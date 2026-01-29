@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Configuratore Barca 3D</title>
+  <style>
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url('sfondo.jpg?v=1') center/cover no-repeat;
+      color: #fff;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    #header {
+      width: 60vw;
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    #header h1 {
+      margin: 0 0 6px 0;
+      font-size: 28px;
+      letter-spacing: 2px;
+    }
+
+    #header h2 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    #viewer {
+      width: 60vw;
+      height: 80vh;
+      border: 5px solid rgba(255,255,255,0.5);
+      border-radius: 12px;
+      background: rgba(0,0,0,0.35);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+      overflow: hidden;
+      position: relative;
+    }
+
+    #viewer-ui {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    #viewer-ui .top,
+    #viewer-ui .bottom {
+      padding: 10px 14px;
+      text-align: center;
+      background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.55),
+        rgba(0,0,0,0)
+      );
+    }
+
+    #viewer-ui .bottom {
+      background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.55),
+        rgba(0,0,0,0)
+      );
+      position: relative;
+      padding-top: 42px;
+    }
+
+    #viewer-ui h1 {
+      margin: 0;
+      font-size: 34px;
+      letter-spacing: 2px;
+      color: #7CFF00;
+    }
+
+    #viewer-ui h2 {
+      margin: 0 0 6px 0;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      text-align: center;
+      color: #7CFF00;
+    }
+
+    #price-tag {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.35);
+      padding: 10px 14px;
+      font-size: 20px;
+      letter-spacing: 0.5px;
+      color: #7CFF00;
+    }
+
+    .color-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .color-group {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .color-label {
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      opacity: 0.85;
+      margin-right: 4px;
+    }
+
+    .nav-btn {
+      position: relative;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.35);
+      background: rgba(0,0,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .nav-btn::after {
+      content: '';
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 8px solid #7CFF00;
+    }
+
+    .nav-btn:hover {
+      background: rgba(0,0,0,0.7);
+    }
+
+    .nav-btn:focus-visible {
+      outline: 2px solid #7CFF00;
+      outline-offset: 3px;
+    }
+
+    .back-btn {
+      transform: scaleX(-1);
+      transform-origin: center;
+      justify-self: end;
+    }
+
+    .reset-btn::after {
+      content: "X";
+      color: #ff3b3b;
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 700;
+      width: auto;
+      height: auto;
+      border: none;
+    }
+
+    .nav-btn.is-disabled {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    .nav-btn.is-hidden {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .ghost-btn {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .step-header {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0 6px;
+      height: 26px;
+    }
+
+    #step-title {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #7CFF00;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .step { margin: 0 0 6px 0; }
+    .hidden { display: none; }
+
+    button {
+      margin: 4px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      background: #333;
+      color: #fff;
+      pointer-events: auto;
+    }
+
+    #step-colori button {
+      padding: 6px 10px;
+      font-size: 12px;
+      margin: 3px;
+    }
+
+    #step-colori select {
+      min-width: 140px;
+      padding: 6px 8px;
+      font-size: 12px;
+      min-height: 34px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.35);
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+    }
+
+    #step-colori option {
+      background: #111;
+      color: #fff;
+    }
+
+    #step-finitura button {
+      padding: 6px 8px;
+      font-size: 12px;
+      min-width: 140px;
+    }
+
+    #step-accessori label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 8px;
+      font-size: 12px;
+      line-height: 14px;
+    }
+
+    #step-accessori input {
+      transform: scale(1.1);
+    }
+
+    .accessory-tooltip {
+      position: absolute;
+      left: 50%;
+      top: -6px;
+      transform: translate(-50%, -100%);
+      background: rgba(0,0,0,0.8);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #ffb3b3;
+      font-size: 11px;
+      padding: 4px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+      z-index: 5;
+    }
+
+    #step-accessori label {
+      position: relative;
+    }
+
+    #step-accessori label:hover .accessory-tooltip {
+      opacity: 1;
+    }
+
+
+
+    #step-colori {
+      padding-top: 0;
+    }
+
+    #step-accessori {
+      padding-top: 0;
+    }
+
+      button:hover { background:#555; }
+      button.active { background:#1e90ff; }
+
+      #viewer-ui label,
+      #viewer-ui input,
+      #viewer-ui select {
+        pointer-events: auto;
+        cursor: pointer;
+      }
+  </style>
+</head>
+<body>
+
+<div id="viewer">
+  <div id="viewer-ui">
+    <div class="top">
+      <h1>FISHER 40</h1>
+    </div>
+    <div id="price-tag">€ 6.000</div>
+    <div class="bottom">
+      <div class="step-header">
+        <button class="nav-btn reset-btn is-hidden" onclick="resetAllAccessories()" aria-label="Reset accessori">
+          <span class="sr-only">Reset accessori</span>
+        </button>
+        <button class="nav-btn back-btn is-hidden" onclick="goBack()" aria-label="Indietro">
+          <span class="sr-only">Indietro</span>
+        </button>
+        <div id="step-title">Finitura</div>
+        <button class="nav-btn next-btn is-hidden" onclick="goNext()" aria-label="Avanti">
+          <span class="sr-only">Avanti</span>
+        </button>
+        <button class="nav-btn ghost-btn" aria-hidden="true" tabindex="-1"></button>
+      </div>
+      <div id="step-finitura" class="step">
+        <button data-group="finish" onclick="selectFinitura('gelcoat', this)">Gelcoat</button>
+        <button data-group="finish" onclick="selectFinitura('paint', this)">Paint</button>
+        <button data-group="finish" onclick="selectFinitura('rugged', this)">Rugged</button>
+        <button data-group="finish" onclick="selectFinitura('wrapping', this)">Wrapping</button>
+      </div>
+      <div id="step-colori" class="step hidden">
+        <div class="color-row">
+          <div class="color-group" id="group-hull">
+            <span class="color-label">Scafo</span>
+            <div id="hull-colors"></div>
+          </div>
+          <div class="color-group" id="group-deck">
+            <span class="color-label">Ponte</span>
+            <div id="deck-colors"></div>
+          </div>
+          <div class="color-group" id="group-hatches">
+            <span class="color-label">Portelli</span>
+            <div id="hatches-colors"></div>
+          </div>
+        </div>
+      </div>
+      <div id="step-accessori" class="step hidden">
+        <label><input type="checkbox" data-accessory="tientibene" onchange="toggleAccessory('tientibene', this.checked)"> Tientibene</label>
+        <label style="margin-left:10px"><input type="checkbox" data-accessory="panca" onchange="toggleAccessory('panca', this.checked)"> Panca</label>
+        <label style="margin-left:10px"><input type="checkbox" data-accessory="schienale" onchange="toggleAccessory('schienale', this.checked)"> Schienale</label>
+        <label style="margin-left:10px"><input type="checkbox" data-accessory="supporto" onchange="toggleAccessory('supporto', this.checked)"> Supporto motore</label>
+        <label style="margin-left:10px"><input type="checkbox" data-accessory="motore" onchange="toggleAccessory('motore', this.checked)"> Motore</label>
+        <label style="margin-left:10px"><input type="checkbox" data-accessory="trolling" onchange="toggleAccessory('trolling', this.checked)"> Trolling motor</label>
+        <label style="margin-left:10px"><input type="checkbox" data-accessory="fishfinder" onchange="toggleAccessory('fishfinder', this.checked)"> Fishfinder</label>
+        <label style="margin-left:10px"><input type="checkbox" data-accessory="impianto" onchange="toggleAccessory('impianto', this.checked)"> Impianto elettrico</label>
+        <label style="margin-left:10px"><input type="checkbox" data-accessory="batteria" onchange="toggleAccessory('batteria', this.checked)"> Batteria al Litio</label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="ui">
+</div>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160/build/three.module.js"
+    }
+  }
+</script>
+
+<script type="module">
+  import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160/build/three.module.js';
+  import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/controls/OrbitControls.js';
+  import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/loaders/GLTFLoader.js';
+  import { RGBELoader } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/loaders/RGBELoader.js';
+  import { Sky } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/objects/Sky.js';
+  import { Water } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/objects/Water.js';
+
+  const scene = new THREE.Scene();
+
+  const camera = new THREE.PerspectiveCamera(60, 1.6, 0.1, 100);
+  camera.position.set(0, 1.5, 5);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha:true });
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.15;
+  const viewer = document.getElementById('viewer');
+  renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+  viewer.appendChild(renderer.domElement);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enablePan = false;
+  controls.enableDamping = true;
+  controls.autoRotate = false;
+
+  const ambient = new THREE.AmbientLight(0xffffff, 0.25);
+  scene.add(ambient);
+
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+  dirLight.position.set(4, 6, 3);
+  scene.add(dirLight);
+
+
+  const sky = new Sky();
+  sky.scale.setScalar(10000);
+  scene.add(sky);
+  sky.visible = false;
+
+  const skyUniforms = sky.material.uniforms;
+  skyUniforms['turbidity'].value = 1.6;
+  skyUniforms['rayleigh'].value = 3.5;
+  skyUniforms['mieCoefficient'].value = 0.0025;
+  skyUniforms['mieDirectionalG'].value = 0.85;
+
+  const sun = new THREE.Vector3();
+  const phi = THREE.MathUtils.degToRad(35);
+  const theta = THREE.MathUtils.degToRad(180);
+  sun.setFromSphericalCoords(1, phi, theta);
+  sky.material.uniforms['sunPosition'].value.copy(sun);
+
+  // HDR sky background
+  const pmremGenerator = new THREE.PMREMGenerator(renderer);
+  new RGBELoader()
+    .setPath('hdr/')
+    .load('puresky.hdr', (hdrTexture) => {
+      const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
+      scene.background = envMap;
+      scene.environment = envMap;
+      hdrTexture.dispose();
+      pmremGenerator.dispose();
+    });
+
+  const waterGeometry = new THREE.PlaneGeometry(10000, 10000);
+  const water = new Water(
+    waterGeometry,
+    {
+      textureWidth: 512,
+      textureHeight: 512,
+      waterNormals: new THREE.TextureLoader().load(
+        'https://threejs.org/examples/textures/waternormals.jpg',
+        (texture) => {
+          texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        }
+      ),
+      sunDirection: new THREE.Vector3(),
+      sunColor: 0xffffff,
+      waterColor: 0x0f7a4a,
+      alpha: 0.65,
+      distortionScale: 0.05,
+      fog: scene.fog !== undefined
+    }
+  );
+  water.material.transparent = true;
+  water.rotation.x = -Math.PI / 2;
+  water.position.y = -0.5;
+  scene.add(water);
+
+  let hullMat, deckMat, hatchesMat;
+  let bottazzoMat, scrittaMat;
+  const accessories = {};
+  const sounds = {
+    bg: new Audio('audio/gabbiani.mp3'),
+    on: new Audio('audio/click.mp3'),
+    off: new Audio('audio/blip.mp3')
+  };
+  sounds.bg.loop = true;
+  sounds.bg.volume = 0.35;
+  sounds.on.volume = 0.8;
+  sounds.off.volume = 0.8;
+  let audioUnlocked = false;
+
+  function unlockAudio(){
+    if(audioUnlocked) return;
+    audioUnlocked = true;
+    sounds.bg.play().catch(() => {});
+  }
+
+  document.addEventListener('pointerdown', unlockAudio, { once: true });
+  document.addEventListener('keydown', unlockAudio, { once: true });
+  const accessoryKeys = [
+    'tientibene',
+    'panca',
+    'schienale',
+    'motore',
+    'supporto',
+    'trolling',
+    'fishfinder',
+    'impianto',
+    'batteria'
+  ];
+  const accessoryGroups = {
+    panca: [],
+    tientibene: [],
+    schienale: [],
+    motore: [],
+    supporto: [],
+    trolling: [],
+    fishfinder: [],
+    impianto: [],
+    batteria: []
+  };
+
+  const loader = new GLTFLoader();
+  const accessoryInputs = document.querySelectorAll('#step-accessori input[type="checkbox"]');
+  const accessoryDeps = {
+    schienale: ['tientibene'],
+    motore: ['supporto'],
+    batteria: ['impianto'],
+    fishfinder: ['batteria'],
+    trolling: ['batteria']
+  };
+  const accessoryLabels = {
+    tientibene: 'Tientibene',
+    panca: 'Panca',
+    schienale: 'Schienale',
+    motore: 'Motore',
+    supporto: 'Supporto motore',
+    trolling: 'Trolling motor',
+    fishfinder: 'Fishfinder',
+    impianto: 'Impianto elettrico',
+    batteria: 'Batteria al Litio'
+  };
+
+  function setAccessoryChecked(key, checked, silent = false){
+    const cb = document.querySelector(`#step-accessori input[data-accessory="${key}"]`);
+    if(cb) cb.checked = checked;
+    toggleAccessory(key, checked, silent);
+  }
+
+  function updateAccessoryRules(){
+    accessoryInputs.forEach((cb) => {
+      const key = cb.dataset.accessory;
+      const deps = accessoryDeps[key];
+      const allowed = !deps || deps.every(dep => {
+        const depCb = document.querySelector(`#step-accessori input[data-accessory="${dep}"]`);
+        return depCb?.checked;
+      });
+      cb.disabled = !allowed;
+      const label = cb.closest('label');
+      if(label){
+        let tip = label.querySelector('.accessory-tooltip');
+        if(!tip){
+          tip = document.createElement('span');
+          tip.className = 'accessory-tooltip';
+          label.appendChild(tip);
+        }
+        if(!allowed && deps?.length){
+          const depNames = deps.map(dep => accessoryLabels[dep] || dep).join(', ');
+          tip.textContent = `Only with ${depNames}`;
+        }else{
+          tip.textContent = '';
+        }
+      }
+      if(!allowed && cb.checked){
+        setAccessoryChecked(key, false, true);
+      }
+    });
+  }
+
+  function syncAccessoryUI(){
+    accessoryInputs.forEach((cb) => {
+      const key = cb.dataset.accessory;
+      if(key) toggleAccessory(key, cb.checked, true);
+    });
+    updateAccessoryRules();
+  }
+
+  function resetAccessoryUI(){
+    accessoryInputs.forEach((cb) => {
+      cb.checked = false;
+    });
+    syncAccessoryUI();
+  }
+  const glbUrls = [
+    'https://github.com/nikopvs/configuratore/releases/download/v1/fisher40_base.glb',
+    'models/fisher40_base.glb'
+  ];
+  let glbIndex = 0;
+
+  function loadGlb(){
+    const url = glbUrls[glbIndex];
+    loader.load(url, (gltf) => {
+    gltf.scene.scale.set(0.3,0.3,0.3);
+    gltf.scene.position.set(0,-1,0);
+    scene.add(gltf.scene);
+
+    // Removed axes helper for clean view
+
+    gltf.scene.traverse(obj => {
+      if(obj.isMesh){
+        if(obj.material?.name==='Hull') hullMat=obj.material;
+        if(obj.material?.name==='Deck') deckMat=obj.material;
+        if(obj.material?.name==='Hatches' || obj.material?.name==='Portelli') hatchesMat=obj.material;
+        if(obj.material?.name==='Gomma') bottazzoMat=obj.material;
+        if(obj.material?.name==='Scritta') scrittaMat=obj.material;
+        if(!scrittaMat && obj.name==='Scritta') scrittaMat=obj.material;
+        if(!scrittaMat && typeof obj.material?.name === 'string' && obj.material.name.toLowerCase().includes('scritta')) {
+          scrittaMat = obj.material;
+        }
+        if(obj.name==='Tientibene') accessories.tientibene=obj;
+        if(obj.name==='Panca') accessories.panca=obj;
+        if(obj.name==='Schienale' || obj.name?.toLowerCase()==='schienale') accessories.schienale=obj;
+        if(obj.name==='Motore') accessories.motore=obj;
+        if(obj.name==='Fuoribordo') accessories.motore=obj;
+        if(obj.name?.toLowerCase()==='supporto') accessories.supporto = obj;
+        if(obj.name==='trolling' || obj.name?.toLowerCase()==='trolling') accessories.trolling = obj;
+        if(obj.name==='Fishfinder' || obj.name?.toLowerCase()==='fishfinder') accessories.fishfinder = obj;
+        if(obj.name==='Impianto' || obj.name?.toLowerCase()==='impianto' || obj.name==='ImpiantoElettrico' || obj.name?.toLowerCase()==='impiantoelettrico') accessories.impianto = obj;
+        if(obj.name==='Batteria' || obj.name?.toLowerCase()==='batteria' || obj.name==='BatteriaLitio' || obj.name?.toLowerCase()==='batterialitio') accessories.batteria = obj;
+        if(obj.name?.toLowerCase()==='schienale' || obj.name?.toLowerCase()==='fishfinder'){
+          // Clone to avoid changing shared materials (e.g. Hatches).
+          obj.material = obj.material?.clone?.() || obj.material;
+          if(obj.material){
+            if('metalness' in obj.material) obj.material.metalness = 0;
+            if('roughness' in obj.material) obj.material.roughness = 0.9;
+            obj.material.needsUpdate = true;
+          }
+        }
+        if(obj.name?.startsWith('Panca')) accessoryGroups.panca.push(obj);
+        if(obj.name?.startsWith('Tientibene')) accessoryGroups.tientibene.push(obj);
+        if(obj.name?.startsWith('Schienale') || obj.name?.toLowerCase().startsWith('schienale')) accessoryGroups.schienale.push(obj);
+        if(obj.name?.startsWith('Motore')) accessoryGroups.motore.push(obj);
+        if(obj.name?.startsWith('Fuoribordo')) accessoryGroups.motore.push(obj);
+        if(obj.name?.toLowerCase().startsWith('supporto')) accessoryGroups.supporto.push(obj);
+        if(obj.name?.toLowerCase().startsWith('trolling')) accessoryGroups.trolling.push(obj);
+        if(obj.name?.toLowerCase().startsWith('fishfinder')) accessoryGroups.fishfinder.push(obj);
+        if(obj.name?.toLowerCase().startsWith('impianto')) accessoryGroups.impianto.push(obj);
+        if(obj.name?.toLowerCase().startsWith('batteria')) accessoryGroups.batteria.push(obj);
+      }
+    });
+
+    // Preload scritta textures once
+    if(!scrittaTextures.black){
+      scrittaTextures.black = textureLoader.load('images/Scritta_black.png', (t) => {
+        t.wrapS = t.wrapT = THREE.MirroredRepeatWrapping;
+        t.repeat.x = -1;
+        t.repeat.y = -1;
+        t.flipY = false;
+      });
+    }
+    if(!scrittaTextures.white){
+      scrittaTextures.white = textureLoader.load('images/Scritta_white.png', (t) => {
+        t.wrapS = t.wrapT = THREE.MirroredRepeatWrapping;
+        t.repeat.x = -1;
+        t.repeat.y = -1;
+        t.flipY = false;
+      });
+    }
+    if(!antiskidTexture){
+      antiskidTexture = textureLoader.load('images/antiskid.jpg', (t) => {
+        t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        t.repeat.set(2, 2);
+      });
+    }
+
+    if(hullMat) hullMat.color.set('#ffffff');
+    if(deckMat) deckMat.color.set('#ffffff');
+    if(hatchesMat) hatchesMat.color.set('#ffffff');
+    if(bottazzoMat) bottazzoMat.color.set('#000000');
+    if(scrittaMat){
+      scrittaMat.map = scrittaTextures.black;
+      scrittaMat.color.set('#ffffff');
+    }
+    Object.values(accessories).forEach(a=>a.visible=false);
+    Object.values(accessoryGroups).forEach(list => list.forEach(a => a.visible = false));
+
+    // Auto-center and frame model in the camera view
+    const box = new THREE.Box3().setFromObject(gltf.scene);
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+    gltf.scene.position.sub(center);
+    gltf.scene.position.add(new THREE.Vector3(-0.05, 0, 0));
+
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const fov = camera.fov * (Math.PI / 180);
+    let cameraZ = Math.abs(maxDim / (2 * Math.tan(fov / 2)));
+    cameraZ *= 1;
+    camera.position.set(0.2, maxDim * 0.2, cameraZ * 0.9);
+    camera.lookAt(0, 0, 0);
+    controls.target.set(0, 0, 0);
+    controls.update();
+
+    controls.minDistance = cameraZ * 0.4;
+    controls.maxDistance = cameraZ * 1.4;
+
+    water.position.y = -maxDim * 0.12 + 0.035;
+    syncAccessoryUI();
+  }, undefined, err => {
+    if(glbIndex < glbUrls.length - 1){
+      glbIndex += 1;
+      loadGlb();
+      return;
+    }
+    console.error('Errore caricamento GLB:', err);
+  });
+  }
+
+  loadGlb();
+
+  let finishSelected = false;
+  let hullSelected = false;
+  let deckSelected = false;
+  let hatchesSelected = false;
+  let currentStep = 'finitura';
+  let selectedFinish = null;
+  let selectedHull = null;
+  let selectedDeck = null;
+  let selectedHatches = null;
+  let hullDark = false;
+  let deckDark = false;
+  let wrappingWhite = false;
+  let hatchesAuto = true;
+  const colorSelects = { hull: null, deck: null, hatches: null };
+  const textureLoader = new THREE.TextureLoader();
+  let antiskidTexture = null;
+  const scrittaTextures = {
+    black: null,
+    white: null
+  };
+
+  const priceTable = {
+    base: 6000,
+    finishPct: {
+      gelcoat: 0.0,
+      wrapping: 0.30,
+      paint: 0.15,
+      rugged: 0.20
+    },
+    accessories: {
+      tientibene: 500,
+      panca: 1000,
+      schienale: 250,
+      motore: 3000,
+      supporto: 150,
+      trolling: 2000,
+      fishfinder: 800,
+      impianto: 500,
+      batteria: 300
+    }
+  };
+
+  function updatePrice(){
+    let total = priceTable.base;
+    if(selectedFinish){
+      total += priceTable.base * (priceTable.finishPct[selectedFinish] || 0);
+    }
+    const isChecked = (name) =>
+      document.querySelector(`#step-accessori input[data-accessory="${name}"]`)?.checked;
+    const isVisible = (name) =>
+      accessories[name]?.visible ||
+      (accessoryGroups[name] && accessoryGroups[name].some(obj => obj.visible));
+    const isSelected = (name) => Boolean(isChecked(name) || isVisible(name));
+    total += isSelected('tientibene') ? priceTable.accessories.tientibene : 0;
+    total += isSelected('panca') ? priceTable.accessories.panca : 0;
+    total += isSelected('schienale') ? priceTable.accessories.schienale : 0;
+    total += isSelected('motore') ? priceTable.accessories.motore : 0;
+    total += isSelected('supporto') ? priceTable.accessories.supporto : 0;
+    total += isSelected('trolling') ? priceTable.accessories.trolling : 0;
+    total += isSelected('fishfinder') ? priceTable.accessories.fishfinder : 0;
+    total += isSelected('impianto') ? priceTable.accessories.impianto : 0;
+    total += isSelected('batteria') ? priceTable.accessories.batteria : 0;
+    const el = document.getElementById('price-tag');
+    if(el) el.textContent = `€ ${total.toLocaleString('it-IT')}`;
+  }
+
+  function showStep(step){
+    document.getElementById('step-finitura').classList.add('hidden');
+    document.getElementById('step-colori').classList.add('hidden');
+    document.getElementById('step-accessori').classList.add('hidden');
+    document.getElementById(`step-${step}`).classList.remove('hidden');
+
+    const backBtn = document.querySelector('#viewer-ui .back-btn');
+    const resetBtn = document.querySelector('#viewer-ui .reset-btn');
+    const nextBtn = document.querySelector('#viewer-ui .next-btn');
+    if(backBtn){
+      const isFirst = step === 'finitura';
+      backBtn.classList.toggle('is-disabled', isFirst);
+      backBtn.setAttribute('aria-disabled', isFirst ? 'true' : 'false');
+      backBtn.classList.toggle('is-hidden', isFirst);
+    }
+    if(resetBtn){
+      resetBtn.classList.toggle('is-hidden', step !== 'accessori');
+    }
+    if(nextBtn){
+      nextBtn.classList.toggle('is-hidden', step === 'finitura');
+    }
+    const title = document.getElementById('step-title');
+    if(title){
+      if(step === 'finitura') title.textContent = 'Finitura';
+      else if(step === 'colori') title.textContent = 'Colori';
+      else if(step === 'accessori') title.textContent = 'Accessori';
+    }
+    currentStep = step;
+  }
+
+  const colorPalettes = {
+    gelcoat: {
+      hull: [
+        { label: 'White', color: '#ffffff' },
+        { label: 'Grey', color: '#a9a9a9' },
+        { label: 'Aquamarina', color: '#7fffd4' },
+        { label: 'Blue', color: '#000080' },
+        { label: 'Orange', color: '#FF8C00' },
+        { label: 'Pink', color: '#FF69B4' }
+      ],
+      deck: [
+        { label: 'White', color: '#ffffff' },
+        { label: 'Grey', color: '#a9a9a9' },
+        { label: 'Acquamarina', color: '#7fffd4' },
+        { label: 'Blue', color: '#000080' },
+        { label: 'Orange', color: '#FF8C00' },
+        { label: 'Pink', color: '#FF69B4' }
+      ],
+      hatches: [
+        { label: 'White', color: '#ffffff' },
+        { label: 'Grey', color: '#a9a9a9' },
+        { label: 'Acquamarina', color: '#7fffd4' },
+        { label: 'Blue', color: '#000080' },
+        { label: 'Orange', color: '#FF8C00' },
+        { label: 'Pink', color: '#FF69B4' }
+      ]
+    },
+    wrapping: {
+      hull: [
+        { label: 'Honey', color: '#ffffff', texture: 'images/wrapping/Honey.jpg', scale: 0.5 },
+        { label: 'Wave', color: '#234a63', texture: 'images/wrapping/Wave.jpg', scale: 0.7 },
+        { label: 'Carbon', color: '#333333', texture: 'images/wrapping/Carbon.jpg', scale: 1 },
+        { label: 'Camu', color: '#3b4a3a', texture: 'images/wrapping/Camu.jpg', scale: 0.2 },
+        { label: 'Green wave', color: '#ffffff', texture: 'images/wrapping/Greenwave.jpg', scale: 0.7 },
+        { label: 'Abstract', color: '#ffffff', texture: 'images/wrapping/Abstract.jpg', scale: 0.5 }
+      ],
+      deck: [
+        { label: 'Honey', color: '#ffffff', texture: 'images/wrapping/Honey.jpg', scale: 0.5 },
+        { label: 'Wave', color: '#234a63', texture: 'images/wrapping/Wave.jpg', scale: 0.7 },
+        { label: 'Carbon', color: '#333333', texture: 'images/wrapping/Carbon.jpg', scale: 1 },
+        { label: 'Camu', color: '#3b4a3a', texture: 'images/wrapping/Camu.jpg', scale: 0.2 },
+        { label: 'Green wave', color: '#ffffff', texture: 'images/wrapping/Greenwave.jpg', scale: 0.7 },
+        { label: 'Abstract', color: '#ffffff', texture: 'images/wrapping/Abstract.jpg', scale: 0.5 }
+      ],
+      hatches: [
+        { label: 'Honey', color: '#ffffff', texture: 'images/wrapping/Honey.jpg', scale: 0.5 },
+        { label: 'Wave', color: '#234a63', texture: 'images/wrapping/Wave.jpg', scale: 0.7 },
+        { label: 'Carbon', color: '#333333', texture: 'images/wrapping/Carbon.jpg', scale: 1 },
+        { label: 'Camu', color: '#3b4a3a', texture: 'images/wrapping/Camu.jpg', scale: 0.2 },
+        { label: 'Green wave', color: '#ffffff', texture: 'images/wrapping/Greenwave.jpg', scale: 0.7 },
+        { label: 'Abstract', color: '#ffffff', texture: 'images/wrapping/Abstract.jpg', scale: 0.5 }
+      ]
+    },
+    paint: {
+      hull: [
+        { label: 'White', color: '#FFFFFF' },
+        { label: 'Dark', color: '#808080' },
+        { label: 'Green', color: '#ADFF2F' },
+        { label: 'Blue', color: '#0000CD' },
+        { label: 'Yellow', color: '#FFFF00' },
+        { label: 'Black', color: '#000000' }
+      ],
+      deck: [
+        { label: 'White', color: '#FFFFFF' },
+        { label: 'Dark', color: '#808080' },
+        { label: 'Green', color: '#ADFF2F' },
+        { label: 'Blue', color: '#0000CD' },
+        { label: 'Yellow', color: '#FFFF00' },
+        { label: 'Black', color: '#000000' }
+      ],
+      hatches: [
+        { label: 'White', color: '#FFFFFF' },
+        { label: 'Dark', color: '#808080' },
+        { label: 'Green', color: '#ADFF2F' },
+        { label: 'Blue', color: '#0000CD' },
+        { label: 'Yellow', color: '#FFFF00' },
+        { label: 'Black', color: '#000000' }
+      ]
+    },
+    rugged: {
+      all: [
+        { label: 'Lagoon', color: '#556B2F' },
+        { label: 'Seals', color: '#2F4F4F' },
+        { label: 'Acid', color: '#7FFF00' }
+      ]
+    }
+  };
+
+  function renderColorSelect(group, containerId, colors){
+    const container = document.getElementById(containerId);
+    if(!container) return;
+    container.innerHTML = '';
+    const select = document.createElement('select');
+    select.dataset.group = group;
+    colorSelects[group] = select;
+    let isInit = true;
+    colors.forEach(({ label, color, texture, scale }) => {
+      const opt = document.createElement('option');
+      opt.textContent = label;
+      opt.value = color || '';
+      if(texture) opt.dataset.texture = texture;
+      if(scale) opt.dataset.scale = scale;
+      select.appendChild(opt);
+    });
+    select.addEventListener('change', () => {
+      const opt = select.selectedOptions[0];
+      if(!opt || !opt.value) return;
+      const proxyBtn = {
+        dataset: {
+          texture: opt.dataset.texture,
+          scale: opt.dataset.scale
+        }
+      };
+      if(group === 'hull') setHull(opt.value, proxyBtn);
+      else if(group === 'deck') setDeck(opt.value, proxyBtn);
+      else setHatches(opt.value, proxyBtn, !isInit);
+      isInit = false;
+    });
+    if(select.options.length > 0){
+      select.selectedIndex = 0;
+      select.dispatchEvent(new Event('change'));
+      isInit = false;
+    }
+    container.appendChild(select);
+  }
+
+  function updateColorOptions(finish){
+    const palette = colorPalettes[finish] || colorPalettes.gelcoat;
+    hullSelected = false;
+    deckSelected = false;
+    hatchesSelected = false;
+    hatchesAuto = true;
+    const groupHull = document.getElementById('group-hull');
+    const groupDeck = document.getElementById('group-deck');
+    const groupHatches = document.getElementById('group-hatches');
+    if(finish === 'rugged'){
+      if(groupDeck) groupDeck.classList.add('hidden');
+      if(groupHatches) groupHatches.classList.add('hidden');
+      if(groupHull) groupHull.classList.remove('hidden');
+      renderColorSelect('hull', 'hull-colors', palette.all);
+      renderColorSelect('deck', 'deck-colors', []);
+      renderColorSelect('hatches', 'hatches-colors', []);
+    }else{
+      if(groupDeck) groupDeck.classList.remove('hidden');
+      if(groupHatches) groupHatches.classList.remove('hidden');
+      if(groupHull) groupHull.classList.remove('hidden');
+      renderColorSelect('hull', 'hull-colors', palette.hull);
+      renderColorSelect('deck', 'deck-colors', palette.deck);
+      renderColorSelect('hatches', 'hatches-colors', palette.hatches);
+    }
+  }
+
+  function applyAntiskid(mat, color){
+    if(!mat) return;
+    if(!antiskidTexture){
+      mat.color.set(color);
+      mat.needsUpdate = true;
+      antiskidTexture = textureLoader.load('images/antiskid.jpg', (t) => {
+        t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        t.repeat.set(2, 2);
+        mat.map = t;
+        mat.color.set(color);
+        mat.needsUpdate = true;
+      });
+      return;
+    }
+    mat.map = antiskidTexture;
+    mat.color.set(color);
+    mat.needsUpdate = true;
+  }
+
+  function applyWrappingTextureFor(mat, texturePath, scale){
+    if(!mat) return;
+    if(texturePath){
+      mat.color.set('#ffffff');
+      textureLoader.load(texturePath, (t) => {
+        t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        const s = Number.isFinite(scale) ? scale : 2;
+        t.repeat.set(s, s);
+        mat.map = t;
+        mat.needsUpdate = true;
+      });
+    }else{
+      mat.map = null;
+      mat.needsUpdate = true;
+    }
+  }
+
+  function isDarkColor(hex){
+    if(!hex || typeof hex !== 'string') return false;
+    const cleaned = hex.replace('#', '');
+    if(cleaned.length !== 6) return false;
+    const r = parseInt(cleaned.slice(0, 2), 16);
+    const g = parseInt(cleaned.slice(2, 4), 16);
+    const b = parseInt(cleaned.slice(4, 6), 16);
+    const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b);
+    return luminance < 80;
+  }
+
+  function isWrappingWhiteTrigger(texturePath){
+    if(!texturePath) return false;
+    const name = texturePath.toLowerCase();
+    return name.includes('carbon') || name.includes('greenwave') || name.includes('abstract');
+  }
+
+  function updateLogoAndBottazzo(){
+    const makeWhite = wrappingWhite || hullDark;
+    const color = makeWhite ? '#FFFFFF' : '#000000';
+    if(bottazzoMat){
+      if(bottazzoMat.map){
+        bottazzoMat.map = null;
+      }
+      bottazzoMat.color.set(color);
+      bottazzoMat.needsUpdate = true;
+    }
+    if(scrittaMat){
+      const tex = makeWhite ? scrittaTextures.white : scrittaTextures.black;
+      if(tex){
+        scrittaMat.map = tex;
+        scrittaMat.color.set('#ffffff');
+        scrittaMat.needsUpdate = true;
+      }else{
+        const texPath = makeWhite ? 'images/Scritta_white.png' : 'images/Scritta_black.png';
+        textureLoader.load(texPath, (t) => {
+          scrittaMat.map = t;
+          scrittaMat.color.set('#ffffff');
+          scrittaMat.needsUpdate = true;
+        });
+      }
+    }
+  }
+
+  window.selectFinitura = function(f, btn) {
+    setActiveColor('finish', btn);
+    finishSelected = true;
+    selectedFinish = f;
+    updateColorOptions(f);
+    updatePrice();
+    if(currentStep === 'finitura') showStep('colori');
+  };
+
+  function setActiveColor(group, btn){
+    if(!btn) return;
+    document.querySelectorAll(`button[data-group="${group}"]`).forEach(b => {
+      b.classList.toggle('active', b === btn);
+    });
+  }
+
+  window.setHull = function(color, btn){
+    if(selectedFinish === 'rugged'){
+      applyAntiskid(hullMat, color);
+      applyAntiskid(deckMat, color);
+      applyAntiskid(hatchesMat, color);
+      hullDark = isDarkColor(color);
+      deckDark = hullDark;
+      wrappingWhite = false;
+      deckSelected = true;
+      hatchesSelected = true;
+      selectedDeck = color;
+      selectedHatches = color;
+    }else if(selectedFinish === 'wrapping' && btn?.dataset.texture){
+      applyWrappingTextureFor(hullMat, btn.dataset.texture, Number(btn.dataset.scale));
+      wrappingWhite = isWrappingWhiteTrigger(btn.dataset.texture);
+      hullDark = false;
+    }else if(hullMat){
+      hullMat.map = null;
+      hullMat.color.set(color);
+      hullMat.needsUpdate = true;
+      hullDark = isDarkColor(color);
+      wrappingWhite = false;
+    }
+    hullSelected = true;
+    selectedHull = color;
+    checkStep();
+    updateLogoAndBottazzo();
+  };
+  window.setDeck = function(color, btn){
+    if(selectedFinish === 'wrapping' && btn?.dataset.texture){
+      applyWrappingTextureFor(deckMat, btn.dataset.texture, Number(btn.dataset.scale));
+      wrappingWhite = isWrappingWhiteTrigger(btn.dataset.texture);
+      deckDark = false;
+    }else if(deckMat){
+      deckMat.map = null;
+      deckMat.color.set(color);
+      deckMat.needsUpdate = true;
+      deckDark = isDarkColor(color);
+      wrappingWhite = false;
+    }
+    deckSelected = true;
+    selectedDeck = color;
+    checkStep();
+    updateLogoAndBottazzo();
+    if(hatchesAuto){
+      setHatches(color, btn, false);
+      const hSelect = colorSelects.hatches;
+      if(hSelect){
+        if(btn?.dataset.texture){
+          const match = Array.from(hSelect.options).find(opt => opt.dataset.texture === btn.dataset.texture);
+          if(match){
+            hSelect.value = match.value;
+          }
+        }else{
+          hSelect.value = color;
+        }
+      }
+    }
+  };
+  window.setHatches = function(color, btn, manual = true){
+    if(selectedFinish === 'wrapping' && btn?.dataset.texture){
+      applyWrappingTextureFor(hatchesMat, btn.dataset.texture, Number(btn.dataset.scale));
+    }else if(hatchesMat){
+      hatchesMat.map = null;
+      hatchesMat.color.set(color);
+      hatchesMat.needsUpdate = true;
+    }
+    hatchesSelected = true;
+    selectedHatches = color;
+    checkStep();
+    if(manual) hatchesAuto = false;
+  };
+
+  window.setBottazzoColor = function(color){
+    if(bottazzoMat){
+      bottazzoMat.color.set(color);
+      bottazzoMat.needsUpdate = true;
+    }
+  };
+
+  window.setScrittaColor = function(color){
+    if(scrittaMat){
+      scrittaMat.color.set(color);
+      scrittaMat.needsUpdate = true;
+    }
+  };
+  function checkStep(){
+    if(hullSelected && deckSelected && hatchesSelected){
+      // waiting for "Avanti"
+    }
+  }
+
+  window.goBack = function(){
+    if(currentStep === 'colori') showStep('finitura');
+    else if(currentStep === 'accessori') showStep('colori');
+  };
+
+  window.goNext = function(){
+    if(currentStep === 'finitura'){
+      if(!finishSelected) return;
+      showStep('colori');
+      return;
+    }
+    if(currentStep === 'colori'){
+      if(!(hullSelected && deckSelected && hatchesSelected)) return;
+      showStep('accessori');
+    }
+  };
+  window.toggleAccessory = function(name,state, silent = false){
+    if(accessories[name]) accessories[name].visible=state;
+    if(accessoryGroups[name]) accessoryGroups[name].forEach(obj => obj.visible = state);
+    if(!silent){
+      const sfx = state ? sounds.on : sounds.off;
+      if(sfx){
+        sfx.currentTime = 0;
+        sfx.play().catch(() => {});
+      }
+      unlockAudio();
+    }
+    updatePrice();
+    updateAccessoryRules();
+  };
+
+  window.resetAllAccessories = function(){
+    resetAccessoryUI();
+  };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    resetAccessoryUI();
+  });
+
+  function animate(){
+    requestAnimationFrame(animate);
+    controls.update();
+    water.material.uniforms['time'].value += 1.0 / 600.0;
+    renderer.render(scene,camera);
+  }
+  animate();
+
+  window.addEventListener('resize',()=>{
+    camera.aspect=1.6;
+    camera.updateProjectionMatrix();
+    renderer.setSize(viewer.clientWidth,viewer.clientHeight);
+  });
+</script>
+
+</body>
+</html>
