@@ -11,7 +11,10 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: url('sfondo.jpg?v=1') center/cover no-repeat;
+      background-color: #05070a;
+      background:
+        radial-gradient(circle at top, rgba(20, 80, 140, 0.45), rgba(2, 6, 12, 0.9) 60%),
+        url('sfondo.jpg?v=2') center/cover no-repeat;
       color: #fff;
       overflow: hidden;
       display: flex;
@@ -49,6 +52,40 @@
       box-shadow: 0 12px 30px rgba(0,0,0,0.35);
       overflow: hidden;
       position: relative;
+    }
+
+    #loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 5;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+      font-size: 12px;
+      color: #7CFF00;
+      pointer-events: none;
+    }
+
+    #loading-bar {
+      width: min(320px, 70%);
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.15);
+      overflow: hidden;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
+    }
+
+    #loading-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #7CFF00, #3DFF8C);
+      transition: width 0.2s ease;
     }
 
     #viewer-ui {
@@ -334,6 +371,12 @@
 <body>
 
 <div id="viewer">
+  <div id="loading">
+    <div id="loading-text">Caricamento modello 0%</div>
+    <div id="loading-bar">
+      <div id="loading-fill"></div>
+    </div>
+  </div>
   <div id="viewer-ui">
     <div class="top">
       <h1>FISHER 40</h1>
@@ -539,6 +582,9 @@
   const dracoLoader = new DRACOLoader();
   dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
   loader.setDRACOLoader(dracoLoader);
+  const loadingOverlay = document.getElementById('loading');
+  const loadingText = document.getElementById('loading-text');
+  const loadingFill = document.getElementById('loading-fill');
   const accessoryInputs = document.querySelectorAll('#step-accessori input[type="checkbox"]');
   const accessoryDeps = {
     schienale: ['tientibene'],
@@ -616,6 +662,15 @@
 
   function loadGlb(){
     const url = glbUrls[glbIndex];
+    if(loadingOverlay){
+      loadingOverlay.style.display = 'flex';
+    }
+    if(loadingText){
+      loadingText.textContent = 'Caricamento modello 0%';
+    }
+    if(loadingFill){
+      loadingFill.style.width = '0%';
+    }
     loader.load(url, (gltf) => {
     gltf.scene.scale.set(0.3,0.3,0.3);
     gltf.scene.position.set(0,-1,0);
@@ -720,19 +775,34 @@
     controls.update();
 
     controls.minDistance = cameraZ * 0.4;
-    controls.maxDistance = cameraZ * 1.4;
+      controls.maxDistance = cameraZ * 1.4;
 
-    water.position.y = -maxDim * 0.12 + 0.035;
-    syncAccessoryUI();
-  }, undefined, err => {
-    if(glbIndex < glbUrls.length - 1){
-      glbIndex += 1;
-      loadGlb();
-      return;
+      water.position.y = -maxDim * 0.12 + 0.035;
+      syncAccessoryUI();
+      if(loadingOverlay){
+        loadingOverlay.style.display = 'none';
+      }
+    }, (xhr) => {
+      if(!xhr || !loadingFill || !loadingText) return;
+      if(xhr.total){
+        const pct = Math.min(100, Math.round((xhr.loaded / xhr.total) * 100));
+        loadingFill.style.width = `${pct}%`;
+        loadingText.textContent = `Caricamento modello ${pct}%`;
+      }else{
+        loadingText.textContent = 'Caricamento modello...';
+      }
+    }, err => {
+      if(glbIndex < glbUrls.length - 1){
+        glbIndex += 1;
+        loadGlb();
+        return;
+      }
+      console.error('Errore caricamento GLB:', err);
+      if(loadingText){
+        loadingText.textContent = 'Errore caricamento modello';
+      }
+    });
     }
-    console.error('Errore caricamento GLB:', err);
-  });
-  }
 
   loadGlb();
 
