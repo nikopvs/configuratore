@@ -459,6 +459,7 @@
   camera.position.set(0, 1.5, 5);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.15;
@@ -496,42 +497,50 @@
   sun.setFromSphericalCoords(1, phi, theta);
   sky.material.uniforms['sunPosition'].value.copy(sun);
 
-  // HDR sky background
   const pmremGenerator = new THREE.PMREMGenerator(renderer);
-  new RGBELoader()
-    .setPath('hdr/')
-    .load('puresky.hdr', (hdrTexture) => {
-      const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
-      scene.background = envMap;
-      scene.environment = envMap;
-      hdrTexture.dispose();
-      pmremGenerator.dispose();
-    });
+  let environmentLoaded = false;
+  let water;
+  let waterTargetY = -0.5;
 
-  const waterGeometry = new THREE.PlaneGeometry(10000, 10000);
-  const water = new Water(
-    waterGeometry,
-    {
-      textureWidth: 512,
-      textureHeight: 512,
-      waterNormals: new THREE.TextureLoader().load(
-        'https://threejs.org/examples/textures/waternormals.jpg',
-        (texture) => {
-          texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-        }
-      ),
-      sunDirection: new THREE.Vector3(),
-      sunColor: 0xffffff,
-      waterColor: 0x0f7a4a,
-      alpha: 0.65,
-      distortionScale: 0.05,
-      fog: scene.fog !== undefined
-    }
-  );
-  water.material.transparent = true;
-  water.rotation.x = -Math.PI / 2;
-  water.position.y = -0.5;
-  scene.add(water);
+  function loadEnvironment(){
+    if(environmentLoaded) return;
+    environmentLoaded = true;
+
+    new RGBELoader()
+      .setPath('hdr/')
+      .load('puresky.hdr', (hdrTexture) => {
+        const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
+        scene.background = envMap;
+        scene.environment = envMap;
+        hdrTexture.dispose();
+        pmremGenerator.dispose();
+      });
+
+    const waterGeometry = new THREE.PlaneGeometry(10000, 10000);
+    water = new Water(
+      waterGeometry,
+      {
+        textureWidth: 512,
+        textureHeight: 512,
+        waterNormals: new THREE.TextureLoader().load(
+          'https://threejs.org/examples/textures/waternormals.jpg',
+          (texture) => {
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+          }
+        ),
+        sunDirection: new THREE.Vector3(),
+        sunColor: 0xffffff,
+        waterColor: 0x0f7a4a,
+        alpha: 0.65,
+        distortionScale: 0.05,
+        fog: scene.fog !== undefined
+      }
+    );
+    water.material.transparent = true;
+    water.rotation.x = -Math.PI / 2;
+    water.position.y = waterTargetY;
+    scene.add(water);
+  }
 
   let hullMat, deckMat, hatchesMat;
   let bottazzoMat, scrittaMat;
@@ -777,11 +786,15 @@
     controls.minDistance = cameraZ * 0.4;
       controls.maxDistance = cameraZ * 1.4;
 
-      water.position.y = -maxDim * 0.12 + 0.035;
+      waterTargetY = -maxDim * 0.12 + 0.035;
+      if(water){
+        water.position.y = waterTargetY;
+      }
       syncAccessoryUI();
       if(loadingOverlay){
         loadingOverlay.style.display = 'none';
       }
+      loadEnvironment();
     }, (xhr) => {
       if(!xhr || !loadingFill || !loadingText) return;
       if(xhr.total){
@@ -1284,7 +1297,9 @@
   function animate(){
     requestAnimationFrame(animate);
     controls.update();
-    water.material.uniforms['time'].value += 1.0 / 600.0;
+    if(water){
+      water.material.uniforms['time'].value += 1.0 / 600.0;
+    }
     renderer.render(scene,camera);
   }
   animate();
