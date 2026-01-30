@@ -54,6 +54,18 @@
       position: relative;
     }
 
+    body.mobile-rotate #viewer {
+      width: 100vh;
+      height: 100vw;
+      transform: rotate(90deg);
+      transform-origin: center;
+    }
+
+    body.mobile-rotate #header,
+    body.mobile-rotate #ui {
+      display: none;
+    }
+
     #loading {
       position: absolute;
       inset: 0;
@@ -597,6 +609,7 @@
   const loadingOverlay = document.getElementById('loading');
   const loadingText = document.getElementById('loading-text');
   const loadingFill = document.getElementById('loading-fill');
+  const mobileRotateQuery = window.matchMedia('(max-width: 900px) and (orientation: portrait)');
   const accessoryInputs = document.querySelectorAll('#step-accessori input[type="checkbox"]');
   const accessoryDeps = {
     schienale: ['tientibene'],
@@ -674,6 +687,7 @@
 
   function loadGlb(){
     const url = glbUrls[glbIndex];
+    let loadTimeout;
     if(loadingOverlay){
       loadingOverlay.style.display = 'flex';
     }
@@ -683,7 +697,13 @@
     if(loadingFill){
       loadingFill.style.width = '0%';
     }
+    loadTimeout = setTimeout(() => {
+      if(loadingText){
+        loadingText.textContent = 'Caricamento lento...';
+      }
+    }, 6000);
     loader.load(url, (gltf) => {
+    if(loadTimeout) clearTimeout(loadTimeout);
     gltf.scene.scale.set(0.3,0.3,0.3);
     gltf.scene.position.set(0,-1,0);
     scene.add(gltf.scene);
@@ -808,6 +828,7 @@
         loadingText.textContent = 'Caricamento modello...';
       }
     }, err => {
+      if(loadTimeout) clearTimeout(loadTimeout);
       if(glbIndex < glbUrls.length - 1){
         glbIndex += 1;
         loadGlb();
@@ -815,10 +836,23 @@
       }
       console.error('Errore caricamento GLB:', err);
       if(loadingText){
-        loadingText.textContent = 'Errore caricamento modello';
+        const details = err?.message ? ` (${err.message})` : '';
+        loadingText.textContent = `Errore caricamento modello${details}`;
       }
     });
     }
+
+  function applyMobileRotate(){
+    document.body.classList.toggle('mobile-rotate', mobileRotateQuery.matches);
+    if(mobileRotateQuery.matches){
+      renderer.setSize(window.innerHeight, window.innerWidth);
+      camera.aspect = window.innerHeight / window.innerWidth;
+    }else{
+      renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+      camera.aspect = viewer.clientWidth / viewer.clientHeight;
+    }
+    camera.updateProjectionMatrix();
+  }
 
   loadGlb();
 
@@ -1308,10 +1342,14 @@
   animate();
 
   window.addEventListener('resize',()=>{
-    camera.aspect=1.6;
-    camera.updateProjectionMatrix();
-    renderer.setSize(viewer.clientWidth,viewer.clientHeight);
+    applyMobileRotate();
+    if(!document.body.classList.contains('mobile-rotate')){
+      renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+      camera.aspect = viewer.clientWidth / viewer.clientHeight;
+      camera.updateProjectionMatrix();
+    }
   });
+  applyMobileRotate();
 </script>
 
 </body>
