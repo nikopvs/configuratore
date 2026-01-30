@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Configuratore Barca 3D</title>
   <style>
     html, body {
@@ -612,6 +613,7 @@
   const loadingText = document.getElementById('loading-text');
   const loadingFill = document.getElementById('loading-fill');
   const mobileRotateQuery = window.matchMedia('(max-width: 900px) and (orientation: portrait)');
+  let loadToken = 0;
   const accessoryInputs = document.querySelectorAll('#step-accessori input[type="checkbox"]');
   const accessoryDeps = {
     schienale: ['tientibene'],
@@ -690,6 +692,8 @@
 
   function loadGlb(){
     const url = glbUrls[glbIndex];
+    const token = ++loadToken;
+    let progressSeen = false;
     let loadTimeout;
     if(loadingOverlay){
       loadingOverlay.style.display = 'flex';
@@ -701,11 +705,17 @@
       loadingFill.style.width = '0%';
     }
     loadTimeout = setTimeout(() => {
+      if(token !== loadToken) return;
       if(loadingText){
         loadingText.textContent = 'Caricamento lento...';
       }
+      if(!progressSeen && glbIndex < glbUrls.length - 1){
+        glbIndex += 1;
+        loadGlb();
+      }
     }, 6000);
     loader.load(url, (gltf) => {
+    if(token !== loadToken) return;
     if(loadTimeout) clearTimeout(loadTimeout);
     gltf.scene.scale.set(0.3,0.3,0.3);
     gltf.scene.position.set(0,-1,0);
@@ -822,6 +832,8 @@
       }
       loadEnvironment();
     }, (xhr) => {
+      if(token !== loadToken) return;
+      progressSeen = true;
       if(!xhr || !loadingFill || !loadingText) return;
       if(xhr.total){
         const pct = Math.min(100, Math.round((xhr.loaded / xhr.total) * 100));
@@ -831,6 +843,7 @@
         loadingText.textContent = 'Caricamento modello...';
       }
     }, err => {
+      if(token !== loadToken) return;
       if(loadTimeout) clearTimeout(loadTimeout);
       if(glbIndex < glbUrls.length - 1){
         glbIndex += 1;
@@ -846,8 +859,11 @@
     }
 
   function applyMobileRotate(){
-    document.body.classList.toggle('mobile-rotate', mobileRotateQuery.matches);
-    if(mobileRotateQuery.matches){
+    const isPortrait = window.innerHeight > window.innerWidth;
+    const isSmall = Math.min(window.innerWidth, window.innerHeight) <= 900;
+    const shouldRotate = isPortrait && isSmall;
+    document.body.classList.toggle('mobile-rotate', shouldRotate);
+    if(shouldRotate){
       renderer.setSize(window.innerHeight, window.innerWidth);
       camera.aspect = window.innerHeight / window.innerWidth;
     }else{
