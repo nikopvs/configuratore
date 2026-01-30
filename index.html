@@ -461,6 +461,7 @@
   import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/controls/OrbitControls.js';
   import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/loaders/GLTFLoader.js';
   import { DRACOLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/loaders/DRACOLoader.js';
+  import { MeshoptDecoder } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/libs/meshopt_decoder.module.js';
   import { RGBELoader } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/loaders/RGBELoader.js';
   import { Sky } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/objects/Sky.js';
   import { Water } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/objects/Water.js';
@@ -606,6 +607,7 @@
   dracoLoader.preload();
   loader.setCrossOrigin('anonymous');
   loader.setDRACOLoader(dracoLoader);
+  loader.setMeshoptDecoder(MeshoptDecoder);
   const loadingOverlay = document.getElementById('loading');
   const loadingText = document.getElementById('loading-text');
   const loadingFill = document.getElementById('loading-fill');
@@ -681,7 +683,8 @@
     syncAccessoryUI();
   }
   const glbUrls = [
-    'models/fisher40_base.glb?v=2'
+    'models/fisher40_base.glb?v=6',
+    'models/fisher40_base_nodraco.glb?v=6'
   ];
   let glbIndex = 0;
 
