@@ -1182,6 +1182,7 @@
     container.innerHTML = '';
     const select = document.createElement('select');
     const options = [
+      { label: 'None', value: 'none' },
       { label: 'Eva', value: 'eva' },
       { label: 'Paint', value: 'paint' },
       { label: 'Print', value: 'print' }
@@ -1199,6 +1200,7 @@
     if(select.options.length > 0){
       select.selectedIndex = 0;
       selectedAntiskid = select.value;
+      updateAntiskidFinish();
     }
     container.appendChild(select);
   }
@@ -1237,6 +1239,7 @@
       antiskidTexture = textureLoader.load('images/antiskid.jpg', (t) => {
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
         t.repeat.set(2, 2);
+        t.colorSpace = THREE.SRGBColorSpace;
         mat.map = t;
         mat.color.set(color);
         mat.needsUpdate = true;
@@ -1257,6 +1260,7 @@
       antiskidPrintTexture = textureLoader.load('images/millepunte.jpg', (t) => {
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
         t.repeat.set(2, 2);
+        t.colorSpace = THREE.SRGBColorSpace;
         onReady(t);
       });
       return;
@@ -1268,6 +1272,7 @@
     antiskidTexture = textureLoader.load('images/antiskid.jpg', (t) => {
       t.wrapS = t.wrapT = THREE.RepeatWrapping;
       t.repeat.set(2, 2);
+      t.colorSpace = THREE.SRGBColorSpace;
       onReady(t);
     });
   }
@@ -1303,6 +1308,7 @@
         antiskidEvaTexture = textureLoader.load('images/eva.png', (t) => {
           t.wrapS = t.wrapT = THREE.RepeatWrapping;
           t.repeat.set(2, 2);
+          t.colorSpace = THREE.SRGBColorSpace;
           mat.map = t;
           mat.color.set('#ffffff');
           mat.needsUpdate = true;
@@ -1341,7 +1347,37 @@
   }
 
   function updateAntiskidFinish(){
-    if(!selectedAntiskid) return;
+    if(!selectedAntiskid || selectedAntiskid === 'none'){
+      if(deckMat){
+        if(deckMat.userData?.compositeMap){
+          deckMat.userData.compositeMap.dispose();
+          deckMat.userData.compositeMap = null;
+        }
+        if(deckMat.userData?.baseMap){
+          deckMat.map = deckMat.userData.baseMap;
+          deckMat.color.set('#ffffff');
+        }else if(selectedDeck){
+          deckMat.map = null;
+          deckMat.color.set(selectedDeck);
+        }
+        deckMat.needsUpdate = true;
+      }
+      if(hatchesMat){
+        if(hatchesMat.userData?.compositeMap){
+          hatchesMat.userData.compositeMap.dispose();
+          hatchesMat.userData.compositeMap = null;
+        }
+        if(hatchesMat.userData?.baseMap){
+          hatchesMat.map = hatchesMat.userData.baseMap;
+          hatchesMat.color.set('#ffffff');
+        }else if(selectedHatches){
+          hatchesMat.map = null;
+          hatchesMat.color.set(selectedHatches);
+        }
+        hatchesMat.needsUpdate = true;
+      }
+      return;
+    }
     if(selectedDeck) applyAntiskidVariant(deckMat, selectedDeck, selectedAntiskid);
     if(selectedHatches) applyAntiskidVariant(hatchesMat, selectedHatches, selectedAntiskid);
   }
@@ -1354,6 +1390,7 @@
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
         const s = Number.isFinite(scale) ? scale : 2;
         t.repeat.set(s, s);
+        t.colorSpace = THREE.SRGBColorSpace;
         mat.map = t;
         mat.userData.baseMap = t;
         mat.needsUpdate = true;
