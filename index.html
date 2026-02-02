@@ -55,16 +55,99 @@
       position: relative;
     }
 
-    body.mobile-rotate #viewer {
-      width: 100vh;
-      height: 100vw;
-      transform: rotate(90deg);
-      transform-origin: center;
-    }
+    @media (max-width: 900px) {
+      body {
+        justify-content: flex-start;
+        padding-top: 10px;
+      }
 
-    body.mobile-rotate #header,
-    body.mobile-rotate #ui {
-      display: none;
+      #header {
+        width: min(92vw, 560px);
+      }
+
+      #header h1 {
+        font-size: 22px;
+      }
+
+      #header h2 {
+        font-size: 12px;
+      }
+
+      #viewer {
+        width: 96vw;
+        height: 58vh;
+        border-width: 3px;
+      }
+
+      #viewer-ui h1 {
+        font-size: 26px;
+      }
+
+      #viewer-ui h2 {
+        font-size: 12px;
+      }
+
+      #price-tag {
+        top: 8px;
+        right: 8px;
+        padding: 8px 10px;
+        font-size: 16px;
+      }
+
+      .step-header {
+        top: 6px;
+        height: 32px;
+        gap: 10px;
+      }
+
+      #step-title {
+        font-size: 12px;
+        letter-spacing: 0.6px;
+      }
+
+      .nav-btn {
+        width: 36px;
+        height: 36px;
+      }
+
+      .nav-btn::after {
+        border-top-width: 6px;
+        border-bottom-width: 6px;
+        border-left-width: 10px;
+      }
+
+      .reset-btn::after {
+        font-size: 18px;
+      }
+
+      #step-finitura button,
+      #step-colori button {
+        min-width: 96px;
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+
+      #step-colori select {
+        min-width: 120px;
+        font-size: 12px;
+      }
+
+      #step-accessori {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px 8px;
+        text-align: left;
+      }
+
+      #step-accessori label {
+        margin-left: 0 !important;
+        padding: 6px 6px;
+        font-size: 11px;
+      }
+
+      #step-accessori input {
+        transform: scale(1.15);
+      }
     }
 
     #loading {
@@ -859,17 +942,8 @@
     }
 
   function applyMobileRotate(){
-    const isPortrait = window.innerHeight > window.innerWidth;
-    const isSmall = Math.min(window.innerWidth, window.innerHeight) <= 900;
-    const shouldRotate = isPortrait && isSmall;
-    document.body.classList.toggle('mobile-rotate', shouldRotate);
-    if(shouldRotate){
-      renderer.setSize(window.innerHeight, window.innerWidth);
-      camera.aspect = window.innerHeight / window.innerWidth;
-    }else{
-      renderer.setSize(viewer.clientWidth, viewer.clientHeight);
-      camera.aspect = viewer.clientWidth / viewer.clientHeight;
-    }
+    renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+    camera.aspect = viewer.clientWidth / viewer.clientHeight;
     camera.updateProjectionMatrix();
   }
 
@@ -1360,13 +1434,8 @@
   }
   animate();
 
-  window.addEventListener('resize',()=>{
+  window.addEventListener('resize', () => {
     applyMobileRotate();
-    if(!document.body.classList.contains('mobile-rotate')){
-      renderer.setSize(viewer.clientWidth, viewer.clientHeight);
-      camera.aspect = viewer.clientWidth / viewer.clientHeight;
-      camera.updateProjectionMatrix();
-    }
   });
   applyMobileRotate();
 </script>
