@@ -499,16 +499,20 @@
       <div id="step-colori" class="step hidden">
         <div class="color-row">
           <div class="color-group" id="group-hull">
-            <span class="color-label">Scafo</span>
+            <span class="color-label">Hull</span>
             <div id="hull-colors"></div>
           </div>
           <div class="color-group" id="group-deck">
-            <span class="color-label">Ponte</span>
+            <span class="color-label">Deck</span>
             <div id="deck-colors"></div>
           </div>
           <div class="color-group" id="group-hatches">
-            <span class="color-label">Portelli</span>
+            <span class="color-label">Doors</span>
             <div id="hatches-colors"></div>
+          </div>
+          <div class="color-group" id="group-antiskid">
+            <span class="color-label">Antiskid</span>
+            <div id="antiskid-select"></div>
           </div>
         </div>
       </div>
@@ -963,6 +967,9 @@
   const colorSelects = { hull: null, deck: null, hatches: null };
   const textureLoader = new THREE.TextureLoader();
   let antiskidTexture = null;
+  let antiskidPrintTexture = null;
+  let antiskidEvaTexture = null;
+  let selectedAntiskid = '';
   const scrittaTextures = {
     black: null,
     white: null
@@ -1169,6 +1176,33 @@
     container.appendChild(select);
   }
 
+  function renderAntiskidSelect(){
+    const container = document.getElementById('antiskid-select');
+    if(!container) return;
+    container.innerHTML = '';
+    const select = document.createElement('select');
+    const options = [
+      { label: 'Eva', value: 'eva' },
+      { label: 'Paint', value: 'paint' },
+      { label: 'Print', value: 'print' }
+    ];
+    options.forEach(({ label, value }) => {
+      const opt = document.createElement('option');
+      opt.textContent = label;
+      opt.value = value;
+      select.appendChild(opt);
+    });
+    select.addEventListener('change', () => {
+      selectedAntiskid = select.value;
+      updateAntiskidFinish();
+    });
+    if(select.options.length > 0){
+      select.selectedIndex = 0;
+      selectedAntiskid = select.value;
+    }
+    container.appendChild(select);
+  }
+
   function updateColorOptions(finish){
     const palette = colorPalettes[finish] || colorPalettes.gelcoat;
     hullSelected = false;
@@ -1214,6 +1248,104 @@
     mat.needsUpdate = true;
   }
 
+  function getAntiskidOverlayTexture(mode, onReady){
+    if(mode === 'print'){
+      if(antiskidPrintTexture){
+        onReady(antiskidPrintTexture);
+        return;
+      }
+      antiskidPrintTexture = textureLoader.load('images/millepunte.jpg', (t) => {
+        t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        t.repeat.set(2, 2);
+        onReady(t);
+      });
+      return;
+    }
+    if(antiskidTexture){
+      onReady(antiskidTexture);
+      return;
+    }
+    antiskidTexture = textureLoader.load('images/antiskid.jpg', (t) => {
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(2, 2);
+      onReady(t);
+    });
+  }
+
+  function buildCompositeTexture(baseTex, overlayTex){
+    if(!baseTex?.image || !overlayTex?.image) return null;
+    const width = baseTex.image.width || 1024;
+    const height = baseTex.image.height || 1024;
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    if(!ctx) return null;
+    ctx.drawImage(baseTex.image, 0, 0, width, height);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 0.6;
+    ctx.drawImage(overlayTex.image, 0, 0, width, height);
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.copy(baseTex.repeat);
+    return tex;
+  }
+
+  function applyAntiskidVariant(mat, color, mode){
+    if(!mat) return;
+    if(mode === 'eva'){
+      if(mat.userData?.compositeMap){
+        mat.userData.compositeMap.dispose();
+        mat.userData.compositeMap = null;
+      }
+      if(!antiskidEvaTexture){
+        antiskidEvaTexture = textureLoader.load('images/eva.png', (t) => {
+          t.wrapS = t.wrapT = THREE.RepeatWrapping;
+          t.repeat.set(2, 2);
+          mat.map = t;
+          mat.color.set('#ffffff');
+          mat.needsUpdate = true;
+        });
+        return;
+      }
+      mat.map = antiskidEvaTexture;
+      mat.color.set('#ffffff');
+      mat.needsUpdate = true;
+      return;
+    }
+    const baseMap = mat.userData?.baseMap;
+    if(baseMap){
+      getAntiskidOverlayTexture(mode, (overlay) => {
+        const composite = buildCompositeTexture(baseMap, overlay);
+        if(!composite) return;
+        if(mat.userData?.compositeMap && mat.userData.compositeMap !== composite){
+          mat.userData.compositeMap.dispose();
+        }
+        mat.userData.compositeMap = composite;
+        mat.map = composite;
+        mat.color.set('#ffffff');
+        mat.needsUpdate = true;
+      });
+      return;
+    }
+    if(mode === 'print'){
+      getAntiskidOverlayTexture(mode, (overlay) => {
+        mat.map = overlay;
+        mat.color.set(color);
+        mat.needsUpdate = true;
+      });
+      return;
+    }
+    applyAntiskid(mat, color);
+  }
+
+  function updateAntiskidFinish(){
+    if(!selectedAntiskid) return;
+    if(selectedDeck) applyAntiskidVariant(deckMat, selectedDeck, selectedAntiskid);
+    if(selectedHatches) applyAntiskidVariant(hatchesMat, selectedHatches, selectedAntiskid);
+  }
+
   function applyWrappingTextureFor(mat, texturePath, scale){
     if(!mat) return;
     if(texturePath){
@@ -1223,10 +1355,13 @@
         const s = Number.isFinite(scale) ? scale : 2;
         t.repeat.set(s, s);
         mat.map = t;
+        mat.userData.baseMap = t;
         mat.needsUpdate = true;
+        updateAntiskidFinish();
       });
     }else{
       mat.map = null;
+      mat.userData.baseMap = null;
       mat.needsUpdate = true;
     }
   }
@@ -1280,6 +1415,7 @@
     finishSelected = true;
     selectedFinish = f;
     updateColorOptions(f);
+    updateAntiskidFinish();
     updatePrice();
     if(autoNext && currentStep === 'finitura') showStep('colori');
   };
@@ -1355,6 +1491,11 @@
       wrappingWhite = isWrappingWhiteTrigger(btn.dataset.texture);
       deckDark = false;
     }else if(deckMat){
+      if(deckMat.userData?.compositeMap){
+        deckMat.userData.compositeMap.dispose();
+        deckMat.userData.compositeMap = null;
+      }
+      deckMat.userData.baseMap = null;
       deckMat.map = null;
       deckMat.color.set(color);
       deckMat.needsUpdate = true;
@@ -1363,6 +1504,7 @@
     }
     deckSelected = true;
     selectedDeck = color;
+    updateAntiskidFinish();
     checkStep();
     updateLogoAndBottazzo();
     if(hatchesAuto){
@@ -1384,12 +1526,18 @@
     if(selectedFinish === 'wrapping' && btn?.dataset.texture){
       applyWrappingTextureFor(hatchesMat, btn.dataset.texture, Number(btn.dataset.scale));
     }else if(hatchesMat){
+      if(hatchesMat.userData?.compositeMap){
+        hatchesMat.userData.compositeMap.dispose();
+        hatchesMat.userData.compositeMap = null;
+      }
+      hatchesMat.userData.baseMap = null;
       hatchesMat.map = null;
       hatchesMat.color.set(color);
       hatchesMat.needsUpdate = true;
     }
     hatchesSelected = true;
     selectedHatches = color;
+    updateAntiskidFinish();
     checkStep();
     if(manual) hatchesAuto = false;
   };
@@ -1450,6 +1598,7 @@
 
   window.addEventListener('DOMContentLoaded', () => {
     renderFinishSelect();
+    renderAntiskidSelect();
     resetAccessoryUI();
   });
 
