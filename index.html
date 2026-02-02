@@ -1240,6 +1240,8 @@
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
         t.repeat.set(2, 2);
         t.colorSpace = THREE.SRGBColorSpace;
+        t.flipY = false;
+        t.needsUpdate = true;
         mat.map = t;
         mat.color.set(color);
         mat.needsUpdate = true;
@@ -1261,6 +1263,8 @@
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
         t.repeat.set(2, 2);
         t.colorSpace = THREE.SRGBColorSpace;
+        t.flipY = false;
+        t.needsUpdate = true;
         onReady(t);
       });
       return;
@@ -1273,6 +1277,8 @@
       t.wrapS = t.wrapT = THREE.RepeatWrapping;
       t.repeat.set(2, 2);
       t.colorSpace = THREE.SRGBColorSpace;
+      t.flipY = false;
+      t.needsUpdate = true;
       onReady(t);
     });
   }
@@ -1292,6 +1298,8 @@
     ctx.drawImage(overlayTex.image, 0, 0, width, height);
     const tex = new THREE.CanvasTexture(canvas);
     tex.colorSpace = THREE.SRGBColorSpace;
+    tex.flipY = false;
+    tex.needsUpdate = true;
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
     tex.repeat.copy(baseTex.repeat);
     return tex;
@@ -1309,6 +1317,8 @@
           t.wrapS = t.wrapT = THREE.RepeatWrapping;
           t.repeat.set(2, 2);
           t.colorSpace = THREE.SRGBColorSpace;
+          t.flipY = false;
+          t.needsUpdate = true;
           mat.map = t;
           mat.color.set('#ffffff');
           mat.needsUpdate = true;
@@ -1391,6 +1401,8 @@
         const s = Number.isFinite(scale) ? scale : 2;
         t.repeat.set(s, s);
         t.colorSpace = THREE.SRGBColorSpace;
+        t.flipY = false;
+        t.needsUpdate = true;
         mat.map = t;
         mat.userData.baseMap = t;
         mat.needsUpdate = true;
