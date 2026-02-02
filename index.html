@@ -382,6 +382,7 @@
       margin: 3px;
     }
 
+    #step-finitura select,
     #step-colori select {
       min-width: 140px;
       padding: 6px 8px;
@@ -493,10 +494,7 @@
         <button class="nav-btn ghost-btn" aria-hidden="true" tabindex="-1"></button>
       </div>
       <div id="step-finitura" class="step">
-        <button data-group="finish" onclick="selectFinitura('gelcoat', this)">Gelcoat</button>
-        <button data-group="finish" onclick="selectFinitura('paint', this)">Acrylic</button>
-        <button data-group="finish" onclick="selectFinitura('rugged', this)">Rugged</button>
-        <button data-group="finish" onclick="selectFinitura('wrapping', this)">Wrapping</button>
+        <div id="finish-select"></div>
       </div>
       <div id="step-colori" class="step hidden">
         <div class="color-row">
@@ -1277,13 +1275,13 @@
     }
   }
 
-  window.selectFinitura = function(f, btn) {
+  window.selectFinitura = function(f, btn, autoNext = true) {
     setActiveColor('finish', btn);
     finishSelected = true;
     selectedFinish = f;
     updateColorOptions(f);
     updatePrice();
-    if(currentStep === 'finitura') showStep('colori');
+    if(autoNext && currentStep === 'finitura') showStep('colori');
   };
 
   function setActiveColor(group, btn){
@@ -1291,6 +1289,36 @@
     document.querySelectorAll(`button[data-group="${group}"]`).forEach(b => {
       b.classList.toggle('active', b === btn);
     });
+  }
+
+  function renderFinishSelect(){
+    const container = document.getElementById('finish-select');
+    if(!container) return;
+    container.innerHTML = '';
+    const select = document.createElement('select');
+    const placeholder = document.createElement('option');
+    placeholder.textContent = 'Seleziona finitura';
+    placeholder.value = '';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    select.appendChild(placeholder);
+    const options = [
+      { label: 'Gelcoat', value: 'gelcoat' },
+      { label: 'Acrylic', value: 'paint' },
+      { label: 'Rugged', value: 'rugged' },
+      { label: 'Wrapping', value: 'wrapping' }
+    ];
+    options.forEach(({ label, value }) => {
+      const opt = document.createElement('option');
+      opt.textContent = label;
+      opt.value = value;
+      select.appendChild(opt);
+    });
+    select.addEventListener('change', () => {
+      if(!select.value) return;
+      selectFinitura(select.value, null, true);
+    });
+    container.appendChild(select);
   }
 
   window.setHull = function(color, btn){
@@ -1421,6 +1449,7 @@
   };
 
   window.addEventListener('DOMContentLoaded', () => {
+    renderFinishSelect();
     resetAccessoryUI();
   });
 
