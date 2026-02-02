@@ -1181,28 +1181,38 @@
     if(!container) return;
     container.innerHTML = '';
     const select = document.createElement('select');
-    const options = [
+    select.addEventListener('change', () => {
+      selectedAntiskid = select.value;
+      updateAntiskidFinish();
+    });
+    container.appendChild(select);
+    updateAntiskidOptions(selectedFinish);
+  }
+
+  function updateAntiskidOptions(finish){
+    const select = document.querySelector('#antiskid-select select');
+    if(!select) return;
+    const baseOptions = [
       { label: 'None', value: 'none' },
-      { label: 'Eva', value: 'eva' },
+      { label: 'Eva', value: 'eva' }
+    ];
+    const fullOptions = baseOptions.concat([
       { label: 'Paint', value: 'paint' },
       { label: 'Print', value: 'print' }
-    ];
+    ]);
+    const options = finish === 'wrapping' ? baseOptions : fullOptions;
+    select.innerHTML = '';
     options.forEach(({ label, value }) => {
       const opt = document.createElement('option');
       opt.textContent = label;
       opt.value = value;
       select.appendChild(opt);
     });
-    select.addEventListener('change', () => {
-      selectedAntiskid = select.value;
-      updateAntiskidFinish();
-    });
-    if(select.options.length > 0){
-      select.selectedIndex = 0;
-      selectedAntiskid = select.value;
-      updateAntiskidFinish();
+    if(!options.some(opt => opt.value === selectedAntiskid)){
+      selectedAntiskid = options[0]?.value || 'none';
     }
-    container.appendChild(select);
+    select.value = selectedAntiskid;
+    updateAntiskidFinish();
   }
 
   function updateColorOptions(finish){
@@ -1229,6 +1239,7 @@
       renderColorSelect('deck', 'deck-colors', palette.deck);
       renderColorSelect('hatches', 'hatches-colors', palette.hatches);
     }
+    updateAntiskidOptions(finish);
   }
 
   function applyAntiskid(mat, color){
