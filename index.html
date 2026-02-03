@@ -811,6 +811,7 @@
 
     gltf.scene.traverse(obj => {
       if(obj.isMesh){
+        console.log('MESH:', obj.name, 'MAT:', obj.material?.name);
         if(obj.material?.name==='Hull') hullMat=obj.material;
         if(obj.material?.name==='Deck') deckMat=obj.material;
         if(obj.material?.name==='Hatches' || obj.material?.name==='Portelli') hatchesMat=obj.material;
