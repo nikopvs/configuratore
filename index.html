@@ -803,6 +803,7 @@
     loader.load(url, (gltf) => {
     if(token !== loadToken) return;
     if(loadTimeout) clearTimeout(loadTimeout);
+    console.log('GLB LOADED', gltf?.scene);
     gltf.scene.scale.set(0.3,0.3,0.3);
     gltf.scene.position.set(0,-1,0);
     scene.add(gltf.scene);
