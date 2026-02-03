@@ -853,16 +853,20 @@
           if(accessoryGroups[accessoryKey]) accessoryGroups[accessoryKey].push(obj);
         }
         const objNameLower = (obj.name || '').toLowerCase();
-        if(
-          objNameLower.startsWith('panca') ||
-          objNameLower.startsWith('schienale') ||
-          objNameLower.startsWith('fishfinder') ||
-          objNameLower.startsWith('antiskid_eva') ||
-          objNameLower.startsWith('supporto')
-        ){
+        const parentNameLower = (obj.parent?.name || '').toLowerCase();
+        const grandParentNameLower = (obj.parent?.parent?.name || '').toLowerCase();
+        const nameCandidates = [objNameLower, parentNameLower, grandParentNameLower];
+        const shouldHideByPrefix = nameCandidates.some((n) =>
+          n.startsWith('panca') ||
+          n.startsWith('schienale') ||
+          n.startsWith('fishfinder') ||
+          n.startsWith('antiskid_eva') ||
+          n.startsWith('supporto')
+        );
+        if(shouldHideByPrefix){
           obj.visible = false;
         }
-        if(objNameLower==='antiskid_eva'){
+        if(nameCandidates.some(n => n === 'antiskid_eva')){
           antiskidEvaMeshes.push(obj);
           obj.material = obj.material?.clone?.() || obj.material;
         }
