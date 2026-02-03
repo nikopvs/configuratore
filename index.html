@@ -895,6 +895,11 @@
         t.flipY = false;
       });
     }
+    if(scrittaMat){
+      scrittaHasEmbeddedMap = Boolean(scrittaMat.map);
+      scrittaMat.userData = scrittaMat.userData || {};
+      scrittaMat.userData.hasEmbeddedMap = scrittaHasEmbeddedMap;
+    }
     if(!antiskidTexture){
       antiskidTexture = textureLoader.load('images/antiskid.jpg', (t) => {
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
@@ -907,11 +912,16 @@
     if(hatchesMat) hatchesMat.color.set('#ffffff');
     if(bottazzoMat) bottazzoMat.color.set('#000000');
     if(scrittaMat){
-      scrittaMat.map = scrittaTextures.black;
-      scrittaMat.color.set('#ffffff');
-      scrittaMat.transparent = true;
-      scrittaMat.alphaTest = 0.5;
-      scrittaMat.needsUpdate = true;
+      if(scrittaMat.userData?.hasEmbeddedMap){
+        scrittaMat.color.set('#ffffff');
+        scrittaMat.needsUpdate = true;
+      }else{
+        scrittaMat.map = scrittaTextures.black;
+        scrittaMat.color.set('#ffffff');
+        scrittaMat.transparent = true;
+        scrittaMat.alphaTest = 0.5;
+        scrittaMat.needsUpdate = true;
+      }
     }
     Object.values(accessories).forEach(a=>a.visible=false);
     Object.values(accessoryGroups).forEach(list => list.forEach(a => a.visible = false));
@@ -1001,6 +1011,7 @@
   let antiskidPrintTexture = null;
   let antiskidEvaTexture = null;
   let selectedAntiskid = '';
+  let scrittaHasEmbeddedMap = false;
   const scrittaTextures = {
     black: null,
     white: null
@@ -1520,6 +1531,11 @@
       bottazzoMat.needsUpdate = true;
     }
     if(scrittaMat){
+      if(scrittaMat.userData?.hasEmbeddedMap){
+        scrittaMat.color.set('#ffffff');
+        scrittaMat.needsUpdate = true;
+        return;
+      }
       const tex = makeWhite ? scrittaTextures.white : scrittaTextures.black;
       if(tex){
         scrittaMat.map = tex;
