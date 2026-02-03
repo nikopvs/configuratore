@@ -852,7 +852,17 @@
           if(!accessories[accessoryKey]) accessories[accessoryKey] = obj;
           if(accessoryGroups[accessoryKey]) accessoryGroups[accessoryKey].push(obj);
         }
-        if(obj.name?.toLowerCase()==='antiskid_eva'){
+        const objNameLower = (obj.name || '').toLowerCase();
+        if(
+          objNameLower.startsWith('panca') ||
+          objNameLower.startsWith('schienale') ||
+          objNameLower.startsWith('fishfinder') ||
+          objNameLower.startsWith('antiskid_eva') ||
+          objNameLower.startsWith('supporto')
+        ){
+          obj.visible = false;
+        }
+        if(objNameLower==='antiskid_eva'){
           antiskidEvaMeshes.push(obj);
           obj.material = obj.material?.clone?.() || obj.material;
         }
