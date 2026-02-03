@@ -686,6 +686,20 @@
     impianto: [],
     batteria: []
   };
+  function getAccessoryKey(objName, matName){
+    const name = (objName || '').toLowerCase();
+    const mat = (matName || '').toLowerCase();
+    if(name.includes('tientibene') || mat.includes('tientibene')) return 'tientibene';
+    if(name.includes('panca') || mat.includes('panca')) return 'panca';
+    if(name.includes('schienale') || mat.includes('schienale')) return 'schienale';
+    if(name.includes('supporto') || mat.includes('supporto')) return 'supporto';
+    if(name.includes('trolling') || mat.includes('trolling')) return 'trolling';
+    if(name.includes('fishfinder') || mat.includes('fishfinder')) return 'fishfinder';
+    if(name.includes('impianto') || mat.includes('impianto')) return 'impianto';
+    if(name.includes('batteria') || mat.includes('batteria')) return 'batteria';
+    if(name.includes('fuoribordo') || mat.includes('fuoribordo') || name.includes('motore') || mat.includes('motore') || mat.includes('manopola')) return 'motore';
+    return '';
+  }
 
   const loader = new GLTFLoader();
   const dracoLoader = new DRACOLoader();
@@ -803,7 +817,6 @@
     loader.load(url, (gltf) => {
     if(token !== loadToken) return;
     if(loadTimeout) clearTimeout(loadTimeout);
-    console.log('GLB LOADED', gltf?.scene);
     gltf.scene.scale.set(0.3,0.3,0.3);
     gltf.scene.position.set(0,-1,0);
     scene.add(gltf.scene);
@@ -812,12 +825,13 @@
 
     gltf.scene.traverse(obj => {
       if(obj.isMesh){
-        console.log('MESH:', obj.name, 'MAT:', obj.material?.name);
-        if(obj.material?.name==='Hull') hullMat=obj.material;
-        if(obj.material?.name==='Deck') deckMat=obj.material;
-        if(obj.material?.name==='Hatches' || obj.material?.name==='Portelli') hatchesMat=obj.material;
-        if(obj.material?.name==='Gomma') bottazzoMat=obj.material;
-        if(obj.material?.name==='Scritta') scrittaMat=obj.material;
+        const matName = obj.material?.name || '';
+        const matNameLower = matName.toLowerCase();
+        if(matName === 'Hull') hullMat=obj.material;
+        if(matName === 'Deck') deckMat=obj.material;
+        if(matName === 'Hatches' || matName === 'Portelli') hatchesMat=obj.material;
+        if(matName === 'Gomma') bottazzoMat=obj.material;
+        if(matName === 'Scritta' || matNameLower.includes('scritta')) scrittaMat=obj.material;
         if(!scrittaMat && obj.name==='Scritta') scrittaMat=obj.material;
         if(!scrittaMat && typeof obj.material?.name === 'string' && obj.material.name.toLowerCase().includes('scritta')) {
           scrittaMat = obj.material;
@@ -832,6 +846,11 @@
         if(obj.name==='Fishfinder' || obj.name?.toLowerCase()==='fishfinder') accessories.fishfinder = obj;
         if(obj.name==='Impianto' || obj.name?.toLowerCase()==='impianto' || obj.name==='ImpiantoElettrico' || obj.name?.toLowerCase()==='impiantoelettrico') accessories.impianto = obj;
         if(obj.name==='Batteria' || obj.name?.toLowerCase()==='batteria' || obj.name==='BatteriaLitio' || obj.name?.toLowerCase()==='batterialitio') accessories.batteria = obj;
+        const accessoryKey = getAccessoryKey(obj.name, matName);
+        if(accessoryKey){
+          if(!accessories[accessoryKey]) accessories[accessoryKey] = obj;
+          if(accessoryGroups[accessoryKey]) accessoryGroups[accessoryKey].push(obj);
+        }
         if(obj.name?.toLowerCase()==='antiskid_eva'){
           antiskidEvaMeshes.push(obj);
           obj.material = obj.material?.clone?.() || obj.material;
