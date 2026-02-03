@@ -698,6 +698,7 @@
     if(name.includes('impianto') || mat.includes('impianto')) return 'impianto';
     if(name.includes('batteria') || mat.includes('batteria')) return 'batteria';
     if(name.includes('fuoribordo') || mat.includes('fuoribordo') || name.includes('motore') || mat.includes('motore') || mat.includes('manopola')) return 'motore';
+    if(mat.includes('silver metal') || mat.includes('clean silver')) return 'supporto';
     return '';
   }
 
@@ -908,6 +909,9 @@
     if(scrittaMat){
       scrittaMat.map = scrittaTextures.black;
       scrittaMat.color.set('#ffffff');
+      scrittaMat.transparent = true;
+      scrittaMat.alphaTest = 0.5;
+      scrittaMat.needsUpdate = true;
     }
     Object.values(accessories).forEach(a=>a.visible=false);
     Object.values(accessoryGroups).forEach(list => list.forEach(a => a.visible = false));
@@ -1520,12 +1524,16 @@
       if(tex){
         scrittaMat.map = tex;
         scrittaMat.color.set('#ffffff');
+        scrittaMat.transparent = true;
+        scrittaMat.alphaTest = 0.5;
         scrittaMat.needsUpdate = true;
       }else{
         const texPath = makeWhite ? 'images/Scritta_white.png' : 'images/Scritta_black.png';
         textureLoader.load(texPath, (t) => {
           scrittaMat.map = t;
           scrittaMat.color.set('#ffffff');
+          scrittaMat.transparent = true;
+          scrittaMat.alphaTest = 0.5;
           scrittaMat.needsUpdate = true;
         });
       }
