@@ -644,6 +644,7 @@
   let hullMat, deckMat, hatchesMat;
   let bottazzoMat, scrittaMat;
   const accessories = {};
+  const antiskidEvaMeshes = [];
   const sounds = {
     bg: new Audio('audio/gabbiani.mp3'),
     on: new Audio('audio/click.mp3'),
@@ -829,6 +830,10 @@
         if(obj.name==='Fishfinder' || obj.name?.toLowerCase()==='fishfinder') accessories.fishfinder = obj;
         if(obj.name==='Impianto' || obj.name?.toLowerCase()==='impianto' || obj.name==='ImpiantoElettrico' || obj.name?.toLowerCase()==='impiantoelettrico') accessories.impianto = obj;
         if(obj.name==='Batteria' || obj.name?.toLowerCase()==='batteria' || obj.name==='BatteriaLitio' || obj.name?.toLowerCase()==='batterialitio') accessories.batteria = obj;
+        if(obj.name?.toLowerCase()==='antiskid_eva'){
+          antiskidEvaMeshes.push(obj);
+          obj.material = obj.material?.clone?.() || obj.material;
+        }
         if(obj.name?.toLowerCase()==='schienale' || obj.name?.toLowerCase()==='fishfinder'){
           // Clone to avoid changing shared materials (e.g. Hatches).
           obj.material = obj.material?.clone?.() || obj.material;
@@ -885,6 +890,7 @@
     }
     Object.values(accessories).forEach(a=>a.visible=false);
     Object.values(accessoryGroups).forEach(list => list.forEach(a => a.visible = false));
+    antiskidEvaMeshes.forEach(mesh => mesh.visible = false);
 
     // Auto-center and frame model in the camera view
     const box = new THREE.Box3().setFromObject(gltf.scene);
@@ -1367,8 +1373,43 @@
     applyAntiskid(mat, color);
   }
 
+  function applyEvaTextureToMeshes(meshes){
+    if(!meshes?.length) return;
+    const applyTexture = (tex) => {
+      meshes.forEach((mesh) => {
+        if(!mesh?.material) return;
+        mesh.material.map = tex;
+        if(mesh.material.color) mesh.material.color.set('#ffffff');
+        mesh.material.needsUpdate = true;
+      });
+    };
+    if(antiskidEvaTexture){
+      applyTexture(antiskidEvaTexture);
+      return;
+    }
+    antiskidEvaTexture = textureLoader.load('images/eva.png', (t) => {
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(2, 2);
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.flipY = false;
+      t.needsUpdate = true;
+      applyTexture(t);
+    });
+  }
+
+  function updateAntiskidEvaMeshes(){
+    const isEva = selectedAntiskid === 'eva';
+    antiskidEvaMeshes.forEach(mesh => {
+      mesh.visible = isEva;
+    });
+    if(isEva){
+      applyEvaTextureToMeshes(antiskidEvaMeshes);
+    }
+  }
+
   function updateAntiskidFinish(){
-    if(!selectedAntiskid || selectedAntiskid === 'none'){
+    updateAntiskidEvaMeshes();
+    if(!selectedAntiskid || selectedAntiskid === 'none' || selectedAntiskid === 'eva'){
       if(deckMat){
         if(deckMat.userData?.compositeMap){
           deckMat.userData.compositeMap.dispose();
