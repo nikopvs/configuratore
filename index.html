@@ -195,7 +195,11 @@
 
     #viewer-ui .top,
     #viewer-ui .bottom {
-      padding: 10px 14px;
+      pointer-events: auto;
+      position: relative;
+      z-index: 6;
+      pointer-events: auto;
+padding: 10px 14px;
       text-align: center;
       background: linear-gradient(
         to bottom,
@@ -204,7 +208,12 @@
       );
     }
 
-    #viewer-ui .bottom {
+    
+    #viewer-ui .top *,
+    #viewer-ui .bottom * {
+      pointer-events: auto;
+    }
+#viewer-ui .bottom {
       background: linear-gradient(
         to top,
         rgba(0,0,0,0.55),
@@ -214,7 +223,12 @@
       padding-top: 42px;
     }
 
-    #viewer-ui h1 {
+    
+    #viewer-ui .top *,
+    #viewer-ui .bottom * {
+      pointer-events: auto;
+    }
+#viewer-ui h1 {
       margin: 0;
       font-size: 34px;
       letter-spacing: 2px;
@@ -275,8 +289,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      pointer-events: auto;
-      transition: background 0.2s ease, transform 0.2s ease;
+transition: background 0.2s ease, transform 0.2s ease;
     }
 
     .nav-btn::after {
@@ -374,8 +387,7 @@
       cursor: pointer;
       background: #333;
       color: #fff;
-      pointer-events: auto;
-    }
+}
 
     #step-colori button {
       padding: 6px 10px;
@@ -460,9 +472,9 @@
 
       #viewer-ui label,
       #viewer-ui input,
-      #viewer-ui select {
-        pointer-events: auto;
-        cursor: pointer;
+      #viewer-ui select,
+      #viewer-ui button {
+cursor: pointer;
       }
   
     /* Extra UI */
@@ -492,6 +504,18 @@
     #audio-toggle {
       position: absolute;
       top: 12px;
+      left: 12px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.35);
+      padding: 8px 12px;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #7CFF00;
+    }
+    #screenshot-btn {
+      position: absolute;
+      top: 52px;
       left: 12px;
       background: rgba(0,0,0,0.55);
       border: 1px solid rgba(255,255,255,0.35);
@@ -554,7 +578,10 @@
     @media (max-width: 900px) {
       .controls-overlay { font-size: 17px; }
       #audio-toggle { top: 8px; left: 8px; padding: 6px 8px; font-size: 11px; }
+    
       #order-btn { top: 46px; right: 8px; padding: 6px 8px; font-size: 11px; }
+      #screenshot-btn { top: 42px; left: 8px; padding: 6px 8px; font-size: 11px; }
+      
     }
   </style>
 </head>
@@ -570,15 +597,16 @@
   <div id="viewer-ui">
     <div class="top">
       <h1>FISHER 40</h1>
+      <div id="price-tag">� 6.000</div>
+      <button id="order-btn" type="button" class="is-hidden" style="display:none;">Ordina</button>
+      <button id="audio-toggle" type="button" aria-pressed="false">Audio On</button>
+      <button id="screenshot-btn" type="button" title="Salva screenshot">TAKE A PHOTO</button>
     </div>
     <div id="controls-overlay" class="controls-overlay">
       Mouse: trascina per ruotare, tasto destro per pan, rotella per zoom.<br>
       Touch: 1 dito ruota, 2 dita pan, pinch per zoom.
     </div>
-    <div id="price-tag">€ 6.000</div>
-    <button id="order-btn" type="button" class="is-hidden" style="display:none;">Ordina</button>
-    <button id="audio-toggle" type="button" aria-pressed="false">Audio On</button>
-    <div class="bottom">
+<div class="bottom">
       <div class="step-header">
         <button class="nav-btn reset-btn is-hidden" onclick="resetAllAccessories()" aria-label="Reset accessori">
           <span class="sr-only">Reset accessori</span>
@@ -700,7 +728,7 @@
   const camera = new THREE.PerspectiveCamera(60, 1.6, 0.1, 100);
   camera.position.set(0, 1.5, 5);
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha:true });
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha:true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -710,6 +738,8 @@
   viewer.appendChild(renderer.domElement);
 
   const controls = new OrbitControls(camera, renderer.domElement);
+  window.camera = camera;
+  window.controls = controls;
   controls.enablePan = true;
   controls.enableDamping = true;
   controls.autoRotate = false;
@@ -906,8 +936,13 @@
   const loadingFill = document.getElementById('loading-fill');
   const mobileRotateQuery = window.matchMedia('(max-width: 900px) and (orientation: portrait)');
   let loadToken = 0;
-  const accessoryInputs = document.querySelectorAll('#step-accessori input[type="checkbox"]');
-  const accessoryDeps = {
+const accessoryInputs = document.querySelectorAll('#step-accessori input[type="checkbox"]');
+  accessoryInputs.forEach((cb) => {
+    cb.addEventListener('change', () => {
+      updatePrice();
+    });
+  });
+const accessoryDeps = {
     schienale: ['tientibene'],
     motore: ['supporto'],
     batteria: ['impianto'],
@@ -932,7 +967,7 @@
     toggleAccessory(key, checked, silent);
   }
 
-  function updateAccessoryRules(){
+    function updateAccessoryRules(){
     accessoryInputs.forEach((cb) => {
       const key = cb.dataset.accessory;
       const deps = accessoryDeps[key];
@@ -962,15 +997,17 @@
     });
   }
 
-  function syncAccessoryUI(){
+
+    function syncAccessoryUI(){
     accessoryInputs.forEach((cb) => {
       const key = cb.dataset.accessory;
       if(key) toggleAccessory(key, cb.checked, true);
     });
     updateAccessoryRules();
+    updatePrice();
   }
 
-  function resetAccessoryUI(){
+    function resetAccessoryUI(){
     accessoryInputs.forEach((cb) => {
       cb.checked = false;
     });
@@ -1282,28 +1319,28 @@
     white: null
   };
 
-  const priceTable = {
-    base: 6000,
-    finishPct: {
-      gelcoat: 0.0,
-      wrapping: 0.30,
-      paint: 0.15,
-      rugged: 0.20
-    },
-    accessories: {
-      tientibene: 500,
-      panca: 1000,
-      schienale: 250,
-      motore: 3000,
-      supporto: 150,
-      trolling: 2000,
-      fishfinder: 800,
-      impianto: 500,
-      batteria: 300
-    }
-  };
-
-  function updatePrice(){
+    const priceTable = {
+      base: 6000,
+      finishPct: {
+        gelcoat: 0.0,
+        wrapping: 0.30,
+        paint: 0.15,
+        rugged: 0.20
+      },
+      accessories: {
+        tientibene: 500,
+        panca: 1000,
+        schienale: 250,
+        motore: 3000,
+        supporto: 150,
+        trolling: 2000,
+        fishfinder: 800,
+        impianto: 500,
+        batteria: 300,
+        antiskid: { eva: 250, paint: 0, print: 500 }
+      }
+    };
+function updatePrice(){
     let total = priceTable.base;
     if(selectedFinish){
       total += priceTable.base * (priceTable.finishPct[selectedFinish] || 0);
@@ -1322,9 +1359,9 @@
     total += isSelected('trolling') ? priceTable.accessories.trolling : 0;
     total += isSelected('fishfinder') ? priceTable.accessories.fishfinder : 0;
     total += isSelected('impianto') ? priceTable.accessories.impianto : 0;
-    total += isSelected('batteria') ? priceTable.accessories.batteria : 0;
+    total += isSelected('batteria') ? priceTable.accessories.batteria : 0;      total += getAntiskidPrice();
     const el = document.getElementById('price-tag');
-    if(el) el.textContent = `€ ${total.toLocaleString('it-IT')}`;
+    if(el) el.textContent = `${"\u20AC"} ${total.toLocaleString('it-IT')}`;
   }
 
   function showStep(step){
@@ -1496,6 +1533,8 @@
     select.addEventListener('change', () => {
       selectedAntiskid = select.value;
       updateAntiskidFinish();
+    
+      updatePrice();
     });
     container.appendChild(select);
     updateAntiskidOptions(selectedFinish);
@@ -2077,6 +2116,7 @@
     }
     updatePrice();
     updateAccessoryRules();
+    updatePrice();
   };
 
   window.resetAllAccessories = function(){
@@ -2084,13 +2124,16 @@
   };
 
     let currentOrderId = null;
+  let lastScreenshotDataUrl = null;
+  let lastPresetScreenshots = [];
+  
 
   function generateOrderId(){
     const rand = Math.floor(Math.random() * 1e6).toString().padStart(6, '0');
     return `NS-${Date.now()}-${rand}`;
   }
 
-  function getAccessoriesSummary(){
+    function getAccessoriesSummary(){
     const items = [];
     document.querySelectorAll('#step-accessori input[type="checkbox"]')?.forEach((cb) => {
       if(cb.checked){
@@ -2100,14 +2143,77 @@
     });
     return items.length ? items.join(', ') : 'Nessuno';
   }
-
-  function getColorsSummary(){
-    const hull = selectedHull || '-';
-    const deck = selectedDeck || '-';
-    const hatches = selectedHatches || '-';
+    function getSelectedAccessoriesDetailed(){
+    const isChecked = (name) =>
+      document.querySelector(`#step-accessori input[data-accessory="${name}"]`)?.checked;
+    const isVisible = (name) =>
+      accessories[name]?.visible ||
+      (accessoryGroups[name] && accessoryGroups[name].some(obj => obj.visible));
+    const isSelected = (name) => Boolean(isChecked(name) || isVisible(name));
+    const order = [
+      { key: 'antiskid', label: 'Antiskid' },
+      { key: 'tientibene', label: 'Tientibene' },
+      { key: 'panca', label: 'Panca' },
+      { key: 'schienale', label: 'Schienale' },
+      { key: 'supporto', label: 'Supporto motore' },
+      { key: 'motore', label: 'Motore' },
+      { key: 'trolling', label: 'Trolling motor' },
+      { key: 'fishfinder', label: 'Fishfinder' },
+      { key: 'impianto', label: 'Impianto elettrico' },
+      { key: 'batteria', label: 'Batteria al Litio' }
+    ];
+    const items = [];
+    order.forEach((item) => {
+      if(item.key === 'antiskid'){
+        if((selectedAntiskid || 'none') !== 'none'){
+          const price = getAntiskidPrice();
+          const label = `Antiskid (${getAntiskidLabel()})`;
+          items.push({ label, price });
+        }
+        return;
+      }
+      if(isSelected(item.key)){
+        const price = priceTable?.accessories?.[item.key] ?? 0;
+        items.push({ label: item.label, price });
+      }
+    });
+    return items;
+  }
+      function formatEuro(value){
+    const num = Number(value) || 0;
+    const euro = "\u20AC";
+    return `${euro} ${num.toLocaleString('it-IT')}`;
+  }
+      function getFinishLabel(){
+    const map = { gelcoat: 'Gelcoat', paint: 'Acrylic', rugged: 'Rugged', wrapping: 'Wrapping' };
+    return map[selectedFinish] || selectedFinish || '-';
+  }
+  function getSelectLabel(sel, fallback){
+    if(!sel) return fallback || '-';
+    const opt = sel.options?.[sel.selectedIndex];
+    return opt?.textContent?.trim() || fallback || '-';
+  }
+  function getAntiskidLabel(){
+    const sel = document.querySelector('#antiskid-select select');
+    return getSelectLabel(sel, selectedAntiskid || 'none');
+  }
+  function getColorLabel(group, fallback){
+    return getSelectLabel(colorSelects[group], fallback || '-');
+  }
+function getColorsSummary(){
+    const hull = getColorLabel('hull', selectedHull || '-');
+    const deck = getColorLabel('deck', selectedDeck || '-');
+    const hatches = getColorLabel('hatches', selectedHatches || '-');
     return `Hull ${hull}, Deck ${deck}, Hatches ${hatches}`;
   }
 
+    function getAntiskidPrice(){
+    const key = (selectedAntiskid || 'none').toLowerCase();
+    if(key === 'none') return 0;
+    const table = priceTable?.accessories?.antiskid;
+    if(typeof table === 'number') return table || 0;
+    return (table && typeof table === 'object') ? (table[key] ?? 0) : 0;
+  }
   function getPriceSummary(){
     const el = document.getElementById('price-tag');
     return el ? el.textContent.trim() : '';
@@ -2210,36 +2316,264 @@ function openOrderModal(){
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden', 'true');
   }
+  function captureScreenshot(){
+    if(!renderer || !renderer.domElement) return null;
+    try{
+      const dataUrl = renderer.domElement.toDataURL('image/png');
+      lastScreenshotDataUrl = dataUrl;
+      return dataUrl;
+    }catch(err){
+      console.warn('Screenshot fallito', err);
+      return null;
+    }
+  }
 
-  function downloadOrderPdf(){
-    if(!window.jspdf?.jsPDF) return;
-    const doc = new window.jspdf.jsPDF();
-    doc.setFontSize(16);
-    doc.text('Configurazione Barca', 14, 20);
-    doc.setFontSize(11);
-    doc.text(`ID: ${currentOrderId || ''}`, 14, 30);
-    doc.text(`Finitura: ${selectedFinish || '-'}`, 14, 38);
-    doc.text(`Colori: ${getColorsSummary()}`, 14, 46);
-    doc.text(`Antiskid: ${selectedAntiskid || 'none'}`, 14, 54);
-    doc.text(`Accessori: ${getAccessoriesSummary()}`, 14, 62);
-    doc.text(`Prezzo: ${getPriceSummary()}`, 14, 70);
-    const fields = [
-      ['Nome', 'order-nome'],
-      ['Cognome', 'order-cognome'],
-      ['Email', 'order-email'],
-      ['Telefono', 'order-telefono'],
-      ['Indirizzo', 'order-indirizzo'],
-      ['Citta', 'order-citta'],
-      ['CAP', 'order-cap'],
-      ['Note', 'order-note']
+    function setCameraView(pos, target){
+    if(!camera || !controls) return;
+    camera.position.set(pos[0], pos[1], pos[2]);
+    controls.target.set(target[0], target[1], target[2]);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  async function capturePresetScreenshots(){
+    if(!renderer || !camera || !controls) return [];
+    const originalPos = camera.position.clone();
+    const originalTarget = controls.target.clone();
+            const target = [-0.10810611905192113, -0.167470325414858, -0.13144927171760207];
+    const views = [
+      { label: 'Side', pos: [0.0516653740024167, 0.1820664977829592, 0.8294428750065087], target: [-0.05, -0.167470325414858, -0.13144927171760207] },
+      { label: 'Rear', pos: [-0.8191399443716609, 0.1300141316619867, 0.3925348763178731] },
+      { label: 'Top', pos: [0.4912714944470407, 0.4747723290977302, -0.4437419989992951], target: [0.05, -0.08190660770733932, 0.07343899384140155] }
     ];
-    let y = 82;
-    fields.forEach(([label, id]) => {
-      const val = document.getElementById(id)?.value || '';
-      const line = `${label}: ${val}`;
-      doc.text(line, 14, y);
-      y += 8;
+    const results = [];
+    for(const view of views){
+      setCameraView(view.pos, view.target || target);
+      await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+      const shot = captureScreenshot();
+      if(shot){
+        results.push({ label: view.label, dataUrl: shot });
+      }
+    }
+    camera.position.copy(originalPos);
+    controls.target.copy(originalTarget);
+    controls.update();
+    renderer.render(scene, camera);
+    return results;
+  }
+
+function downloadScreenshot(){
+    const dataUrl = captureScreenshot();
+    if(!dataUrl) return;
+    const link = document.createElement('a');
+    const id = currentOrderId || 'config';
+    link.href = dataUrl;
+    link.download = `screenshot-${id}.png`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
+  async function loadImageAsDataUrl(src){
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try{
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          resolve({
+            dataUrl: canvas.toDataURL('image/png'),
+            width: img.naturalWidth,
+            height: img.naturalHeight
+          });
+        }catch(err){
+          reject(err);
+        }
+      };
+      img.onerror = reject;
+      img.src = src;
     });
+  }
+
+  async function makeQrDataUrl(text){
+    return new Promise((resolve) => {
+      if(typeof QRCode === 'undefined'){
+        resolve(null);
+        return;
+      }
+      const holder = document.createElement('div');
+      holder.style.position = 'absolute';
+      holder.style.left = '-9999px';
+      holder.style.top = '-9999px';
+      document.body.appendChild(holder);
+      new QRCode(holder, { text, width: 160, height: 160 });
+      const img = holder.querySelector('img');
+      if(img && img.src){
+        resolve(img.src);
+      }else{
+        const canvas = holder.querySelector('canvas');
+        resolve(canvas ? canvas.toDataURL('image/png') : null);
+      }
+      holder.remove();
+    });
+  }
+
+  async function downloadOrderPdf(){
+    if(!window.jspdf?.jsPDF) return;
+    const doc = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' });
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const margin = 12;
+
+    if(!currentOrderId){
+      currentOrderId = generateOrderId();
+    }
+
+    let logoData = null;
+    try{
+      logoData = await loadImageAsDataUrl('images/Scritta_black.png');
+    }catch(err){
+      console.warn('Logo non caricato', err);
+    }
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('it-IT') + ' ' + now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+    // Header
+    if(logoData && logoData.dataUrl){
+      const maxW = 57;
+      const maxH = 15;
+      const ratio = logoData.width && logoData.height ? (logoData.width / logoData.height) : 4;
+      let w = maxW;
+      let h = w / ratio;
+      if(h > maxH){
+        h = maxH;
+        w = h * ratio;
+      }
+      doc.addImage(logoData.dataUrl, 'PNG', margin, 10, w, h, undefined, 'FAST');
+    }
+    doc.setFontSize(9);
+    doc.setTextColor(60);
+    doc.text(`Ninga ID: ${currentOrderId}`, pageW - margin, 12, { align: 'right' });
+    doc.text(`Salvato: ${dateStr}`, pageW - margin, 17, { align: 'right' });
+
+    const qrData = await makeQrDataUrl(currentOrderId);
+    if(qrData){
+      const qrSize = 22;
+      doc.addImage(qrData, 'PNG', pageW - margin - qrSize, 25, qrSize, qrSize, undefined, 'FAST');
+    }
+
+    doc.setDrawColor(210);
+    doc.line(margin, 22, pageW - margin, 22);
+
+    // Title
+    doc.setTextColor(20);
+    doc.setFontSize(24);
+    doc.text('FISHER 40', margin, 34);
+    doc.setFontSize(12);
+    doc.text('Configurazione personalizzata', margin, 41);
+
+    // Images layout
+    let shots = Array.isArray(lastPresetScreenshots) ? lastPresetScreenshots : [];
+    if(!shots.length){
+      const single = lastScreenshotDataUrl || captureScreenshot();
+      if(single){
+        shots = [{ label: 'Vista', dataUrl: single }];
+      }
+    }
+    if(shots.length === 1){
+      shots = [shots[0], shots[0], shots[0]];
+    }else if(shots.length === 2){
+      shots = [shots[0], shots[1], shots[1]];
+    }
+
+    const imgTop = 50;
+    const imgGap = 4;
+    const leftW = 118;
+    const leftH = 78;
+    const rightW = pageW - margin - (margin + leftW) - imgGap;
+    const rightH = (leftH - imgGap) / 2;
+    const leftX = margin;
+    const rightX = margin + leftW + imgGap;
+
+    if(shots[0]){
+      doc.addImage(shots[0].dataUrl, 'PNG', leftX, imgTop, leftW, leftH, undefined, 'FAST');
+    }
+    if(shots[1]){
+      doc.addImage(shots[1].dataUrl, 'PNG', rightX, imgTop, rightW, rightH, undefined, 'FAST');
+    }
+    if(shots[2]){
+      doc.addImage(shots[2].dataUrl, 'PNG', rightX, imgTop + rightH + imgGap, rightW, rightH, undefined, 'FAST');
+    }
+
+            // Configurazione + Accessori
+    const listTop = imgTop + leftH + 10;
+    doc.setDrawColor(210);
+    doc.line(margin, listTop, pageW - margin, listTop);
+
+    doc.setFontSize(10);
+    doc.setTextColor(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Configurazione', margin, listTop + 6);
+    doc.setFont('helvetica', 'normal');
+
+    doc.setFontSize(9);
+    const cfgStartY = listTop + 12;
+        doc.text(`- Finitura: ${getFinishLabel()}`, margin + 2, cfgStartY);
+    const finishPct = priceTable?.finishPct?.[selectedFinish] || 0;
+    const finishPrice = priceTable.base + (priceTable.base * finishPct);
+    doc.text(formatEuro(finishPrice), pageW - margin, cfgStartY, { align: 'right' });
+    const hullLabel = getColorLabel('hull', selectedHull || '-');
+    const deckLabel = getColorLabel('deck', selectedDeck || '-');
+    const doorsLabel = getColorLabel('hatches', selectedHatches || '-');
+    const colorsY = cfgStartY + 5;
+    const colorsLine = `- Colori: Hull (${hullLabel}), Deck (${deckLabel}), Doors (${doorsLabel})`;
+    doc.setFont('helvetica', 'normal');
+    doc.text(colorsLine, margin + 2, colorsY);
+    doc.text(`- Antiskid: ${getAntiskidLabel()}`, margin + 2, cfgStartY + 10);
+
+    const items = getSelectedAccessoriesDetailed();
+    const rowH = 5;
+    const listStartY = cfgStartY + 20;
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Accessori selezionati', margin, listStartY);
+    doc.setFont('helvetica', 'normal');
+
+    const accessoriesY = listStartY + 6;
+    if(items.length){
+      items.forEach((item, idx) => {
+        const y = accessoriesY + idx * rowH;
+        doc.text(`- ${item.label}`, margin + 2, y);
+        doc.text(formatEuro(item.price), pageW - margin, y, { align: 'right' });
+      });
+    }else{
+      doc.setTextColor(90);
+      doc.text('Nessuno', margin + 2, accessoriesY);
+      doc.setTextColor(20);
+    }
+
+    const totalLineY = accessoriesY + Math.max(items.length, 1) * rowH + 2;
+    doc.setDrawColor(210);
+    doc.line(margin, totalLineY, pageW - margin, totalLineY);
+    const totalTextY = totalLineY + 7;
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Totale configurazione', margin, totalTextY);
+    doc.text(getPriceSummary() || '-', pageW - margin, totalTextY, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+
+    // Footer notes
+    doc.setFontSize(8);
+    doc.setTextColor(120);
+    const noteY = totalTextY + 8;
+    doc.text('Immagini e specifiche sono indicative. Prezzi soggetti a variazione.', margin, noteY);
+
     doc.save(`ordine-${currentOrderId || 'config'}.pdf`);
   }
 window.addEventListener('DOMContentLoaded', () => {
@@ -2250,7 +2584,19 @@ window.addEventListener('DOMContentLoaded', () => {
     const orderConfirm = document.getElementById('order-confirm');
     initEmailJs();
     if(orderBtn){
-      orderBtn.addEventListener('click', () => {
+      orderBtn.addEventListener('click', async () => {
+        const prev = orderBtn.textContent;
+        orderBtn.disabled = true;
+        orderBtn.textContent = 'Caricamento...';
+        try{
+          lastPresetScreenshots = await capturePresetScreenshots();
+        }catch(err){
+          console.warn('Preset screenshot fallito', err);
+          lastPresetScreenshots = [];
+        }finally{
+          orderBtn.disabled = false;
+          orderBtn.textContent = prev;
+        }
         openOrderModal();
       });
     }
@@ -2315,6 +2661,12 @@ Note: ${payload.customer.note}`;
     renderAntiskidSelect();
     resetAccessoryUI();
     const audioBtn = document.getElementById('audio-toggle');
+    const screenshotBtn = document.getElementById('screenshot-btn');
+    if(screenshotBtn){
+      screenshotBtn.addEventListener('click', () => {
+        downloadScreenshot();
+      });
+    }
     if(audioBtn){
       audioBtn.addEventListener('click', () => {
         setAudioEnabled(!audioEnabled, true);
