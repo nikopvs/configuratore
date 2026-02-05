@@ -364,6 +364,7 @@
 
     .step { margin: 0 0 6px 0; }
     .hidden { display: none; }
+    .is-hidden { display: none; }
 
     button {
       margin: 4px;
@@ -463,6 +464,98 @@
         pointer-events: auto;
         cursor: pointer;
       }
+  
+    /* Extra UI */
+    .controls-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      text-align: center;
+      padding: calc(18% + 20px) 18px 0;
+      font-size: 22px;
+      line-height: 1.5;
+      letter-spacing: 0.3px;
+      font-weight: 700;
+      color: #7CFF00;
+      background: rgba(0,0,0,0.25);
+      z-index: 4;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .controls-overlay.is-hidden {
+      opacity: 0;
+    }
+
+    #audio-toggle {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.35);
+      padding: 8px 12px;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #7CFF00;
+    }
+
+    #order-btn {
+      position: absolute;
+      top: 56px;
+      right: 12px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.35);
+      padding: 8px 12px;
+      font-size: 12px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: #7CFF00;
+    }
+
+    #order-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.7);
+      z-index: 20;
+    }
+    #order-modal.is-open { display: flex; }
+    .order-dialog {
+      width: min(92vw, 720px);
+      max-height: 88vh;
+      overflow: auto;
+      background: rgba(8,12,18,0.95);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      padding: 16px 18px;
+      color: #fff;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+    }
+    .order-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+    .order-header h3 { margin:0; font-size:18px; letter-spacing:1px; text-transform:uppercase; color:#7CFF00; }
+    .order-close { background:transparent; border:1px solid rgba(255,255,255,0.35); color:#fff; padding:4px 8px; font-size:12px; }
+    .order-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 12px; margin-bottom:12px; }
+    .order-grid label { display:flex; flex-direction:column; gap:4px; font-size:12px; color: rgba(255,255,255,0.8); }
+    .order-grid input,
+    .order-grid textarea { background: rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; padding:8px 10px; font-size:12px; }
+    .order-grid textarea { min-height:70px; resize:vertical; grid-column:1 / -1; }
+    .order-summary { display:grid; grid-template-columns:1fr auto; gap:8px 14px; align-items:start; margin-bottom:12px; font-size:12px; }
+    .order-summary .label { color: rgba(255,255,255,0.6); }
+    .order-qr { justify-self:end; background:#fff; padding:6px; border-radius:6px; }
+    .order-actions { display:flex; gap:8px; justify-content:space-between; }
+    .order-confirm { color:#ff3b3b !important; border-color:#ff3b3b !important; }
+    .order-actions button { background: rgba(0,0,0,0.55); border:1px solid rgba(255,255,255,0.35); color:#7CFF00; padding:8px 12px; font-size:12px; letter-spacing:0.6px; text-transform:uppercase; }
+
+    @media (max-width: 900px) {
+      .controls-overlay { font-size: 17px; }
+      #audio-toggle { top: 8px; left: 8px; padding: 6px 8px; font-size: 11px; }
+      #order-btn { top: 46px; right: 8px; padding: 6px 8px; font-size: 11px; }
+    }
   </style>
 </head>
 <body>
@@ -478,7 +571,13 @@
     <div class="top">
       <h1>FISHER 40</h1>
     </div>
+    <div id="controls-overlay" class="controls-overlay">
+      Mouse: trascina per ruotare, tasto destro per pan, rotella per zoom.<br>
+      Touch: 1 dito ruota, 2 dita pan, pinch per zoom.
+    </div>
     <div id="price-tag">â‚¬ 6.000</div>
+    <button id="order-btn" type="button" class="is-hidden" style="display:none;">Ordina</button>
+    <button id="audio-toggle" type="button" aria-pressed="false">Audio On</button>
     <div class="bottom">
       <div class="step-header">
         <button class="nav-btn reset-btn is-hidden" onclick="resetAllAccessories()" aria-label="Reset accessori">
@@ -531,6 +630,40 @@
   </div>
 </div>
 
+<div id="order-modal" aria-hidden="true">
+  <div class="order-dialog" role="dialog" aria-modal="true" aria-labelledby="order-title">
+    <div class="order-header">
+      <h3 id="order-title">Ordine Configurazione</h3>
+      <button class="order-close" type="button">Chiudi</button>
+    </div>
+    <div class="order-summary">
+      <div>
+        <div><span class="label">ID</span> <span id="order-id"></span></div>
+        <div><span class="label">Finitura</span> <span id="order-finish"></span></div>
+        <div><span class="label">Colori</span> <span id="order-colors"></span></div>
+        <div><span class="label">Antiskid</span> <span id="order-antiskid"></span></div>
+        <div><span class="label">Accessori</span> <span id="order-accessories"></span></div>
+        <div><span class="label">Prezzo</span> <span id="order-price"></span></div>
+      </div>
+      <div class="order-qr" id="order-qr"></div>
+    </div>
+    <div class="order-grid">
+      <label>Nome<input id="order-nome" type="text"></label>
+      <label>Cognome<input id="order-cognome" type="text"></label>
+      <label>Email<input id="order-email" type="email"></label>
+      <label>Telefono<input id="order-telefono" type="tel"></label>
+      <label>Indirizzo<input id="order-indirizzo" type="text"></label>
+      <label>Città<input id="order-citta" type="text"></label>
+      <label>CAP<input id="order-cap" type="text"></label>
+      <label>Note<textarea id="order-note"></textarea></label>
+    </div>
+    <div class="order-actions">
+      <button id="order-confirm" class="order-confirm" type="button">Conferma Ordine</button>
+      <button id="order-download" type="button">Scarica PDF</button>
+    </div>
+  </div>
+</div>
+
 <div id="ui">
 </div>
 
@@ -542,6 +675,10 @@
   }
 </script>
 
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script type="module">
   import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160/build/three.module.js';
   import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/controls/OrbitControls.js';
@@ -549,6 +686,12 @@
   import { DRACOLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/loaders/DRACOLoader.js';
   import { MeshoptDecoder } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/libs/meshopt_decoder.module.js';
   import { RGBELoader } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/loaders/RGBELoader.js';
+
+  const EMAILJS_SERVICE_ID = 'service_pgrsf1t';
+  const EMAILJS_TEMPLATE_ID = 'template_sq2cwmp';
+  const EMAILJS_PUBLIC_KEY = 'Ds3gpi437iatxxEg1';
+  let emailJsReady = false;
+
   import { Sky } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/objects/Sky.js';
   import { Water } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/objects/Water.js';
 
@@ -567,9 +710,19 @@
   viewer.appendChild(renderer.domElement);
 
   const controls = new OrbitControls(camera, renderer.domElement);
-  controls.enablePan = false;
+  controls.enablePan = true;
   controls.enableDamping = true;
   controls.autoRotate = false;
+  controls.touches.ONE = THREE.TOUCH.ROTATE;
+  controls.touches.TWO = THREE.TOUCH.PAN;
+  let controlsHintHidden = false;
+  const controlsOverlay = document.getElementById('controls-overlay');
+  function hideControlsOverlay(){
+    if(controlsHintHidden) return;
+    controlsHintHidden = true;
+    if(controlsOverlay) controlsOverlay.classList.add('is-hidden');
+  }
+  controls.addEventListener('start', hideControlsOverlay);
 
   const ambient = new THREE.AmbientLight(0xffffff, 0.25);
   scene.add(ambient);
@@ -643,8 +796,18 @@
 
   let hullMat, deckMat, hatchesMat;
   let bottazzoMat, scrittaMat;
+  let chirpTexture = null;
   const accessories = {};
   const antiskidEvaMeshes = [];
+  const schienaleMeshes = [];
+  const chirpMeshes = [];
+  const trollingMeshes = [];
+  const accessoryMeshMap = {
+    schienale: ['mesh_0_2'],
+    antiskid_eva: ['mesh_0_1'],
+    fishfinder: ['mesh_0']
+  };
+  const accessoryMeshNames = new Set(Object.values(accessoryMeshMap).flat());
   const sounds = {
     bg: new Audio('audio/gabbiani.mp3'),
     on: new Audio('audio/click.mp3'),
@@ -655,15 +818,41 @@
   sounds.on.volume = 0.8;
   sounds.off.volume = 0.8;
   let audioUnlocked = false;
+  let audioEnabled = true;
 
   function unlockAudio(){
+    if(!audioEnabled) return;
     if(audioUnlocked) return;
     audioUnlocked = true;
     sounds.bg.play().catch(() => {});
   }
 
+  function setAudioEnabled(enabled, fromUser = false){
+    audioEnabled = enabled;
+    sounds.bg.muted = !enabled;
+    sounds.on.muted = !enabled;
+    sounds.off.muted = !enabled;
+    const btn = document.getElementById('audio-toggle');
+    if(btn){
+      btn.textContent = enabled ? 'Audio On' : 'Audio Off';
+      btn.setAttribute('aria-pressed', String(!enabled));
+    }
+    if(!enabled){
+      sounds.bg.pause();
+      return;
+    }
+    if(fromUser){
+      audioUnlocked = true;
+      sounds.bg.play().catch(() => {});
+    }else{
+      unlockAudio();
+    }
+  }
+
   document.addEventListener('pointerdown', unlockAudio, { once: true });
   document.addEventListener('keydown', unlockAudio, { once: true });
+  document.addEventListener('pointerdown', hideControlsOverlay, { once: true });
+  document.addEventListener('keydown', hideControlsOverlay, { once: true });
   const accessoryKeys = [
     'tientibene',
     'panca',
@@ -689,16 +878,18 @@
   function getAccessoryKey(objName, matName){
     const name = (objName || '').toLowerCase();
     const mat = (matName || '').toLowerCase();
-    if(name.includes('tientibene') || mat.includes('tientibene')) return 'tientibene';
-    if(name.includes('panca') || mat.includes('panca')) return 'panca';
-    if(name.includes('schienale') || mat.includes('schienale')) return 'schienale';
-    if(name.includes('supporto') || mat.includes('supporto')) return 'supporto';
-    if(name.includes('trolling') || mat.includes('trolling')) return 'trolling';
-    if(name.includes('fishfinder') || mat.includes('fishfinder')) return 'fishfinder';
-    if(name.includes('impianto') || mat.includes('impianto')) return 'impianto';
-    if(name.includes('batteria') || mat.includes('batteria')) return 'batteria';
-    if(name.includes('fuoribordo') || mat.includes('fuoribordo') || name.includes('motore') || mat.includes('motore') || mat.includes('manopola')) return 'motore';
-    if(mat.includes('silver metal') || mat.includes('clean silver')) return 'supporto';
+    if(name.includes('tientibene')) return 'tientibene';
+    if(name.includes('panca')) return 'panca';
+    if(name.includes('schienale')) return 'schienale';
+    if(name.includes('supporto')) return 'supporto';
+    if(name.includes('trolling')) return 'trolling';
+    if(name.includes('fuoribordo')) return 'motore';
+    if(name.includes('motore')) return 'motore';
+    if(name.includes('fishfinder')) return 'fishfinder';
+    if(name.includes('impianto')) return 'impianto';
+    if(name.includes('batteria')) return 'batteria';
+    if(mat.includes('trolling')) return 'trolling';
+    if(mat.includes('fuoribordo')) return 'motore';
     return '';
   }
 
@@ -720,7 +911,7 @@
     schienale: ['tientibene'],
     motore: ['supporto'],
     batteria: ['impianto'],
-    fishfinder: ['batteria'],
+    fishfinder: ['impianto', 'tientibene', 'batteria'],
     trolling: ['batteria']
   };
   const accessoryLabels = {
@@ -786,7 +977,7 @@
     syncAccessoryUI();
   }
   const glbUrls = [
-    'models/fisher40_base.glb?v=6',
+    'models/fisher40_base_free_softsafe.glb?v=6',
     'models/fisher40_base_nodraco.glb?v=6'
   ];
   let glbIndex = 0;
@@ -837,6 +1028,7 @@
         if(!scrittaMat && typeof obj.material?.name === 'string' && obj.material.name.toLowerCase().includes('scritta')) {
           scrittaMat = obj.material;
         }
+        if(matNameLower.includes('chirp') || obj.name?.toLowerCase().includes('chirp')) chirpMeshes.push(obj);
         if(obj.name==='Tientibene') accessories.tientibene=obj;
         if(obj.name==='Panca') accessories.panca=obj;
         if(obj.name==='Schienale' || obj.name?.toLowerCase()==='schienale') accessories.schienale=obj;
@@ -847,30 +1039,43 @@
         if(obj.name==='Fishfinder' || obj.name?.toLowerCase()==='fishfinder') accessories.fishfinder = obj;
         if(obj.name==='Impianto' || obj.name?.toLowerCase()==='impianto' || obj.name==='ImpiantoElettrico' || obj.name?.toLowerCase()==='impiantoelettrico') accessories.impianto = obj;
         if(obj.name==='Batteria' || obj.name?.toLowerCase()==='batteria' || obj.name==='BatteriaLitio' || obj.name?.toLowerCase()==='batterialitio') accessories.batteria = obj;
-        const accessoryKey = getAccessoryKey(obj.name, matName);
-        if(accessoryKey){
-          if(!accessories[accessoryKey]) accessories[accessoryKey] = obj;
-          if(accessoryGroups[accessoryKey]) accessoryGroups[accessoryKey].push(obj);
-        }
+
         const objNameLower = (obj.name || '').toLowerCase();
         const parentNameLower = (obj.parent?.name || '').toLowerCase();
         const grandParentNameLower = (obj.parent?.parent?.name || '').toLowerCase();
         const nameCandidates = [objNameLower, parentNameLower, grandParentNameLower];
-        const shouldHideByPrefix = nameCandidates.some((n) =>
-          n.startsWith('panca') ||
-          n.startsWith('schienale') ||
-          n.startsWith('fishfinder') ||
-          n.startsWith('antiskid_eva') ||
-          n.startsWith('supporto')
+        const isAccessoryName = (n) => (
+          n.includes('tientibene') ||
+          n.includes('panca') ||
+          n.includes('schienale') ||
+          n.includes('supporto') ||
+          n.includes('trolling') ||
+          n.includes('fuoribordo') ||
+          n.includes('motore') ||
+          n.includes('fishfinder') ||
+          n.includes('impianto') ||
+          n.includes('batteria') ||
+          n.includes('antiskid_eva') ||
+          n.includes('chirp')
         );
+        const isAccessoryMaterial = (m) => (
+          m.includes('clean silver') ||
+          m.includes('procedural skin') ||
+          m.includes('manopola') ||
+          m.includes('fuoribordo') ||
+          m.includes('trolling') ||
+          m.includes('chirp')
+        );
+        const isMappedAccessoryMesh = accessoryMeshNames.has(obj.name);
+        const shouldHideByPrefix =
+          nameCandidates.some((n) => isAccessoryName(n)) ||
+          isAccessoryMaterial(matNameLower) ||
+          isMappedAccessoryMesh;
         if(shouldHideByPrefix){
           obj.visible = false;
         }
-        if(nameCandidates.some(n => n === 'antiskid_eva')){
-          antiskidEvaMeshes.push(obj);
-          obj.material = obj.material?.clone?.() || obj.material;
-        }
-        if(obj.name?.toLowerCase()==='schienale' || obj.name?.toLowerCase()==='fishfinder'){
+        if(nameCandidates.some(n => n === 'antiskid_eva' || n.includes('antiskid') || n.includes('eva')) || obj.name === 'mesh_0_1' || obj.name === 'EVA' || obj.name?.toLowerCase().includes('eva') || matNameLower.includes('sponge')){          antiskidEvaMeshes.push(obj);          obj.material = obj.material?.clone?.() || obj.material;          obj.visible = false;        }
+        if(obj.name?.toLowerCase()==='fishfinder'){
           // Clone to avoid changing shared materials (e.g. Hatches).
           obj.material = obj.material?.clone?.() || obj.material;
           if(obj.material){
@@ -879,16 +1084,26 @@
             obj.material.needsUpdate = true;
           }
         }
-        if(obj.name?.startsWith('Panca')) accessoryGroups.panca.push(obj);
-        if(obj.name?.startsWith('Tientibene')) accessoryGroups.tientibene.push(obj);
-        if(obj.name?.startsWith('Schienale') || obj.name?.toLowerCase().startsWith('schienale')) accessoryGroups.schienale.push(obj);
-        if(obj.name?.startsWith('Motore')) accessoryGroups.motore.push(obj);
-        if(obj.name?.startsWith('Fuoribordo')) accessoryGroups.motore.push(obj);
-        if(obj.name?.toLowerCase().startsWith('supporto')) accessoryGroups.supporto.push(obj);
-        if(obj.name?.toLowerCase().startsWith('trolling')) accessoryGroups.trolling.push(obj);
-        if(obj.name?.toLowerCase().startsWith('fishfinder')) accessoryGroups.fishfinder.push(obj);
-        if(obj.name?.toLowerCase().startsWith('impianto')) accessoryGroups.impianto.push(obj);
-        if(obj.name?.toLowerCase().startsWith('batteria')) accessoryGroups.batteria.push(obj);
+        if(obj.name?.toLowerCase()==='schienale' || obj.name === 'mesh_0_2'){
+          schienaleMeshes.push(obj);
+        }
+        if(obj.name?.toLowerCase().includes('trolling')){
+          trollingMeshes.push(obj);
+        }
+
+        const groupKey =
+          getAccessoryKey(obj.name, '') ||
+          getAccessoryKey(obj.parent?.name, '') ||
+          getAccessoryKey(obj.parent?.parent?.name, '') ||
+          (obj.name?.toLowerCase().includes('chirp') ? 'fishfinder' : '') ||
+          (matNameLower.includes('chirp') ? 'fishfinder' : '') ||
+          (accessoryMeshMap.schienale?.includes(obj.name) ? 'schienale' : '') ||
+          (accessoryMeshMap.tientibene?.includes(obj.name) ? 'tientibene' : '') ||
+          (accessoryMeshMap.panca?.includes(obj.name) ? 'panca' : '') ||
+          (accessoryMeshMap.supporto?.includes(obj.name) ? 'supporto' : '') ||
+          (accessoryMeshMap.motore?.includes(obj.name) ? 'motore' : '') ||
+          (accessoryMeshMap.trolling?.includes(obj.name) ? 'trolling' : '');
+        if(groupKey && accessoryGroups[groupKey]) accessoryGroups[groupKey].push(obj);
       }
     });
 
@@ -909,15 +1124,19 @@
         t.flipY = false;
       });
     }
-    if(scrittaMat){
-      scrittaHasEmbeddedMap = Boolean(scrittaMat.map);
-      scrittaMat.userData = scrittaMat.userData || {};
-      scrittaMat.userData.hasEmbeddedMap = scrittaHasEmbeddedMap;
+    if(!chirpTexture){
+      chirpTexture = textureLoader.load('images/Chirp.png', (t) => {
+        t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        t.colorSpace = THREE.SRGBColorSpace;
+        t.flipY = false;
+        t.needsUpdate = true;
+        applyChirpTextureToMeshes();
+      });
     }
     if(!antiskidTexture){
       antiskidTexture = textureLoader.load('images/antiskid.jpg', (t) => {
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
-        t.repeat.set(2, 2);
+        t.repeat.set(0.5, 0.5);
       });
     }
 
@@ -926,20 +1145,20 @@
     if(hatchesMat) hatchesMat.color.set('#ffffff');
     if(bottazzoMat) bottazzoMat.color.set('#000000');
     if(scrittaMat){
-      if(scrittaMat.userData?.hasEmbeddedMap){
-        scrittaMat.color.set('#ffffff');
-        scrittaMat.needsUpdate = true;
-      }else{
-        scrittaMat.map = scrittaTextures.black;
-        scrittaMat.color.set('#ffffff');
-        scrittaMat.transparent = true;
-        scrittaMat.alphaTest = 0.5;
-        scrittaMat.needsUpdate = true;
-      }
+      scrittaMat.map = scrittaTextures.black;
+      scrittaMat.color.set('#ffffff');
+      scrittaMat.transparent = true;
+      scrittaMat.alphaTest = 0.5;
+      scrittaMat.needsUpdate = true;
     }
+    applyChirpTextureToMeshes();
     Object.values(accessories).forEach(a=>a.visible=false);
     Object.values(accessoryGroups).forEach(list => list.forEach(a => a.visible = false));
     antiskidEvaMeshes.forEach(mesh => mesh.visible = false);
+    applyEvaTextureToMeshes(antiskidEvaMeshes);
+    syncSchienaleMaterial();
+    syncTrollingMaterial();
+    applyMaterialOverrides(gltf.scene);
 
     // Auto-center and frame model in the camera view
     const box = new THREE.Box3().setFromObject(gltf.scene);
@@ -1024,8 +1243,40 @@
   let antiskidTexture = null;
   let antiskidPrintTexture = null;
   let antiskidEvaTexture = null;
+  function applyMaterialOverrides(root){
+    if(!root) return;
+    let yamahaMat = null;
+    let plasticMat = null;
+    root.traverse((obj) => {
+      if(!obj.isMesh || !obj.material) return;
+      const list = Array.isArray(obj.material) ? obj.material : [obj.material];
+      list.forEach((m) => {
+        if(!m?.name) return;
+        const name = m.name.toLowerCase();
+        if(name === 'yamaha') yamahaMat = m;
+        if(name === 'plastic') plasticMat = m;
+      });
+    });
+    if(!yamahaMat && !plasticMat) return;
+    if(yamahaMat && yamahaMat.color) yamahaMat.color.set('#696969');
+    if(plasticMat && plasticMat.color) plasticMat.color.set('#000000');
+
+    const toKey = (name) => (name || '').toLowerCase().replace(/\./g, '');
+    const yamahaTargets = new Set(['fuoribordostl001','fuoribordostl002','fuoribordostl004']);
+    const plasticTargets = new Set(['fuoribordostl','fuoribordostl003','fishfinder','trolling002','trolling003','trolling004','trolling005']);
+
+    root.traverse((obj) => {
+      if(!obj.isMesh) return;
+      const key = toKey(obj.name);
+      if(yamahaMat && yamahaTargets.has(key)){
+        obj.material = yamahaMat;
+      }
+      if(plasticMat && plasticTargets.has(key)){
+        obj.material = plasticMat;
+      }
+    });
+  }
   let selectedAntiskid = '';
-  let scrittaHasEmbeddedMap = false;
   const scrittaTextures = {
     black: null,
     white: null
@@ -1093,6 +1344,11 @@
     }
     if(resetBtn){
       resetBtn.classList.toggle('is-hidden', step !== 'accessori');
+    }
+    const orderBtn = document.getElementById('order-btn');
+    if(orderBtn){
+      orderBtn.classList.toggle('is-hidden', step !== 'accessori');
+      orderBtn.style.display = step === 'accessori' ? 'block' : 'none';
     }
     if(nextBtn){
       nextBtn.classList.toggle('is-hidden', step === 'finitura');
@@ -1252,11 +1508,12 @@
       { label: 'None', value: 'none' },
       { label: 'Eva', value: 'eva' }
     ];
+    const ruggedOptions = baseOptions;
     const fullOptions = baseOptions.concat([
       { label: 'Paint', value: 'paint' },
       { label: 'Print', value: 'print' }
     ]);
-    const options = finish === 'wrapping' ? baseOptions : fullOptions;
+    const options = finish === 'wrapping' ? baseOptions : (finish === 'rugged' ? ruggedOptions : fullOptions);
     select.innerHTML = '';
     options.forEach(({ label, value }) => {
       const opt = document.createElement('option');
@@ -1287,6 +1544,13 @@
       renderColorSelect('hull', 'hull-colors', palette.all);
       renderColorSelect('deck', 'deck-colors', []);
       renderColorSelect('hatches', 'hatches-colors', []);
+      if(palette.all?.length){
+        setTimeout(() => {
+          if(selectedFinish === 'rugged'){
+            setHull(palette.all[0].color);
+          }
+        }, 0);
+      }
     }else{
       if(groupDeck) groupDeck.classList.remove('hidden');
       if(groupHatches) groupHatches.classList.remove('hidden');
@@ -1305,10 +1569,9 @@
       mat.needsUpdate = true;
       antiskidTexture = textureLoader.load('images/antiskid.jpg', (t) => {
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
-        t.repeat.set(2, 2);
+        t.repeat.set(0.5, 0.5);
         t.colorSpace = THREE.SRGBColorSpace;
         t.flipY = false;
-        t.needsUpdate = true;
         mat.map = t;
         mat.color.set(color);
         mat.needsUpdate = true;
@@ -1320,117 +1583,35 @@
     mat.needsUpdate = true;
   }
 
-  function getAntiskidOverlayTexture(mode, onReady){
-    if(mode === 'print'){
-      if(antiskidPrintTexture){
-        onReady(antiskidPrintTexture);
-        return;
-      }
-      antiskidPrintTexture = textureLoader.load('images/millepunte.jpg', (t) => {
-        t.wrapS = t.wrapT = THREE.RepeatWrapping;
-        t.repeat.set(2, 2);
-        t.colorSpace = THREE.SRGBColorSpace;
-        t.flipY = false;
-        t.needsUpdate = true;
-        onReady(t);
-      });
-      return;
-    }
-    if(antiskidTexture){
-      onReady(antiskidTexture);
-      return;
-    }
-    antiskidTexture = textureLoader.load('images/antiskid.jpg', (t) => {
-      t.wrapS = t.wrapT = THREE.RepeatWrapping;
-      t.repeat.set(2, 2);
-      t.colorSpace = THREE.SRGBColorSpace;
-      t.flipY = false;
-      t.needsUpdate = true;
-      onReady(t);
-    });
-  }
-
-  function buildCompositeTexture(baseTex, overlayTex){
-    if(!baseTex?.image || !overlayTex?.image) return null;
-    const width = baseTex.image.width || 1024;
-    const height = baseTex.image.height || 1024;
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d');
-    if(!ctx) return null;
-    ctx.drawImage(baseTex.image, 0, 0, width, height);
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.globalAlpha = 0.6;
-    ctx.drawImage(overlayTex.image, 0, 0, width, height);
-    const tex = new THREE.CanvasTexture(canvas);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.flipY = false;
-    tex.needsUpdate = true;
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.copy(baseTex.repeat);
-    return tex;
-  }
-
   function applyAntiskidVariant(mat, color, mode){
     if(!mat) return;
-    if(mode === 'eva'){
-      if(mat.userData?.compositeMap){
-        mat.userData.compositeMap.dispose();
-        mat.userData.compositeMap = null;
-      }
-      if(!antiskidEvaTexture){
-        antiskidEvaTexture = textureLoader.load('images/eva.png', (t) => {
-          t.wrapS = t.wrapT = THREE.RepeatWrapping;
-          t.repeat.set(2, 2);
-          t.colorSpace = THREE.SRGBColorSpace;
-          t.flipY = false;
-          t.needsUpdate = true;
-          mat.map = t;
-          mat.color.set('#ffffff');
-          mat.needsUpdate = true;
-        });
-        return;
-      }
-      mat.map = antiskidEvaTexture;
-      mat.color.set('#ffffff');
-      mat.needsUpdate = true;
-      return;
-    }
-    const baseMap = mat.userData?.baseMap;
-    if(baseMap){
-      getAntiskidOverlayTexture(mode, (overlay) => {
-        const composite = buildCompositeTexture(baseMap, overlay);
-        if(!composite) return;
-        if(mat.userData?.compositeMap && mat.userData.compositeMap !== composite){
-          mat.userData.compositeMap.dispose();
-        }
-        mat.userData.compositeMap = composite;
-        mat.map = composite;
-        mat.color.set('#ffffff');
-        mat.needsUpdate = true;
-      });
-      return;
-    }
-    if(mode === 'print'){
-      getAntiskidOverlayTexture(mode, (overlay) => {
-        mat.map = overlay;
-        mat.color.set(color);
-        mat.needsUpdate = true;
-      });
+    if(mode === 'paint'){
+      applyAntiskid(mat, color);
       return;
     }
     applyAntiskid(mat, color);
   }
 
-  function applyEvaTextureToMeshes(meshes){
+    function applyEvaTextureToMeshes(meshes){
     if(!meshes?.length) return;
     const applyTexture = (tex) => {
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(0.5, 0.5);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.flipY = false;
+      tex.needsUpdate = true;
       meshes.forEach((mesh) => {
-        if(!mesh?.material) return;
-        mesh.material.map = tex;
-        if(mesh.material.color) mesh.material.color.set('#ffffff');
-        mesh.material.needsUpdate = true;
+        if(!mesh) return;
+        ensurePlanarUv(mesh);
+        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        materials.forEach((mat) => {
+          if(!mat) return;
+          mat.map = tex;
+          if(mat.color) mat.color.set('#ffffff');
+          if('metalness' in mat) mat.metalness = 0;
+          if('roughness' in mat) mat.roughness = 1;
+          mat.needsUpdate = true;
+        });
       });
     };
     if(antiskidEvaTexture){
@@ -1438,8 +1619,93 @@
       return;
     }
     antiskidEvaTexture = textureLoader.load('images/eva.png', (t) => {
+      applyTexture(t);
+    });
+  }
+
+  function applyChirpTextureToMeshes(){
+    if(!chirpMeshes.length || !chirpTexture) return;
+    chirpMeshes.forEach((mesh) => {
+      if(!mesh?.material) return;
+      const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      materials.forEach((mat) => {
+        if(!mat) return;
+        mat.map = chirpTexture;
+        if(mat.color) mat.color.set('#ffffff');
+        mat.transparent = true;
+        mat.alphaTest = 0.5;
+        mat.polygonOffset = true;
+        mat.polygonOffsetFactor = -1;
+        mat.polygonOffsetUnits = -1;
+        mat.needsUpdate = true;
+      });
+      mesh.renderOrder = 2;
+    });
+  }
+
+  function ensurePlanarUv(mesh, axis = 'xz', uniform = true){
+    const geom = mesh?.geometry;
+    if(!geom || geom.attributes?.uv) return;
+    geom.computeBoundingBox();
+    const box = geom.boundingBox;
+    if(!box) return;
+    const size = new THREE.Vector3();
+    box.getSize(size);
+    const pos = geom.attributes.position;
+    const uvs = new Float32Array(pos.count * 2);
+    const sizeX = size.x || 1;
+    const sizeY = size.y || 1;
+    const sizeZ = size.z || 1;
+    const denomU = uniform ? Math.max(sizeX, axis === 'xy' ? sizeY : sizeZ) : (axis === 'xy' ? sizeX : sizeX);
+    const denomV = uniform ? Math.max(sizeX, axis === 'xy' ? sizeY : sizeZ) : (axis === 'xy' ? sizeY : sizeZ);
+    for(let i = 0; i < pos.count; i++){
+      const x = pos.getX(i);
+      const y = pos.getY(i);
+      const z = pos.getZ(i);
+      let u = 0;
+      let v = 0;
+      if(axis === 'xy'){
+        u = denomU ? (x - box.min.x) / denomU : 0;
+        v = denomV ? (y - box.min.y) / denomV : 0;
+      }else{
+        u = denomU ? (x - box.min.x) / denomU : 0;
+        v = denomV ? (z - box.min.z) / denomV : 0;
+      }
+      uvs[i * 2] = u;
+      uvs[i * 2 + 1] = v;
+    }
+    geom.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+    geom.attributes.uv.needsUpdate = true;
+  }
+
+  function applyPrintTextureToMeshes(meshes, color){
+    if(!meshes?.length) return;
+    const applyTexture = (tex) => {
+      tex.repeat.set(10, 10);
+      tex.needsUpdate = true;
+      meshes.forEach((mesh) => {
+        if(!mesh) return;
+        ensurePlanarUv(mesh);
+        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        materials.forEach((mat) => {
+          if(!mat) return;
+          mat.map = tex;
+          if(mat.color) mat.color.set(color || '#ffffff');
+          if('metalness' in mat) mat.metalness = 0;
+          if('roughness' in mat) mat.roughness = 1;
+          mat.needsUpdate = true;
+        });
+      });
+    };
+    if(antiskidPrintTexture){
+      antiskidPrintTexture.repeat.set(10, 10);
+      antiskidPrintTexture.needsUpdate = true;
+      applyTexture(antiskidPrintTexture);
+      return;
+    }
+    antiskidPrintTexture = textureLoader.load('images/millepunte.jpg', (t) => {
       t.wrapS = t.wrapT = THREE.RepeatWrapping;
-      t.repeat.set(2, 2);
+      t.repeat.set(10, 10);
       t.colorSpace = THREE.SRGBColorSpace;
       t.flipY = false;
       t.needsUpdate = true;
@@ -1449,49 +1715,84 @@
 
   function updateAntiskidEvaMeshes(){
     const isEva = selectedAntiskid === 'eva';
+    const isPrint = selectedAntiskid === 'print';
+    const shouldShow = isEva || isPrint;
     antiskidEvaMeshes.forEach(mesh => {
-      mesh.visible = isEva;
+      mesh.visible = shouldShow;
     });
     if(isEva){
       applyEvaTextureToMeshes(antiskidEvaMeshes);
     }
+    if(isPrint){
+      applyPrintTextureToMeshes(antiskidEvaMeshes, selectedDeck || '#ffffff');
+    }
   }
 
-  function updateAntiskidFinish(){
-    updateAntiskidEvaMeshes();
-    if(!selectedAntiskid || selectedAntiskid === 'none' || selectedAntiskid === 'eva'){
+  function syncSchienaleMaterial(){
+    if(!schienaleMeshes.length || !hatchesMat) return;
+    schienaleMeshes.forEach((mesh) => {
+      if(!mesh) return;
+      if(mesh.material === hatchesMat || !mesh.material){
+        mesh.material = hatchesMat?.clone?.() || mesh.material;
+      }
+      const mat = mesh.material;
+      if(!mat) return;
+      mat.color.copy(hatchesMat.color);
+      mat.map = hatchesMat.map || null;
+      mat.userData.baseMap = hatchesMat.userData?.baseMap || null;
+      mat.normalMap = null;
+      mat.roughnessMap = null;
+      mat.metalnessMap = null;
+      if('metalness' in mat) mat.metalness = 0;
+      if('roughness' in mat) mat.roughness = 1;
+      mat.needsUpdate = true;
+    });
+  }
+
+  function syncTrollingMaterial(){
+    if(!trollingMeshes.length) return;
+    trollingMeshes.forEach((mesh) => {
+      if(!mesh) return;
+      if(!mesh.userData?.trollingFixed){
+        mesh.material = mesh.material?.clone?.() || mesh.material;
+        mesh.userData.trollingFixed = true;
+      }
+      const mat = mesh.material;
+      if(!mat) return;
+      mat.normalMap = null;
+      mat.roughnessMap = null;
+      mat.metalnessMap = null;
+      if('metalness' in mat) mat.metalness = 0;
+      if('roughness' in mat) mat.roughness = 1;
+      mat.needsUpdate = true;
+    });
+  }
+
+  function updateAntiskidFinish(){    updateAntiskidEvaMeshes();    if(selectedFinish === 'wrapping') return;
+    if(!selectedAntiskid || selectedAntiskid === 'none' || selectedAntiskid === 'eva' || selectedAntiskid === 'print'){
       if(deckMat){
-        if(deckMat.userData?.compositeMap){
-          deckMat.userData.compositeMap.dispose();
-          deckMat.userData.compositeMap = null;
-        }
-        if(deckMat.userData?.baseMap){
-          deckMat.map = deckMat.userData.baseMap;
-          deckMat.color.set('#ffffff');
+        if(selectedFinish === 'rugged' && selectedAntiskid === 'none' && selectedDeck){
+          applyAntiskid(deckMat, selectedDeck);
         }else if(selectedDeck){
           deckMat.map = null;
           deckMat.color.set(selectedDeck);
+          deckMat.needsUpdate = true;
         }
-        deckMat.needsUpdate = true;
       }
       if(hatchesMat){
-        if(hatchesMat.userData?.compositeMap){
-          hatchesMat.userData.compositeMap.dispose();
-          hatchesMat.userData.compositeMap = null;
-        }
-        if(hatchesMat.userData?.baseMap){
-          hatchesMat.map = hatchesMat.userData.baseMap;
-          hatchesMat.color.set('#ffffff');
+        if(selectedFinish === 'rugged' && selectedAntiskid === 'none' && selectedHatches){
+          applyAntiskid(hatchesMat, selectedHatches);
         }else if(selectedHatches){
           hatchesMat.map = null;
           hatchesMat.color.set(selectedHatches);
+          hatchesMat.needsUpdate = true;
         }
-        hatchesMat.needsUpdate = true;
       }
       return;
     }
     if(selectedDeck) applyAntiskidVariant(deckMat, selectedDeck, selectedAntiskid);
     if(selectedHatches) applyAntiskidVariant(hatchesMat, selectedHatches, selectedAntiskid);
+    syncSchienaleMaterial();
   }
 
   function applyWrappingTextureFor(mat, texturePath, scale){
@@ -1502,17 +1803,11 @@
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
         const s = Number.isFinite(scale) ? scale : 2;
         t.repeat.set(s, s);
-        t.colorSpace = THREE.SRGBColorSpace;
-        t.flipY = false;
-        t.needsUpdate = true;
         mat.map = t;
-        mat.userData.baseMap = t;
         mat.needsUpdate = true;
-        updateAntiskidFinish();
       });
     }else{
       mat.map = null;
-      mat.userData.baseMap = null;
       mat.needsUpdate = true;
     }
   }
@@ -1545,11 +1840,6 @@
       bottazzoMat.needsUpdate = true;
     }
     if(scrittaMat){
-      if(scrittaMat.userData?.hasEmbeddedMap){
-        scrittaMat.color.set('#ffffff');
-        scrittaMat.needsUpdate = true;
-        return;
-      }
       const tex = makeWhite ? scrittaTextures.white : scrittaTextures.black;
       if(tex){
         scrittaMat.map = tex;
@@ -1574,11 +1864,47 @@
     setActiveColor('finish', btn);
     finishSelected = true;
     selectedFinish = f;
+    resetColorsToBase();
     updateColorOptions(f);
     updateAntiskidFinish();
     updatePrice();
     if(autoNext && currentStep === 'finitura') showStep('colori');
   };
+
+  function resetColorsToBase(){
+    hullSelected = false;
+    deckSelected = false;
+    hatchesSelected = false;
+    hatchesAuto = true;
+    selectedHull = null;
+    selectedDeck = null;
+    selectedHatches = null;
+    if(hullMat){
+      hullMat.map = null;
+      hullMat.color.set('#ffffff');
+      hullMat.needsUpdate = true;
+    }
+    if(deckMat){
+      deckMat.map = null;
+      deckMat.color.set('#ffffff');
+      deckMat.needsUpdate = true;
+    }
+    if(hatchesMat){
+      hatchesMat.map = null;
+      hatchesMat.color.set('#ffffff');
+      hatchesMat.needsUpdate = true;
+    }
+    wrappingWhite = false;
+    hullDark = false;
+    deckDark = false;
+    selectedAntiskid = 'none';
+    const antiskidSelect = document.querySelector('#antiskid-select select');
+    if(antiskidSelect){
+      antiskidSelect.value = 'none';
+    }
+    updateAntiskidFinish();
+    updateLogoAndBottazzo();
+  }
 
   function setActiveColor(group, btn){
     if(!btn) return;
@@ -1651,11 +1977,6 @@
       wrappingWhite = isWrappingWhiteTrigger(btn.dataset.texture);
       deckDark = false;
     }else if(deckMat){
-      if(deckMat.userData?.compositeMap){
-        deckMat.userData.compositeMap.dispose();
-        deckMat.userData.compositeMap = null;
-      }
-      deckMat.userData.baseMap = null;
       deckMat.map = null;
       deckMat.color.set(color);
       deckMat.needsUpdate = true;
@@ -1686,11 +2007,6 @@
     if(selectedFinish === 'wrapping' && btn?.dataset.texture){
       applyWrappingTextureFor(hatchesMat, btn.dataset.texture, Number(btn.dataset.scale));
     }else if(hatchesMat){
-      if(hatchesMat.userData?.compositeMap){
-        hatchesMat.userData.compositeMap.dispose();
-        hatchesMat.userData.compositeMap = null;
-      }
-      hatchesMat.userData.baseMap = null;
       hatchesMat.map = null;
       hatchesMat.color.set(color);
       hatchesMat.needsUpdate = true;
@@ -1698,6 +2014,7 @@
     hatchesSelected = true;
     selectedHatches = color;
     updateAntiskidFinish();
+    syncSchienaleMaterial();
     checkStep();
     if(manual) hatchesAuto = false;
   };
@@ -1740,9 +2057,19 @@
   window.toggleAccessory = function(name,state, silent = false){
     if(accessories[name]) accessories[name].visible=state;
     if(accessoryGroups[name]) accessoryGroups[name].forEach(obj => obj.visible = state);
+    if(name === 'schienale' && state){
+      syncSchienaleMaterial();
+    }
+    if(name === 'trolling' && state){
+      syncTrollingMaterial();
+    applyMaterialOverrides(gltf.scene);
+    }
     if(!silent){
       const sfx = state ? sounds.on : sounds.off;
       if(sfx){
+        if(audioEnabled && !audioUnlocked){
+          audioUnlocked = true;
+        }
         sfx.currentTime = 0;
         sfx.play().catch(() => {});
       }
@@ -1756,10 +2083,254 @@
     resetAccessoryUI();
   };
 
-  window.addEventListener('DOMContentLoaded', () => {
+    let currentOrderId = null;
+
+  function generateOrderId(){
+    const rand = Math.floor(Math.random() * 1e6).toString().padStart(6, '0');
+    return `NS-${Date.now()}-${rand}`;
+  }
+
+  function getAccessoriesSummary(){
+    const items = [];
+    document.querySelectorAll('#step-accessori input[type="checkbox"]')?.forEach((cb) => {
+      if(cb.checked){
+        const label = cb.closest('label')?.textContent?.trim() || cb.dataset.accessory;
+        if(label) items.push(label);
+      }
+    });
+    return items.length ? items.join(', ') : 'Nessuno';
+  }
+
+  function getColorsSummary(){
+    const hull = selectedHull || '-';
+    const deck = selectedDeck || '-';
+    const hatches = selectedHatches || '-';
+    return `Hull ${hull}, Deck ${deck}, Hatches ${hatches}`;
+  }
+
+  function getPriceSummary(){
+    const el = document.getElementById('price-tag');
+    return el ? el.textContent.trim() : '';
+  }
+
+      function getEmailPayloadForTemplate(payload){
+    const colori = `Hull ${payload.colors.hull}, Deck ${payload.colors.deck}, Hatches ${payload.colors.hatches}`;
+    return {
+      id: payload.id,
+      finitura: payload.finish,
+      colori,
+      antiskid: payload.antiskid,
+      accessori: payload.accessories,
+      prezzo: payload.price,
+      nome: payload.customer.nome,
+      cognome: payload.customer.cognome,
+      email: payload.customer.email,
+      telefono: payload.customer.telefono,
+      indirizzo: payload.customer.indirizzo,
+      citta: payload.customer.citta,
+      cap: payload.customer.cap,
+      note: payload.customer.note,
+      configurazione_json: JSON.stringify(payload)
+    };
+  }
+  function canSendEmail(){
+    return Boolean(window.emailjs && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY);
+  }
+
+  function initEmailJs(){
+    if(emailJsReady) return;
+    if(window.emailjs && EMAILJS_PUBLIC_KEY){
+      window.emailjs.init(EMAILJS_PUBLIC_KEY);
+      emailJsReady = true;
+    }
+  }
+
+  function sendOrderEmail(payload){
+    if(!canSendEmail()){
+      return Promise.reject(new Error('EmailJS non configurato'));
+    }
+    initEmailJs();
+    return window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, getEmailPayloadForTemplate(payload));
+  }
+  function prepareOrderPayload(){
+    const getVal = (id) => document.getElementById(id)?.value || '';
+    return {
+      id: currentOrderId || generateOrderId(),
+      finish: selectedFinish || '',
+      colors: {
+        hull: selectedHull || '',
+        deck: selectedDeck || '',
+        hatches: selectedHatches || ''
+      },
+      antiskid: selectedAntiskid || 'none',
+      accessories: getAccessoriesSummary(),
+      price: getPriceSummary(),
+      customer: {
+        nome: getVal('order-nome'),
+        cognome: getVal('order-cognome'),
+        email: getVal('order-email'),
+        telefono: getVal('order-telefono'),
+        indirizzo: getVal('order-indirizzo'),
+        citta: getVal('order-citta'),
+        cap: getVal('order-cap'),
+        note: getVal('order-note')
+      }
+    };
+  }
+function openOrderModal(){
+    if(!currentOrderId){
+      currentOrderId = generateOrderId();
+    }
+    const modal = document.getElementById('order-modal');
+    if(!modal) return;
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    const setText = (id, value) => {
+      const el = document.getElementById(id);
+      if(el) el.textContent = value || '';
+    };
+    setText('order-id', currentOrderId);
+    setText('order-finish', selectedFinish || '-');
+    setText('order-colors', getColorsSummary());
+    setText('order-antiskid', selectedAntiskid || 'none');
+    setText('order-accessories', getAccessoriesSummary());
+    setText('order-price', getPriceSummary());
+    const qrEl = document.getElementById('order-qr');
+    if(qrEl){
+      qrEl.innerHTML = '';
+      if(typeof QRCode !== 'undefined'){
+        new QRCode(qrEl, { text: currentOrderId, width: 128, height: 128 });
+      }
+    }
+  }
+
+  function closeOrderModal(){
+    const modal = document.getElementById('order-modal');
+    if(!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  function downloadOrderPdf(){
+    if(!window.jspdf?.jsPDF) return;
+    const doc = new window.jspdf.jsPDF();
+    doc.setFontSize(16);
+    doc.text('Configurazione Barca', 14, 20);
+    doc.setFontSize(11);
+    doc.text(`ID: ${currentOrderId || ''}`, 14, 30);
+    doc.text(`Finitura: ${selectedFinish || '-'}`, 14, 38);
+    doc.text(`Colori: ${getColorsSummary()}`, 14, 46);
+    doc.text(`Antiskid: ${selectedAntiskid || 'none'}`, 14, 54);
+    doc.text(`Accessori: ${getAccessoriesSummary()}`, 14, 62);
+    doc.text(`Prezzo: ${getPriceSummary()}`, 14, 70);
+    const fields = [
+      ['Nome', 'order-nome'],
+      ['Cognome', 'order-cognome'],
+      ['Email', 'order-email'],
+      ['Telefono', 'order-telefono'],
+      ['Indirizzo', 'order-indirizzo'],
+      ['Citta', 'order-citta'],
+      ['CAP', 'order-cap'],
+      ['Note', 'order-note']
+    ];
+    let y = 82;
+    fields.forEach(([label, id]) => {
+      const val = document.getElementById(id)?.value || '';
+      const line = `${label}: ${val}`;
+      doc.text(line, 14, y);
+      y += 8;
+    });
+    doc.save(`ordine-${currentOrderId || 'config'}.pdf`);
+  }
+window.addEventListener('DOMContentLoaded', () => {
+    const orderBtn = document.getElementById('order-btn');
+    const orderModal = document.getElementById('order-modal');
+    const orderClose = document.querySelector('#order-modal .order-close');
+    const orderDownload = document.getElementById('order-download');
+    const orderConfirm = document.getElementById('order-confirm');
+    initEmailJs();
+    if(orderBtn){
+      orderBtn.addEventListener('click', () => {
+        openOrderModal();
+      });
+    }
+    if(orderClose){
+      orderClose.addEventListener('click', () => {
+        closeOrderModal();
+      });
+    }
+    if(orderModal){
+      orderModal.addEventListener('click', (e) => {
+        if(e.target === orderModal){
+          closeOrderModal();
+        }
+      });
+    }
+    if(orderDownload){
+      orderDownload.addEventListener('click', () => {
+        downloadOrderPdf();
+      });
+    }
+    if(orderConfirm){
+      orderConfirm.addEventListener('click', async () => {
+        const payload = prepareOrderPayload();
+        if(canSendEmail()){
+          const originalLabel = orderConfirm.textContent;
+          orderConfirm.disabled = true;
+          orderConfirm.textContent = 'Invio...';
+          try{
+            await sendOrderEmail(payload);
+            alert('Ordine inviato correttamente. Ti contatteremo a breve.');
+          }catch(err){
+            console.error(err);
+            alert('Errore invio ordine. Puoi scaricare il PDF e riprovare.');
+          }finally{
+            orderConfirm.disabled = false;
+            orderConfirm.textContent = originalLabel;
+          }
+          return;
+        }
+        const subject = `Ordine configurazione ${payload.id}`;
+        const body = `ID: ${payload.id}
+Finitura: ${payload.finish}
+Colori: Hull ${payload.colors.hull}, Deck ${payload.colors.deck}, Hatches ${payload.colors.hatches}
+Antiskid: ${payload.antiskid}
+Accessori: ${payload.accessories}
+Prezzo: ${payload.price}
+
+Cliente:
+Nome: ${payload.customer.nome}
+Cognome: ${payload.customer.cognome}
+Email: ${payload.customer.email}
+Telefono: ${payload.customer.telefono}
+Indirizzo: ${payload.customer.indirizzo}
+Citta: ${payload.customer.citta}
+CAP: ${payload.customer.cap}
+Note: ${payload.customer.note}`;
+        const mailto = `mailto:ningaskiffs@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailto;
+      });
+    }
     renderFinishSelect();
     renderAntiskidSelect();
     resetAccessoryUI();
+    const audioBtn = document.getElementById('audio-toggle');
+    if(audioBtn){
+      audioBtn.addEventListener('click', () => {
+        setAudioEnabled(!audioEnabled, true);
+      });
+      setAudioEnabled(audioEnabled, false);
+    }
+    const viewer = document.getElementById('viewer');
+    if(viewer){
+      viewer.addEventListener('pointerdown', () => {
+        unlockAudio();
+        if(audioEnabled){
+          sounds.bg.play().catch(() => {});
+        }
+      });
+    }
+  
   });
 
   function animate(){
