@@ -716,8 +716,10 @@ cursor: pointer;
   import { RGBELoader } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/loaders/RGBELoader.js';
 
   const EMAILJS_SERVICE_ID = 'service_pgrsf1t';
-  const EMAILJS_TEMPLATE_ID = 'template_sq2cwmp';
+  const EMAILJS_TEMPLATE_ID_CLIENT = 'template_pcbac3j';
+  const EMAILJS_TEMPLATE_ID_ADMIN = 'template_sq2cwmp';
   const EMAILJS_PUBLIC_KEY = 'Ds3gpi437iatxxEg1';
+  const UPLOAD_ENDPOINT = 'https://ninga-upload-api.vercel.app/api/upload';
   let emailJsReady = false;
 
   import { Sky } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/objects/Sky.js';
@@ -738,6 +740,8 @@ cursor: pointer;
   viewer.appendChild(renderer.domElement);
 
   const controls = new OrbitControls(camera, renderer.domElement);
+  window.camera = camera;
+  window.controls = controls;
   window.camera = camera;
   window.controls = controls;
   controls.enablePan = true;
@@ -2219,13 +2223,17 @@ function getColorsSummary(){
     return el ? el.textContent.trim() : '';
   }
 
-      function getEmailPayloadForTemplate(payload){
-    const colori = `Hull ${payload.colors.hull}, Deck ${payload.colors.deck}, Hatches ${payload.colors.hatches}`;
+        function getEmailPayloadForTemplate(payload, assets = {}){
+    const colori = getColorsSummary();
+    const finitura = typeof getFinishLabel === 'function' ? getFinishLabel() : payload.finish;
+    const antiskid = typeof getAntiskidLabel === 'function' ? getAntiskidLabel() : payload.antiskid;
+    const now = new Date();
+    const date = now.toLocaleDateString('it-IT') + ' ' + now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
     return {
       id: payload.id,
-      finitura: payload.finish,
+      finitura,
       colori,
-      antiskid: payload.antiskid,
+      antiskid,
       accessori: payload.accessories,
       prezzo: payload.price,
       nome: payload.customer.nome,
@@ -2236,11 +2244,16 @@ function getColorsSummary(){
       citta: payload.customer.citta,
       cap: payload.customer.cap,
       note: payload.customer.note,
+      date,
+      img_main: assets.img_main || '',
+      img_top_right: assets.img_top_right || '',
+      img_bottom_right: assets.img_bottom_right || '',
+      qr: assets.qr || '',
       configurazione_json: JSON.stringify(payload)
     };
   }
   function canSendEmail(){
-    return Boolean(window.emailjs && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY);
+    return Boolean(window.emailjs && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID_CLIENT && EMAILJS_TEMPLATE_ID_ADMIN && EMAILJS_PUBLIC_KEY);
   }
 
   function initEmailJs(){
@@ -2251,12 +2264,23 @@ function getColorsSummary(){
     }
   }
 
-  function sendOrderEmail(payload){
+    function sendOrderEmails(payload, assets){
     if(!canSendEmail()){
       return Promise.reject(new Error('EmailJS non configurato'));
     }
     initEmailJs();
-    return window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, getEmailPayloadForTemplate(payload));
+    const data = getEmailPayloadForTemplate(payload, assets);
+    console.log('EmailJS admin template:', EMAILJS_TEMPLATE_ID_ADMIN);
+    console.log('EmailJS client template:', EMAILJS_TEMPLATE_ID_CLIENT, 'to', payload.customer.email);
+    const sendAdmin = window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID_ADMIN, data);
+    const sendClient = window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID_CLIENT, {
+      ...data,
+      to_email: payload.customer.email
+    });
+    return Promise.all([sendAdmin, sendClient]).then((results) => {
+      console.log('EmailJS risultati:', results);
+      return results;
+    });
   }
   function prepareOrderPayload(){
     const getVal = (id) => document.getElementById(id)?.value || '';
@@ -2334,6 +2358,72 @@ function openOrderModal(){
     controls.target.set(target[0], target[1], target[2]);
     controls.update();
     renderer.render(scene, camera);
+  }
+
+      async function uploadDataUrl(dataUrl){
+    if(!dataUrl || !UPLOAD_ENDPOINT || UPLOAD_ENDPOINT.includes('YOUR-VERCEL-APP')){
+      return '';
+    }
+    const res = await fetch(UPLOAD_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dataUrl })
+    });
+    if(!res.ok){
+      throw new Error(`Upload failed: ${res.status}`);
+    }
+    const json = await res.json();
+    return json.url || '';
+  }
+  async function downscaleDataUrl(dataUrl, maxWidth){
+    return new Promise((resolve) => {
+      if(!dataUrl){
+        resolve('');
+        return;
+      }
+      const img = new Image();
+      img.onload = () => {
+        try{
+          const scale = Math.min(1, maxWidth / (img.naturalWidth || maxWidth));
+          if(scale >= 1){
+            resolve(dataUrl);
+            return;
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.max(1, Math.round((img.naturalWidth || maxWidth) * scale));
+          canvas.height = Math.max(1, Math.round((img.naturalHeight || maxWidth) * scale));
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', 0.82));
+        }catch(err){
+          resolve(dataUrl);
+        }
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    });
+  }
+
+          async function prepareEmailAssets(){
+    let shots = Array.isArray(lastPresetScreenshots) ? lastPresetScreenshots : [];
+    if(!shots.length){
+      try{
+        shots = await capturePresetScreenshots();
+      }catch(err){
+        shots = [];
+      }
+    }
+    const side = shots.find(s => s.label === 'Side') || shots[0] || null;
+    const rear = shots.find(s => s.label === 'Rear') || shots[1] || null;
+    const top = shots.find(s => s.label === 'Top') || shots[2] || null;
+    const qrData = await makeQrDataUrl(currentOrderId || generateOrderId());
+    const [img_main, img_top_right, img_bottom_right, qr] = await Promise.all([
+      uploadDataUrl(side?.dataUrl || ''),
+      uploadDataUrl(rear?.dataUrl || ''),
+      uploadDataUrl(top?.dataUrl || ''),
+      uploadDataUrl(qrData)
+    ]);
+    return { img_main, img_top_right, img_bottom_right, qr };
   }
 
   async function capturePresetScreenshots(){
@@ -2620,12 +2710,17 @@ window.addEventListener('DOMContentLoaded', () => {
     if(orderConfirm){
       orderConfirm.addEventListener('click', async () => {
         const payload = prepareOrderPayload();
+        if(!payload.customer.email || !payload.customer.email.includes('@')){
+          alert('Inserisci un indirizzo email valido.');
+          return;
+        }
         if(canSendEmail()){
           const originalLabel = orderConfirm.textContent;
           orderConfirm.disabled = true;
           orderConfirm.textContent = 'Invio...';
           try{
-            await sendOrderEmail(payload);
+            const assets = await prepareEmailAssets();
+            await sendOrderEmails(payload, assets);
             alert('Ordine inviato correttamente. Ti contatteremo a breve.');
           }catch(err){
             console.error(err);
@@ -2703,3 +2798,9 @@ Note: ${payload.customer.note}`;
 
 </body>
 </html>
+
+
+
+
+
+
