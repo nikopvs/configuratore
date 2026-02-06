@@ -2270,15 +2270,12 @@ function getColorsSummary(){
     }
     initEmailJs();
     const data = getEmailPayloadForTemplate(payload, assets);
-    console.log('EmailJS admin template:', EMAILJS_TEMPLATE_ID_ADMIN);
-    console.log('EmailJS client template:', EMAILJS_TEMPLATE_ID_CLIENT, 'to', payload.customer.email);
     const sendAdmin = window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID_ADMIN, data);
     const sendClient = window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID_CLIENT, {
       ...data,
       to_email: payload.customer.email
     });
     return Promise.all([sendAdmin, sendClient]).then((results) => {
-      console.log('EmailJS risultati:', results);
       return results;
     });
   }
@@ -2798,6 +2795,7 @@ Note: ${payload.customer.note}`;
 
 </body>
 </html>
+
 
 
 
