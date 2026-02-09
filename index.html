@@ -51,7 +51,7 @@
       border-radius: 12px;
       background: rgba(0,0,0,0.35);
       box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-      overflow: hidden;
+      overflow: visible;
       position: relative;
     }
 
@@ -88,11 +88,14 @@
       }
 
       #price-tag {
-        top: 8px;
-        right: 8px;
-        padding: 8px 10px;
-        font-size: 16px;
-      }
+  margin-top: 20px;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+  color: #7CFF00;;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
 
       .step-header {
         top: 6px;
@@ -116,9 +119,7 @@
         border-left-width: 10px;
       }
 
-      .reset-btn::after {
-        font-size: 18px;
-      }
+      .reset-btn::after { content: none !important; }
 
       #step-finitura button,
       #step-colori button {
@@ -139,7 +140,14 @@
         text-align: left;
       }
 
-      #step-accessori label {
+          #step-accessori {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px 18px;
+      text-align: left;
+      padding-top: 0;
+    }
+#step-accessori label {
         margin-left: 0 !important;
         padding: 6px 6px;
         font-size: 11px;
@@ -159,7 +167,7 @@
       justify-content: center;
       gap: 12px;
       background: rgba(0, 0, 0, 0.55);
-      z-index: 5;
+      z-index: 8;
       text-transform: uppercase;
       letter-spacing: 1px;
       font-weight: 600;
@@ -245,16 +253,14 @@ padding: 10px 14px;
     }
 
     #price-tag {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: rgba(0,0,0,0.55);
-      border: 1px solid rgba(255,255,255,0.35);
-      padding: 10px 14px;
-      font-size: 20px;
-      letter-spacing: 0.5px;
-      color: #7CFF00;
-    }
+  margin-top: 20px;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+  color: #7CFF00;;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
 
     .color-row {
       display: flex;
@@ -311,21 +317,11 @@ transition: background 0.2s ease, transform 0.2s ease;
     }
 
     .back-btn {
-      transform: scaleX(-1);
+      transform: none;
       transform-origin: center;
-      justify-self: end;
     }
 
-    .reset-btn::after {
-      content: "X";
-      color: #ff3b3b;
-      font-size: 16px;
-      line-height: 1;
-      font-weight: 700;
-      width: auto;
-      height: auto;
-      border: none;
-    }
+    .reset-btn::after { content: none !important; }
 
     .nav-btn.is-disabled {
       opacity: 0.35;
@@ -412,10 +408,18 @@ transition: background 0.2s ease, transform 0.2s ease;
       color: #fff;
     }
 
-    #step-finitura button {
+        #step-finitura button {
       padding: 6px 8px;
       font-size: 12px;
       min-width: 140px;
+    }
+
+    #step-accessori {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px 18px;
+      text-align: left;
+      padding-top: 0;
     }
 
     #step-accessori label {
@@ -425,39 +429,12 @@ transition: background 0.2s ease, transform 0.2s ease;
       padding: 7px 8px;
       font-size: 12px;
       line-height: 14px;
+      position: relative;
     }
 
     #step-accessori input {
       transform: scale(1.1);
     }
-
-    .accessory-tooltip {
-      position: absolute;
-      left: 50%;
-      top: -6px;
-      transform: translate(-50%, -100%);
-      background: rgba(0,0,0,0.8);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #ffb3b3;
-      font-size: 11px;
-      padding: 4px 6px;
-      border-radius: 4px;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.15s ease;
-      z-index: 5;
-    }
-
-    #step-accessori label {
-      position: relative;
-    }
-
-    #step-accessori label:hover .accessory-tooltip {
-      opacity: 1;
-    }
-
-
 
     #step-colori {
       padding-top: 0;
@@ -469,8 +446,101 @@ transition: background 0.2s ease, transform 0.2s ease;
 
       button:hover { background:#555; }
       button.active { background:#1e90ff; }
+    .choice-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
 
-      #viewer-ui label,
+.choice-btn,
+.choice-option {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+
+.choice-btn.trigger { text-transform: none; }
+.choice-dropdown {
+  position: relative;
+  display: inline-flex;
+}
+
+.choice-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 6px;
+  padding: 6px 8px;
+  display: none;
+  flex-direction: column;
+  gap: 0;
+  min-width: 180px;
+  background: rgba(0,0,0,0.75);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  z-index: 8;
+}
+
+.choice-dropdown:hover .choice-menu,
+.choice-dropdown:focus-within .choice-menu {
+  display: flex;
+}
+
+.choice-sub {
+  position: relative;
+  display: inline-flex;
+}
+
+.choice-submenu {
+  position: absolute;
+  left: 100%;
+  bottom: 0;
+  margin-left: 6px;
+  padding: 6px 8px;
+  display: none;
+  flex-direction: column;
+  gap: 0;
+  min-width: 180px;
+  background: rgba(0,0,0,0.75);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  z-index: 9;
+}
+
+.choice-sub:hover .choice-submenu,
+.choice-sub:focus-within .choice-submenu {
+  display: flex;
+}
+
+.choice-option {
+  width: 100%;
+  text-align: left;
+  padding: 6px 6px;
+  font-size: 11px;
+  text-transform: none;
+  background: transparent;
+  border: none;
+  color: #fff;
+}
+
+.choice-option:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.choice-option.is-selected {
+  color: #7CFF00;
+}
+
+#viewer-ui label,
       #viewer-ui input,
       #viewer-ui select,
       #viewer-ui button {
@@ -500,22 +570,9 @@ cursor: pointer;
     .controls-overlay.is-hidden {
       opacity: 0;
     }
-
-    #audio-toggle {
+#screenshot-btn {
       position: absolute;
       top: 12px;
-      left: 12px;
-      background: rgba(0,0,0,0.55);
-      border: 1px solid rgba(255,255,255,0.35);
-      padding: 8px 12px;
-      font-size: 12px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      color: #7CFF00;
-    }
-    #screenshot-btn {
-      position: absolute;
-      top: 52px;
       left: 12px;
       background: rgba(0,0,0,0.55);
       border: 1px solid rgba(255,255,255,0.35);
@@ -528,7 +585,7 @@ cursor: pointer;
 
     #order-btn {
       position: absolute;
-      top: 56px;
+      top: 12px;
       right: 12px;
       background: rgba(0,0,0,0.55);
       border: 1px solid rgba(255,255,255,0.35);
@@ -577,13 +634,139 @@ cursor: pointer;
 
     @media (max-width: 900px) {
       .controls-overlay { font-size: 17px; }
-      #audio-toggle { top: 8px; left: 8px; padding: 6px 8px; font-size: 11px; }
-    
-      #order-btn { top: 46px; right: 8px; padding: 6px 8px; font-size: 11px; }
-      #screenshot-btn { top: 42px; left: 8px; padding: 6px 8px; font-size: 11px; }
+#order-btn { top: 8px; right: 8px; padding: 6px 8px; font-size: 11px; }
+      #screenshot-btn { top: 8px; left: 8px; padding: 6px 8px; font-size: 11px; }
       
     }
-  </style>
+  
+    .home-link {
+      width: 60vw;
+      max-width: 980px;
+      margin: 10px auto 0;
+      text-align: center;
+    }
+    .home-link a {
+      display: inline-block;
+      color: #00FFFF;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+    .home-link a:hover { text-decoration: underline; }
+
+    @media (max-width: 900px) {
+      .home-link { width: 96vw; }
+      .home-link a { font-size: 11px; }
+    }
+    @media (max-width: 900px) {
+      #step-accessori { flex-wrap: wrap; gap: 8px 12px; }
+    }
+  
+    /* Accessori layout overrides */
+    .hidden { display: none !important; }
+#step-accessori label.is-locked {
+  color: #ff3b3b;
+}
+#viewer-ui .reset-btn {
+  background: rgba(0,0,0,0.55) !important;
+  border: 1px solid rgba(255,255,255,0.35) !important;
+  padding: 8px 12px !important;
+  font-size: 12px !important;
+  letter-spacing: 0.6px !important;
+  text-transform: uppercase !important;
+  color: #7CFF00 !important;
+  border-radius: 6px !important;
+  height: auto !important;
+  width: auto !important;
+}
+#viewer-ui .reset-btn .reset-label {
+  color: #ff3b3b;
+  font-size: 12px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+    #step-accessori:not(.hidden) {
+      display: flex !important;
+      flex-wrap: nowrap;
+      gap: 12px;
+      justify-content: center;
+      text-align: left;
+    }
+    @media (max-width: 900px) {
+      #step-accessori:not(.hidden) { flex-wrap: wrap; gap: 8px 12px; }
+    }
+
+    /* Step header alignment */
+    #viewer-ui .bottom { position: relative !important; }
+    .step-header {
+      position: absolute !important;
+      top: 8px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: auto !important;
+      justify-content: center !important;
+      gap: 10px !important;
+    }
+    #step-title { text-align: center !important; min-width: 120px !important; display: inline-block !important; }
+    #step-title-wrap { position: relative !important; display: inline-block !important; }
+    #step-title-wrap .reset-btn { position: absolute !important; left: calc(100% + 10px) !important; top: calc(50% - 5px) !important; transform: translateY(-50%) !important; }
+    .step-header .ghost-btn { display: none !important; }
+
+    #viewer-ui .back-btn,
+    #viewer-ui .next-btn {
+      position: absolute !important;
+      top: calc(50% - 300px) !important;
+      width: 86px !important;
+      height: 42px !important;
+      border-radius: 999px !important;
+      font-size: 12px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.5px !important;
+      background: rgba(0,0,0,0.45) !important;
+    }
+    #viewer-ui .back-btn::after,
+    #viewer-ui .next-btn::after { display: none !important; content: none !important; }
+    #viewer-ui .back-btn {
+      left: -480px !important;
+      color: #ff3b3b !important;
+      border: 2px solid #ff3b3b !important;
+      transform: translateY(-50%) !important;
+    }
+    #viewer-ui .next-btn {
+      right: -480px !important;
+      color: #7CFF00 !important;
+      border: 2px solid #7CFF00 !important;
+      transform: translateY(-50%) !important;
+    }
+    #viewer-ui .nav-label { font-weight: 700; }
+    #viewer-ui .bottom { position: relative !important; }
+    .step-header {
+      position: absolute !important;
+      top: 8px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: auto !important;
+      justify-content: center !important;
+      gap: 10px !important;
+    }
+    #step-title { text-align: center !important; min-width: 120px !important; display: inline-block !important; }
+    #step-title-wrap { position: relative !important; display: inline-block !important; }
+    #step-title-wrap .reset-btn { position: absolute !important; left: calc(100% + 10px) !important; top: calc(50% - 5px) !important; transform: translateY(-50%) !important; }
+    .step-header .ghost-btn { display: none !important; }
+
+    
+    
+    
+    
+    #viewer-ui .nav-label { font-weight: 700; }
+    
+    
+    #viewer-ui .nav-label { font-weight: 700; }
+    
+    
+    </style>
 </head>
 <body>
 
@@ -599,7 +782,6 @@ cursor: pointer;
       <h1>FISHER 40</h1>
       <div id="price-tag">€ 6.000</div>
       <button id="order-btn" type="button" class="is-hidden" style="display:none;">Ordina</button>
-      <button id="audio-toggle" type="button" aria-pressed="false">Audio On</button>
       <button id="screenshot-btn" type="button" title="Salva screenshot">TAKE A PHOTO</button>
     </div>
     <div id="controls-overlay" class="controls-overlay">
@@ -608,15 +790,19 @@ cursor: pointer;
     </div>
 <div class="bottom">
       <div class="step-header">
-        <button class="nav-btn reset-btn is-hidden" onclick="resetAllAccessories()" aria-label="Reset accessori">
-          <span class="sr-only">Reset accessori</span>
+
+        <button class="nav-btn back-btn is-hidden" onclick="goBack()" aria-label="Back">
+          <span class="sr-only">Back</span>            <span class="nav-label">Back</span>
         </button>
-        <button class="nav-btn back-btn is-hidden" onclick="goBack()" aria-label="Indietro">
-          <span class="sr-only">Indietro</span>
-        </button>
-        <div id="step-title">Finitura</div>
-        <button class="nav-btn next-btn is-hidden" onclick="goNext()" aria-label="Avanti">
-          <span class="sr-only">Avanti</span>
+        <div id="step-title-wrap">
+          <div id="step-title">Finitura</div>
+          <button class="nav-btn reset-btn is-hidden" onclick="resetAllAccessories()" aria-label="Reset accessori">
+            <span class="sr-only">Reset accessori</span>
+              <span class="reset-label">RESET</span>
+          </button>
+        </div>
+        <button class="nav-btn next-btn is-hidden" onclick="goNext()" aria-label="Go">
+          <span class="sr-only">Go</span>            <span class="nav-label">Go</span>
         </button>
         <button class="nav-btn ghost-btn" aria-hidden="true" tabindex="-1"></button>
       </div>
@@ -643,20 +829,22 @@ cursor: pointer;
           </div>
         </div>
       </div>
-      <div id="step-accessori" class="step hidden">
+            <div id="step-accessori" class="step hidden">
         <label><input type="checkbox" data-accessory="tientibene" onchange="toggleAccessory('tientibene', this.checked)"> Tientibene</label>
-        <label style="margin-left:10px"><input type="checkbox" data-accessory="panca" onchange="toggleAccessory('panca', this.checked)"> Panca</label>
-        <label style="margin-left:10px"><input type="checkbox" data-accessory="schienale" onchange="toggleAccessory('schienale', this.checked)"> Schienale</label>
-        <label style="margin-left:10px"><input type="checkbox" data-accessory="supporto" onchange="toggleAccessory('supporto', this.checked)"> Supporto motore</label>
-        <label style="margin-left:10px"><input type="checkbox" data-accessory="motore" onchange="toggleAccessory('motore', this.checked)"> Motore</label>
-        <label style="margin-left:10px"><input type="checkbox" data-accessory="trolling" onchange="toggleAccessory('trolling', this.checked)"> Trolling motor</label>
-        <label style="margin-left:10px"><input type="checkbox" data-accessory="fishfinder" onchange="toggleAccessory('fishfinder', this.checked)"> Fishfinder</label>
-        <label style="margin-left:10px"><input type="checkbox" data-accessory="impianto" onchange="toggleAccessory('impianto', this.checked)"> Impianto elettrico</label>
-        <label style="margin-left:10px"><input type="checkbox" data-accessory="batteria" onchange="toggleAccessory('batteria', this.checked)"> Batteria al Litio</label>
+        <label><input type="checkbox" data-accessory="panca" onchange="toggleAccessory('panca', this.checked)"> Panca</label>
+        <label><input type="checkbox" data-accessory="schienale" onchange="toggleAccessory('schienale', this.checked)"> Schienale</label>
+        <label><input type="checkbox" data-accessory="supporto" onchange="toggleAccessory('supporto', this.checked)"> Supporto motore</label>
+        <label><input type="checkbox" data-accessory="motore" onchange="toggleAccessory('motore', this.checked)"> Motore</label>
+        <label><input type="checkbox" data-accessory="impianto" onchange="toggleAccessory('impianto', this.checked)"> Impianto elettrico</label>
+        <label><input type="checkbox" data-accessory="batteria" onchange="toggleAccessory('batteria', this.checked)"> Batteria al Litio</label>
+        <label><input type="checkbox" data-accessory="fishfinder" onchange="toggleAccessory('fishfinder', this.checked)"> Fishfinder</label>
+        <label><input type="checkbox" data-accessory="trolling" onchange="toggleAccessory('trolling', this.checked)"> Trolling motor</label>
       </div>
     </div>
   </div>
 </div>
+
+<div class="home-link"><a href="https://ninga-skiffs.jimdosite.com/" target="_blank" rel="noopener">www.ningaskiffs.com</a></div>
 
 <div id="order-modal" aria-hidden="true">
   <div class="order-dialog" role="dialog" aria-modal="true" aria-labelledby="order-title">
@@ -972,37 +1160,26 @@ const accessoryDeps = {
   }
 
     function updateAccessoryRules(){
-    accessoryInputs.forEach((cb) => {
-      const key = cb.dataset.accessory;
-      const deps = accessoryDeps[key];
-      const allowed = !deps || deps.every(dep => {
-        const depCb = document.querySelector(`#step-accessori input[data-accessory="${dep}"]`);
-        return depCb?.checked;
+      accessoryInputs.forEach((cb) => {
+        const key = cb.dataset.accessory;
+        const deps = accessoryDeps[key];
+        const allowed = !deps || deps.every(dep => {
+          const depCb = document.querySelector(`#step-accessori input[data-accessory="${dep}"]`);
+          return depCb?.checked;
+        });
+        cb.disabled = !allowed;
+        const label = cb.closest('label');
+        if(label){
+          label.classList.toggle('is-locked', !allowed);
+        }
+        if(!allowed && cb.checked){
+          setAccessoryChecked(key, false, true);
+        }
       });
-      cb.disabled = !allowed;
-      const label = cb.closest('label');
-      if(label){
-        let tip = label.querySelector('.accessory-tooltip');
-        if(!tip){
-          tip = document.createElement('span');
-          tip.className = 'accessory-tooltip';
-          label.appendChild(tip);
-        }
-        if(!allowed && deps?.length){
-          const depNames = deps.map(dep => accessoryLabels[dep] || dep).join(', ');
-          tip.textContent = `Only with ${depNames}`;
-        }else{
-          tip.textContent = '';
-        }
-      }
-      if(!allowed && cb.checked){
-        setAccessoryChecked(key, false, true);
-      }
-    });
-  }
+    }
 
 
-    function syncAccessoryUI(){
+      function updateNavLabels(step){      const nextBtn = document.querySelector('#viewer-ui .next-btn .nav-label');      if(nextBtn){        nextBtn.textContent = step === 'accessori' ? 'END' : 'GO';      }    }      function syncAccessoryUI(){
     accessoryInputs.forEach((cb) => {
       const key = cb.dataset.accessory;
       if(key) toggleAccessory(key, cb.checked, true);
@@ -1062,7 +1239,7 @@ const accessoryDeps = {
         const matNameLower = matName.toLowerCase();
         if(matName === 'Hull') hullMat=obj.material;
         if(matName === 'Deck') deckMat=obj.material;
-        if(matName === 'Hatches' || matName === 'Portelli') hatchesMat=obj.material;
+        if(matName === 'Hatches' || matName === 'hatches' || matName === 'Portelli') hatchesMat=obj.material;
         if(matName === 'Gomma') bottazzoMat=obj.material;
         if(matName === 'Scritta' || matNameLower.includes('scritta')) scrittaMat=obj.material;
         if(!scrittaMat && obj.name==='Scritta') scrittaMat=obj.material;
@@ -1117,7 +1294,7 @@ const accessoryDeps = {
         }
         if(nameCandidates.some(n => n === 'antiskid_eva' || n.includes('antiskid') || n.includes('eva')) || obj.name === 'mesh_0_1' || obj.name === 'EVA' || obj.name?.toLowerCase().includes('eva') || matNameLower.includes('sponge')){          antiskidEvaMeshes.push(obj);          obj.material = obj.material?.clone?.() || obj.material;          obj.visible = false;        }
         if(obj.name?.toLowerCase()==='fishfinder'){
-          // Clone to avoid changing shared materials (e.g. Hatches).
+          // Clone to avoid changing shared materials (e.g. Doors).
           obj.material = obj.material?.clone?.() || obj.material;
           if(obj.material){
             if('metalness' in obj.material) obj.material.metalness = 0;
@@ -1177,7 +1354,7 @@ const accessoryDeps = {
     if(!antiskidTexture){
       antiskidTexture = textureLoader.load('images/antiskid.jpg', (t) => {
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
-        t.repeat.set(0.5, 0.5);
+        t.repeat.set(0.8, 0.8);
       });
     }
 
@@ -1271,19 +1448,36 @@ const accessoryDeps = {
   let deckSelected = false;
   let hatchesSelected = false;
   let currentStep = 'finitura';
+  let accessoriUnlocked = false;
   let selectedFinish = null;
   let selectedHull = null;
   let selectedDeck = null;
   let selectedHatches = null;
+  let selectedHullLabel = '';
+  let selectedDeckLabel = '';
+    let selectedDeckMode = null;
+    let selectedHullMode = null;
+    let selectedHatchesMode = null;
+  let selectedHatchesLabel = '';
+    let presetLocked = false;
+    let presetName = '';
   let hullDark = false;
   let deckDark = false;
   let wrappingWhite = false;
   let hatchesAuto = true;
   const colorSelects = { hull: null, deck: null, hatches: null };
+  function setColorLabel(group, label){
+    if(!label) return;
+    if(group === 'hull') selectedHullLabel = label;
+    else if(group === 'deck') selectedDeckLabel = label;
+    else if(group === 'hatches') selectedHatchesLabel = label;
+  }
+  const gelcoatTriggers = { hull: null, deck: null, hatches: null };
   const textureLoader = new THREE.TextureLoader();
   let antiskidTexture = null;
   let antiskidPrintTexture = null;
   let antiskidEvaTexture = null;
+  let ruggedTexture = null;
   function applyMaterialOverrides(root){
     if(!root) return;
     let yamahaMat = null;
@@ -1327,9 +1521,12 @@ const accessoryDeps = {
       base: 6000,
       finishPct: {
         gelcoat: 0.0,
-        wrapping: 0.30,
-        paint: 0.15,
-        rugged: 0.20
+        paint: 0.0
+      },
+      colorUpcharges: {
+        hull: { white: 0, color: 150, wrapping: 500, rugged: 250 },
+        deck: { white: 0, color: 150, wrapping: 500, rugged: 250 },
+        hatches: { white: 0, color: 50, wrapping: 150, rugged: 100 }
       },
       accessories: {
         tientibene: 500,
@@ -1341,7 +1538,12 @@ const accessoryDeps = {
         fishfinder: 800,
         impianto: 500,
         batteria: 300,
-        antiskid: { eva: 250, paint: 0, print: 500 }
+        antiskid: {
+          none: 0,
+          paint: 150,
+          print: 500,
+          eva: 300
+        }
       }
     };
 function updatePrice(){
@@ -1364,11 +1566,25 @@ function updatePrice(){
     total += isSelected('fishfinder') ? priceTable.accessories.fishfinder : 0;
     total += isSelected('impianto') ? priceTable.accessories.impianto : 0;
     total += isSelected('batteria') ? priceTable.accessories.batteria : 0;      total += getAntiskidPrice();
+      const modePrice = (group, mode) => {
+        const table = priceTable?.colorUpcharges?.[group];
+        if(!table) return 0;
+        return table[mode || 'white'] || 0;
+      };
+      total += modePrice('hull', selectedHullMode);
+      total += modePrice('deck', selectedDeckMode);
+      total += modePrice('hatches', selectedHatchesMode);
     const el = document.getElementById('price-tag');
     if(el) el.textContent = `${"\u20AC"} ${total.toLocaleString('it-IT')}`;
   }
 
-  function showStep(step){
+  function showStep(step){      updateNavLabels(step);
+    if(step === 'accessori' && !accessoriUnlocked){
+      step = 'colori';
+    }
+    if(step !== 'accessori'){
+      accessoriUnlocked = false;
+    }
     document.getElementById('step-finitura').classList.add('hidden');
     document.getElementById('step-colori').classList.add('hidden');
     document.getElementById('step-accessori').classList.add('hidden');
@@ -1392,13 +1608,20 @@ function updatePrice(){
       orderBtn.style.display = step === 'accessori' ? 'block' : 'none';
     }
     if(nextBtn){
-      nextBtn.classList.toggle('is-hidden', step === 'finitura');
+      const showNext = step !== 'finitura' ? true : finishSelected;
+      nextBtn.classList.toggle('is-hidden', !showNext);
     }
-    const title = document.getElementById('step-title');
+        const title = document.getElementById('step-title');
     if(title){
       if(step === 'finitura') title.textContent = 'Finitura';
       else if(step === 'colori') title.textContent = 'Colori';
       else if(step === 'accessori') title.textContent = 'Accessori';
+    }
+    const viewerEl = document.getElementById('viewer');
+    if(viewerEl){
+      viewerEl.classList.toggle('step-finitura', step === 'finitura');
+      viewerEl.classList.toggle('step-colori', step === 'colori');
+      viewerEl.classList.toggle('step-accessori', step === 'accessori');
     }
     currentStep = step;
   }
@@ -1496,6 +1719,12 @@ function updatePrice(){
     if(!container) return;
     container.innerHTML = '';
     const select = document.createElement('select');
+    const placeholder = document.createElement('option');
+    placeholder.textContent = 'Select';
+    placeholder.value = '';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    select.appendChild(placeholder);
     select.dataset.group = group;
     colorSelects[group] = select;
     let isInit = true;
@@ -1511,22 +1740,109 @@ function updatePrice(){
       const opt = select.selectedOptions[0];
       if(!opt || !opt.value) return;
       const proxyBtn = {
-        dataset: {
+          textContent: opt.textContent,
+          dataset: {
           texture: opt.dataset.texture,
           scale: opt.dataset.scale
         }
       };
+      setColorLabel(group, opt.textContent);
       if(group === 'hull') setHull(opt.value, proxyBtn);
       else if(group === 'deck') setDeck(opt.value, proxyBtn);
       else setHatches(opt.value, proxyBtn, !isInit);
       isInit = false;
     });
-    if(select.options.length > 0){
-      select.selectedIndex = 0;
-      select.dispatchEvent(new Event('change'));
-      isInit = false;
-    }
     container.appendChild(select);
+  }
+    function renderGelcoatMenu(group, containerId, colors, wrappingOptions, ruggedOptions){
+    const container = document.getElementById(containerId);
+    if(!container) return;
+    container.innerHTML = '';
+
+    const select = document.createElement('select');
+    const placeholder = document.createElement('option');
+    placeholder.textContent = 'Select';
+    placeholder.value = '';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    select.appendChild(placeholder);
+
+    const whiteEntry = colors.find(c => c.label.toLowerCase() === 'white') || colors[0];
+    if(whiteEntry){
+      const opt = document.createElement('option');
+      opt.textContent = 'White';
+      opt.value = whiteEntry.color || '#ffffff';
+      select.appendChild(opt);
+    }
+
+    const colorEntries = colors.filter(c => c.label.toLowerCase() !== 'white');
+    if(colorEntries.length){
+      const groupEl = document.createElement('optgroup');
+      groupEl.label = 'Color';
+      colorEntries.forEach((entry) => {
+        const opt = document.createElement('option');
+        opt.textContent = entry.label;
+        opt.value = entry.color || '';
+        groupEl.appendChild(opt);
+      });
+      select.appendChild(groupEl);
+    }
+
+    if(wrappingOptions && wrappingOptions.length){
+      const groupEl = document.createElement('optgroup');
+      groupEl.label = 'Wrapping';
+      wrappingOptions.forEach((entry) => {
+        const opt = document.createElement('option');
+        opt.textContent = entry.label;
+        opt.value = entry.color || '#ffffff';
+        if(entry.texture) opt.dataset.texture = entry.texture;
+        if(entry.scale) opt.dataset.scale = entry.scale;
+        groupEl.appendChild(opt);
+      });
+      select.appendChild(groupEl);
+    }
+
+    if(ruggedOptions && ruggedOptions.length){
+      const groupEl = document.createElement('optgroup');
+      groupEl.label = 'Rugged';
+      ruggedOptions.forEach((entry) => {
+        const opt = document.createElement('option');
+        opt.textContent = entry.label;
+        opt.value = entry.color || '';
+        opt.dataset.rugged = '1';
+        groupEl.appendChild(opt);
+      });
+      select.appendChild(groupEl);
+    }
+
+          let isInit = true;
+
+      select.addEventListener('change', () => {
+      const opt = select.selectedOptions[0];
+      if(!opt || !opt.value) return;
+      const isRugged = opt.dataset.rugged || (opt.parentElement && opt.parentElement.label === 'Rugged') ? '1' : '';
+      const proxyBtn = {
+        textContent: opt.textContent,
+        dataset: {
+          texture: opt.dataset.texture,
+          scale: opt.dataset.scale,
+          rugged: isRugged
+        }
+      };
+      setColorLabel(group, opt.textContent);
+      if(group === 'hull') setHull(opt.value, proxyBtn);
+      else if(group === 'deck') setDeck(opt.value, proxyBtn);
+      else setHatches(opt.value, proxyBtn, group === 'hatches' && !isInit);
+      isInit = false;
+    });
+
+    colorSelects[group] = select;
+    container.appendChild(select);
+
+    if(whiteEntry){
+      select.value = whiteEntry.color || '#ffffff';
+      select.dispatchEvent(new Event('change'));
+    }
   }
 
   function renderAntiskidSelect(){
@@ -1534,44 +1850,71 @@ function updatePrice(){
     if(!container) return;
     container.innerHTML = '';
     const select = document.createElement('select');
+    const placeholder = document.createElement('option');
+    placeholder.textContent = 'Select';
+    placeholder.value = '';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    select.appendChild(placeholder);
     select.addEventListener('change', () => {
+      if(!select.value) return;
       selectedAntiskid = select.value;
-      updateAntiskidFinish();
-    
-      updatePrice();
+        updateAntiskidFinish();
+        updatePrice();
     });
     container.appendChild(select);
     updateAntiskidOptions(selectedFinish);
   }
 
-  function updateAntiskidOptions(finish){
-    const select = document.querySelector('#antiskid-select select');
-    if(!select) return;
-    const baseOptions = [
-      { label: 'None', value: 'none' },
-      { label: 'Eva', value: 'eva' }
-    ];
-    const ruggedOptions = baseOptions;
-    const fullOptions = baseOptions.concat([
-      { label: 'Paint', value: 'paint' },
-      { label: 'Print', value: 'print' }
-    ]);
-    const options = finish === 'wrapping' ? baseOptions : (finish === 'rugged' ? ruggedOptions : fullOptions);
-    select.innerHTML = '';
-    options.forEach(({ label, value }) => {
-      const opt = document.createElement('option');
-      opt.textContent = label;
-      opt.value = value;
-      select.appendChild(opt);
-    });
-    if(!options.some(opt => opt.value === selectedAntiskid)){
-      selectedAntiskid = options[0]?.value || 'none';
+      function resolveFinishMode(btn){
+      if(btn?.dataset?.rugged) return 'rugged';
+      if(btn?.dataset?.texture) return 'wrapping';
+      const label = (btn?.textContent || '').trim().toLowerCase();
+      if(label === 'white') return 'white';
+      return 'color';
     }
-    select.value = selectedAntiskid;
-    updateAntiskidFinish();
-  }
 
-  function updateColorOptions(finish){
+function updateAntiskidOptions(finish){
+      const select = document.querySelector('#antiskid-select select');
+      if(!select) return;
+      const baseOptions = [
+        { label: 'None', value: 'none' },
+        { label: 'Eva', value: 'eva' },
+        { label: 'Paint', value: 'paint' },
+        { label: 'Print', value: 'print' }
+      ];
+      let allowed = baseOptions;
+      if(finish === 'gelcoat' || finish === 'paint'){
+        const mode = selectedDeckMode || 'color';
+        if(mode === 'wrapping'){
+          allowed = baseOptions.filter(o => o.value === 'none' || o.value === 'eva' || o.value === 'print');
+        }else if(mode === 'rugged'){
+          allowed = baseOptions.filter(o => o.value === 'none' || o.value === 'eva' || o.value === 'paint');
+        }else{
+          allowed = baseOptions;
+        }
+      }
+      select.innerHTML = '';
+      const placeholder = document.createElement('option');
+      placeholder.textContent = 'Select';
+      placeholder.value = '';
+      placeholder.disabled = true;
+      placeholder.selected = true;
+      select.appendChild(placeholder);
+      allowed.forEach(({ label, value }) => {
+        const opt = document.createElement('option');
+        opt.textContent = label;
+        opt.value = value;
+        select.appendChild(opt);
+      });
+      if(!allowed.some(opt => opt.value === selectedAntiskid)){
+        selectedAntiskid = '';
+      }
+      select.value = selectedAntiskid || '';
+      updateAntiskidFinish();
+    }
+
+    function updateColorOptions(finish){
     const palette = colorPalettes[finish] || colorPalettes.gelcoat;
     hullSelected = false;
     deckSelected = false;
@@ -1587,13 +1930,14 @@ function updatePrice(){
       renderColorSelect('hull', 'hull-colors', palette.all);
       renderColorSelect('deck', 'deck-colors', []);
       renderColorSelect('hatches', 'hatches-colors', []);
-      if(palette.all?.length){
-        setTimeout(() => {
-          if(selectedFinish === 'rugged'){
-            setHull(palette.all[0].color);
-          }
-        }, 0);
-      }
+    }else if(finish === 'gelcoat' || finish === 'paint'){
+      if(groupDeck) groupDeck.classList.remove('hidden');
+      if(groupHatches) groupHatches.classList.remove('hidden');
+      if(groupHull) groupHull.classList.remove('hidden');
+      const wrapPalette = colorPalettes.wrapping || {};
+      renderGelcoatMenu('hull', 'hull-colors', palette.hull, wrapPalette.hull || [], colorPalettes.rugged?.all || []);
+      renderGelcoatMenu('deck', 'deck-colors', palette.deck, wrapPalette.deck || [], colorPalettes.rugged?.all || []);
+      renderGelcoatMenu('hatches', 'hatches-colors', palette.hatches, wrapPalette.hatches || [], colorPalettes.rugged?.all || []);
     }else{
       if(groupDeck) groupDeck.classList.remove('hidden');
       if(groupHatches) groupHatches.classList.remove('hidden');
@@ -1612,7 +1956,7 @@ function updatePrice(){
       mat.needsUpdate = true;
       antiskidTexture = textureLoader.load('images/antiskid.jpg', (t) => {
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
-        t.repeat.set(0.5, 0.5);
+        t.repeat.set(0.8, 0.8);
         t.colorSpace = THREE.SRGBColorSpace;
         t.flipY = false;
         mat.map = t;
@@ -1623,6 +1967,27 @@ function updatePrice(){
     }
     mat.map = antiskidTexture;
     mat.color.set(color);
+    mat.needsUpdate = true;
+  }
+  function applyRuggedTexture(mat, color){
+    if(!mat) return;
+    if(!ruggedTexture){
+      ruggedTexture = textureLoader.load('images/rugged.jpg', (t) => {
+        t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        t.repeat.set(0.5, 0.5);
+        t.colorSpace = THREE.SRGBColorSpace;
+        t.flipY = false;
+        t.needsUpdate = true;
+        applyRuggedTexture(mat, color);
+      });
+      return;
+    }
+    mat.map = ruggedTexture;
+    mat.userData.baseMap = ruggedTexture;
+    mat.color.set(color);
+    if('metalness' in mat) mat.metalness = 0;
+    if('roughness' in mat) mat.roughness = 1;
+    if('vertexColors' in mat) mat.vertexColors = false;
     mat.needsUpdate = true;
   }
 
@@ -1639,7 +2004,9 @@ function updatePrice(){
     if(!meshes?.length) return;
     const applyTexture = (tex) => {
       tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-      tex.repeat.set(0.5, 0.5);
+      tex.repeat.set(0.4, 0.4);
+        tex.center.set(0.5, 0.5);
+        tex.rotation = Math.PI / 2;
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.flipY = false;
       tex.needsUpdate = true;
@@ -1661,12 +2028,44 @@ function updatePrice(){
       applyTexture(antiskidEvaTexture);
       return;
     }
-    antiskidEvaTexture = textureLoader.load('images/eva.png', (t) => {
+    antiskidEvaTexture = textureLoader.load('images/teak.jpg', (t) => {
       applyTexture(t);
     });
   }
 
-  function applyChirpTextureToMeshes(){
+  
+    function applyPaintTextureToMeshes(meshes, color){
+      if(!meshes?.length) return;
+      const applyTexture = (tex) => {
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(1, 1);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        tex.flipY = false;
+        tex.needsUpdate = true;
+        meshes.forEach((mesh) => {
+          if(!mesh) return;
+          ensurePlanarUv(mesh);
+          const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+          materials.forEach((mat) => {
+            if(!mat) return;
+            mat.map = tex;
+            if(mat.color) mat.color.set(color || '#ffffff');
+            if('metalness' in mat) mat.metalness = 0;
+            if('roughness' in mat) mat.roughness = 1;
+            mat.needsUpdate = true;
+          });
+        });
+      };
+      if(antiskidTexture){
+        applyTexture(antiskidTexture);
+        return;
+      }
+      antiskidTexture = textureLoader.load('images/antiskid.jpg', (t) => {
+        applyTexture(t);
+      });
+    }
+
+function applyChirpTextureToMeshes(){
     if(!chirpMeshes.length || !chirpTexture) return;
     chirpMeshes.forEach((mesh) => {
       if(!mesh?.material) return;
@@ -1724,7 +2123,7 @@ function updatePrice(){
   function applyPrintTextureToMeshes(meshes, color){
     if(!meshes?.length) return;
     const applyTexture = (tex) => {
-      tex.repeat.set(10, 10);
+      tex.repeat.set(5, 5);
       tex.needsUpdate = true;
       meshes.forEach((mesh) => {
         if(!mesh) return;
@@ -1741,14 +2140,14 @@ function updatePrice(){
       });
     };
     if(antiskidPrintTexture){
-      antiskidPrintTexture.repeat.set(10, 10);
+      antiskidPrintTexture.repeat.set(5, 5);
       antiskidPrintTexture.needsUpdate = true;
       applyTexture(antiskidPrintTexture);
       return;
     }
-    antiskidPrintTexture = textureLoader.load('images/millepunte.jpg', (t) => {
+    antiskidPrintTexture = textureLoader.load('images/millepunte2.jpg', (t) => {
       t.wrapS = t.wrapT = THREE.RepeatWrapping;
-      t.repeat.set(10, 10);
+      t.repeat.set(5, 5);
       t.colorSpace = THREE.SRGBColorSpace;
       t.flipY = false;
       t.needsUpdate = true;
@@ -1757,21 +2156,25 @@ function updatePrice(){
   }
 
   function updateAntiskidEvaMeshes(){
-    const isEva = selectedAntiskid === 'eva';
-    const isPrint = selectedAntiskid === 'print';
-    const shouldShow = isEva || isPrint;
-    antiskidEvaMeshes.forEach(mesh => {
-      mesh.visible = shouldShow;
-    });
-    if(isEva){
-      applyEvaTextureToMeshes(antiskidEvaMeshes);
+      const isEva = selectedAntiskid === 'eva';
+      const isPrint = selectedAntiskid === 'print';
+      const isPaint = selectedAntiskid === 'paint';
+      const shouldShow = isEva || isPrint || isPaint;
+      antiskidEvaMeshes.forEach(mesh => {
+        mesh.visible = shouldShow;
+      });
+      if(isEva){
+        applyEvaTextureToMeshes(antiskidEvaMeshes);
+      }
+      if(isPrint){
+        applyPrintTextureToMeshes(antiskidEvaMeshes, selectedDeck || '#ffffff');
+      }
+      if(isPaint){
+        applyPaintTextureToMeshes(antiskidEvaMeshes, selectedDeck || '#ffffff');
+      }
     }
-    if(isPrint){
-      applyPrintTextureToMeshes(antiskidEvaMeshes, selectedDeck || '#ffffff');
-    }
-  }
 
-  function syncSchienaleMaterial(){
+    function syncSchienaleMaterial(){
     if(!schienaleMeshes.length || !hatchesMat) return;
     schienaleMeshes.forEach((mesh) => {
       if(!mesh) return;
@@ -1811,34 +2214,17 @@ function updatePrice(){
     });
   }
 
-  function updateAntiskidFinish(){    updateAntiskidEvaMeshes();    if(selectedFinish === 'wrapping') return;
-    if(!selectedAntiskid || selectedAntiskid === 'none' || selectedAntiskid === 'eva' || selectedAntiskid === 'print'){
-      if(deckMat){
-        if(selectedFinish === 'rugged' && selectedAntiskid === 'none' && selectedDeck){
-          applyAntiskid(deckMat, selectedDeck);
-        }else if(selectedDeck){
-          deckMat.map = null;
-          deckMat.color.set(selectedDeck);
-          deckMat.needsUpdate = true;
-        }
-      }
-      if(hatchesMat){
-        if(selectedFinish === 'rugged' && selectedAntiskid === 'none' && selectedHatches){
-          applyAntiskid(hatchesMat, selectedHatches);
-        }else if(selectedHatches){
-          hatchesMat.map = null;
-          hatchesMat.color.set(selectedHatches);
-          hatchesMat.needsUpdate = true;
-        }
-      }
-      return;
+  function updateAntiskidFinish(){
+      updateAntiskidEvaMeshes();
+      if(selectedFinish === 'wrapping') return;
+      if(!selectedAntiskid || selectedAntiskid === 'none') return;
+      if(selectedAntiskid === 'eva' || selectedAntiskid === 'print' || selectedAntiskid === 'paint') return;
+      if(selectedDeck) applyAntiskidVariant(deckMat, selectedDeck, selectedAntiskid);
+      if(selectedHatches) applyAntiskidVariant(hatchesMat, selectedHatches, selectedAntiskid);
+      syncSchienaleMaterial();
     }
-    if(selectedDeck) applyAntiskidVariant(deckMat, selectedDeck, selectedAntiskid);
-    if(selectedHatches) applyAntiskidVariant(hatchesMat, selectedHatches, selectedAntiskid);
-    syncSchienaleMaterial();
-  }
 
-  function applyWrappingTextureFor(mat, texturePath, scale){
+    function applyWrappingTextureFor(mat, texturePath, scale){
     if(!mat) return;
     if(texturePath){
       mat.color.set('#ffffff');
@@ -1927,6 +2313,9 @@ function updatePrice(){
       hullMat.color.set('#ffffff');
       hullMat.needsUpdate = true;
     }
+
+
+    
     if(deckMat){
       deckMat.map = null;
       deckMat.color.set('#ffffff');
@@ -1949,6 +2338,28 @@ function updatePrice(){
     updateLogoAndBottazzo();
   }
 
+  function resetAllConfig(){
+        finishSelected = false;
+        selectedFinish = null;
+        accessoriUnlocked = false;
+        selectedHullMode = null;
+        selectedDeckMode = null;
+        selectedHatchesMode = null;
+        unlockConfigurator();
+        resetColorsToBase();
+        resetAccessoryUI();
+        updateAccessoryRules();
+        const finishSelect = document.querySelector('#finish-select select');
+        if(finishSelect) finishSelect.value = '';
+        const antiskidSelect = document.querySelector('#antiskid-select select');
+        if(antiskidSelect) antiskidSelect.value = '';
+        updatePrice();
+      }
+
+
+    
+
+
   function setActiveColor(group, btn){
     if(!btn) return;
     document.querySelectorAll(`button[data-group="${group}"]`).forEach(b => {
@@ -1956,38 +2367,134 @@ function updatePrice(){
     });
   }
 
-  function renderFinishSelect(){
+  
+    function selectOptionByLabel(select, label){
+      if(!select) return;
+      const opts = Array.from(select.options || []);
+      const target = opts.find(o => (o.textContent || '').trim().toLowerCase() === label.toLowerCase());
+      if(target){
+        select.value = target.value;
+        select.dispatchEvent(new Event('change'));
+      }
+    }
+
+    function lockConfigurator(){
+      presetLocked = true;
+      const finishSelect = document.querySelector('#finish-select select');
+      if(finishSelect) finishSelect.disabled = true;
+      document.querySelectorAll('#step-colori select').forEach(sel => sel.disabled = true);
+      const antiskidSel = document.querySelector('#antiskid-select select');
+      if(antiskidSel) antiskidSel.disabled = true;
+    }
+
+    function unlockConfigurator(){
+      presetLocked = false;
+      presetName = '';
+      const finishSelect = document.querySelector('#finish-select select');
+      if(finishSelect) finishSelect.disabled = false;
+      document.querySelectorAll('#step-colori select').forEach(sel => sel.disabled = false);
+      const antiskidSel = document.querySelector('#antiskid-select select');
+      if(antiskidSel) antiskidSel.disabled = false;
+    }
+
+
+    function applyPresetConfig(name){
+      presetName = name;
+      accessoriUnlocked = true;
+      resetAccessoryUI();
+      if(name === 'nico'){
+        selectFinitura('paint', null, false);
+      }else if(name === 'gabry'){
+        selectFinitura('gelcoat', null, false);
+      }
+
+      const applyChoices = () => {
+        if(name === 'nico'){
+          // Hull/Deck/Doors -> Rugged Acid
+          selectOptionByLabel(colorSelects.hull, 'Acid');
+          selectOptionByLabel(colorSelects.deck, 'Acid');
+          selectOptionByLabel(colorSelects.hatches, 'Acid');
+          selectedAntiskid = 'eva';
+        }else if(name === 'gabry'){
+          // Hull -> Color Acquamarina, Deck/Doors -> White
+          selectOptionByLabel(colorSelects.hull, 'Acquamarina');
+          selectOptionByLabel(colorSelects.hull, 'Aquamarina');
+          selectOptionByLabel(colorSelects.deck, 'White');
+          selectOptionByLabel(colorSelects.hatches, 'White');
+          selectedAntiskid = 'print';
+        }
+        const antiskidSel = document.querySelector('#antiskid-select select');
+        if(antiskidSel){
+          antiskidSel.value = selectedAntiskid || '';
+        }
+        updateAntiskidFinish();
+        updatePrice();
+
+        const presetAccessories = {
+          nico: ['tientibene', 'panca', 'schienale', 'supporto'],
+          gabry: ['tientibene', 'panca', 'schienale', 'supporto', 'impianto', 'batteria', 'trolling']
+        };
+        (presetAccessories[name] || []).forEach(key => setAccessoryChecked(key, true, true));
+        updateAccessoryRules();
+        updatePrice();
+        lockConfigurator();
+        accessoriUnlocked = true;
+        setTimeout(() => showStep('accessori'), 0);
+      };
+
+      setTimeout(applyChoices, 0);
+    }
+
+function renderFinishSelect(){
     const container = document.getElementById('finish-select');
     if(!container) return;
     container.innerHTML = '';
     const select = document.createElement('select');
     const placeholder = document.createElement('option');
-    placeholder.textContent = 'Seleziona finitura';
+    placeholder.textContent = 'Select';
     placeholder.value = '';
     placeholder.disabled = true;
     placeholder.selected = true;
     select.appendChild(placeholder);
     const options = [
-      { label: 'Gelcoat', value: 'gelcoat' },
-      { label: 'Acrylic', value: 'paint' },
-      { label: 'Rugged', value: 'rugged' },
-      { label: 'Wrapping', value: 'wrapping' }
-    ];
+        { label: 'Gelcoat', value: 'gelcoat' },
+        { label: 'Acrylic', value: 'paint' },
+        { label: 'Nico', value: 'nico' },
+        { label: 'Gabry', value: 'gabry' }
+      ];
     options.forEach(({ label, value }) => {
-      const opt = document.createElement('option');
-      opt.textContent = label;
-      opt.value = value;
-      select.appendChild(opt);
-    });
+        const opt = document.createElement('option');
+        opt.textContent = label;
+        opt.value = value;
+        if(value === 'nico') opt.style.color = '#00ff00';
+        if(value === 'gabry') opt.style.color = '#3aa7ff';
+        select.appendChild(opt);
+      });
     select.addEventListener('change', () => {
-      if(!select.value) return;
-      selectFinitura(select.value, null, true);
-    });
+        if(!select.value) return;
+        if(select.value === 'nico' || select.value === 'gabry'){
+          applyPresetConfig(select.value);
+          setTimeout(() => {
+            if(currentStep !== 'accessori') showStep('accessori');
+          }, 0);
+          return;
+        }
+        selectFinitura(select.value, null, true);
+      });
     container.appendChild(select);
   }
 
   window.setHull = function(color, btn){
-    if(selectedFinish === 'rugged'){
+      selectedHullMode = resolveFinishMode(btn);
+    if(btn?.dataset?.texture){
+      applyWrappingTextureFor(hullMat, btn.dataset.texture, Number(btn.dataset.scale));
+      wrappingWhite = isWrappingWhiteTrigger(btn.dataset.texture);
+      hullDark = false;
+    }else if(btn?.dataset?.rugged){
+      applyRuggedTexture(hullMat, color);
+      hullDark = isDarkColor(color);
+      wrappingWhite = false;
+    }else if(selectedFinish === 'rugged'){
       applyAntiskid(hullMat, color);
       applyAntiskid(deckMat, color);
       applyAntiskid(hatchesMat, color);
@@ -1998,10 +2505,6 @@ function updatePrice(){
       hatchesSelected = true;
       selectedDeck = color;
       selectedHatches = color;
-    }else if(selectedFinish === 'wrapping' && btn?.dataset.texture){
-      applyWrappingTextureFor(hullMat, btn.dataset.texture, Number(btn.dataset.scale));
-      wrappingWhite = isWrappingWhiteTrigger(btn.dataset.texture);
-      hullDark = false;
     }else if(hullMat){
       hullMat.map = null;
       hullMat.color.set(color);
@@ -2013,13 +2516,24 @@ function updatePrice(){
     selectedHull = color;
     checkStep();
     updateLogoAndBottazzo();
-  };
+      updatePrice();
+  }
   window.setDeck = function(color, btn){
-    if(selectedFinish === 'wrapping' && btn?.dataset.texture){
+      selectedDeckMode = resolveFinishMode(btn);
+    if(btn?.dataset?.texture){
       applyWrappingTextureFor(deckMat, btn.dataset.texture, Number(btn.dataset.scale));
       wrappingWhite = isWrappingWhiteTrigger(btn.dataset.texture);
       deckDark = false;
+    }else if(btn?.dataset?.rugged){
+      applyRuggedTexture(deckMat, color);
+      deckDark = isDarkColor(color);
+      wrappingWhite = false;
     }else if(deckMat){
+      if(deckMat.userData?.compositeMap){
+        deckMat.userData.compositeMap.dispose();
+        deckMat.userData.compositeMap = null;
+      }
+      deckMat.userData.baseMap = null;
       deckMat.map = null;
       deckMat.color.set(color);
       deckMat.needsUpdate = true;
@@ -2028,11 +2542,16 @@ function updatePrice(){
     }
     deckSelected = true;
     selectedDeck = color;
-    updateAntiskidFinish();
+      updateAntiskidOptions(selectedFinish);
     checkStep();
     updateLogoAndBottazzo();
+      updatePrice();
     if(hatchesAuto){
       setHatches(color, btn, false);
+      if(btn?.textContent) setColorLabel('hatches', btn.textContent);
+      if(selectedFinish === 'gelcoat' && btn?.textContent && gelcoatTriggers?.hatches){
+        gelcoatTriggers.hatches.textContent = btn.textContent;
+      }
       const hSelect = colorSelects.hatches;
       if(hSelect){
         if(btn?.dataset.texture){
@@ -2046,10 +2565,20 @@ function updatePrice(){
       }
     }
   };
+
   window.setHatches = function(color, btn, manual = true){
-    if(selectedFinish === 'wrapping' && btn?.dataset.texture){
+      selectedHatchesMode = resolveFinishMode(btn);
+    if(btn?.textContent) setColorLabel('hatches', btn.textContent);
+    if(btn?.dataset?.texture){
       applyWrappingTextureFor(hatchesMat, btn.dataset.texture, Number(btn.dataset.scale));
+    }else if(btn?.dataset?.rugged){
+      applyRuggedTexture(hatchesMat, color);
     }else if(hatchesMat){
+      if(hatchesMat.userData?.compositeMap){
+        hatchesMat.userData.compositeMap.dispose();
+        hatchesMat.userData.compositeMap = null;
+      }
+      hatchesMat.userData.baseMap = null;
       hatchesMat.map = null;
       hatchesMat.color.set(color);
       hatchesMat.needsUpdate = true;
@@ -2057,10 +2586,10 @@ function updatePrice(){
     hatchesSelected = true;
     selectedHatches = color;
     updateAntiskidFinish();
-    syncSchienaleMaterial();
+      updatePrice();
     checkStep();
     if(manual) hatchesAuto = false;
-  };
+  };;;;
 
   window.setBottazzoColor = function(color){
     if(bottazzoMat){
@@ -2082,9 +2611,20 @@ function updatePrice(){
   }
 
   window.goBack = function(){
-    if(currentStep === 'colori') showStep('finitura');
-    else if(currentStep === 'accessori') showStep('colori');
-  };
+      if(currentStep === 'accessori' && presetLocked){
+        unlockConfigurator();
+        accessoriUnlocked = false;
+        resetAllConfig();
+        showStep('finitura');
+        return;
+      }
+      if(currentStep === 'colori'){
+        resetAllConfig();
+        showStep('finitura');
+      }else if(currentStep === 'accessori'){
+        showStep('colori');
+      }
+    };
 
   window.goNext = function(){
     if(currentStep === 'finitura'){
@@ -2094,6 +2634,7 @@ function updatePrice(){
     }
     if(currentStep === 'colori'){
       if(!(hullSelected && deckSelected && hatchesSelected)) return;
+      accessoriUnlocked = true;
       showStep('accessori');
     }
   };
@@ -2202,13 +2743,16 @@ function updatePrice(){
     return getSelectLabel(sel, selectedAntiskid || 'none');
   }
   function getColorLabel(group, fallback){
+    if(group === 'hull' && selectedHullLabel) return selectedHullLabel;
+    if(group === 'deck' && selectedDeckLabel) return selectedDeckLabel;
+    if(group === 'hatches' && selectedHatchesLabel) return selectedHatchesLabel;
     return getSelectLabel(colorSelects[group], fallback || '-');
   }
 function getColorsSummary(){
     const hull = getColorLabel('hull', selectedHull || '-');
     const deck = getColorLabel('deck', selectedDeck || '-');
-    const hatches = getColorLabel('hatches', selectedHatches || '-');
-    return `Hull ${hull}, Deck ${deck}, Hatches ${hatches}`;
+    const doors = getColorLabel('hatches', selectedHatches || '-');
+    return `Hull (${hull}), Deck (${deck}), Doors (${doors})`;
   }
 
     function getAntiskidPrice(){
@@ -2270,12 +2814,15 @@ function getColorsSummary(){
     }
     initEmailJs();
     const data = getEmailPayloadForTemplate(payload, assets);
+    console.log('EmailJS admin template:', EMAILJS_TEMPLATE_ID_ADMIN);
+    console.log('EmailJS client template:', EMAILJS_TEMPLATE_ID_CLIENT, 'to', payload.customer.email);
     const sendAdmin = window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID_ADMIN, data);
     const sendClient = window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID_CLIENT, {
       ...data,
       to_email: payload.customer.email
     });
     return Promise.all([sendAdmin, sendClient]).then((results) => {
+      console.log('EmailJS risultati:', results);
       return results;
     });
   }
@@ -2285,9 +2832,9 @@ function getColorsSummary(){
       id: currentOrderId || generateOrderId(),
       finish: selectedFinish || '',
       colors: {
-        hull: selectedHull || '',
-        deck: selectedDeck || '',
-        hatches: selectedHatches || ''
+        hull: getColorLabel('hull', selectedHull || ''),
+        deck: getColorLabel('deck', selectedDeck || ''),
+        hatches: getColorLabel('hatches', selectedHatches || '')
       },
       antiskid: selectedAntiskid || 'none',
       accessories: getAccessoriesSummary(),
@@ -2731,7 +3278,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const subject = `Ordine configurazione ${payload.id}`;
         const body = `ID: ${payload.id}
 Finitura: ${payload.finish}
-Colori: Hull ${payload.colors.hull}, Deck ${payload.colors.deck}, Hatches ${payload.colors.hatches}
+Colori: Hull (${payload.colors.hull}), Deck (${payload.colors.deck}), Doors (${payload.colors.hatches})
 Antiskid: ${payload.antiskid}
 Accessori: ${payload.accessories}
 Prezzo: ${payload.price}
@@ -2795,6 +3342,151 @@ Note: ${payload.customer.note}`;
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
