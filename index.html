@@ -78,7 +78,7 @@
 
       #viewer {
         width: 96vw;
-        height: 68vh;
+        height: 92vh;
         border-width: 3px;
       }
 
@@ -772,7 +772,7 @@ cursor: pointer;
     
     /* Mobile optimization overrides */
     @media (max-width: 900px) {
-      #viewer { height: 70vh; }
+      #viewer { height: 92vh; }
 
       #viewer-ui .bottom {
         max-height: calc(38vh - 10px);
@@ -806,7 +806,7 @@ cursor: pointer;
     }
 
     @media (max-width: 640px) {
-      #viewer { height: 68vh; }
+      #viewer { height: 92vh; }
 
       #viewer-ui .back-btn,
       #viewer-ui .next-btn {
@@ -833,7 +833,22 @@ cursor: pointer;
       }
       #viewer-ui .back-btn { left: 10px !important; }
       #viewer-ui .next-btn { right: 10px !important; }
-    }</style>
+    }
+    /* Mobile: move Back/Go above menus inside bottom panel */
+    @media (max-width: 900px) {
+      .step-header { position: static !important; transform: none !important; }
+      #viewer-ui .bottom { padding-top: 64px !important; }
+      #viewer-ui .back-btn,
+      #viewer-ui .next-btn {
+        top: 12px !important;
+        bottom: auto !important;
+        width: 72px !important;
+        height: 34px !important;
+      }
+      #viewer-ui .back-btn { left: 12px !important; }
+      #viewer-ui .next-btn { right: 12px !important; }
+    }
+</style>
 </head>
 <body>
 
