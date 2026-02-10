@@ -820,7 +820,7 @@ cursor: pointer;
       #viewer-ui .next-btn { right: 8px !important; }
 
       #step-accessori { grid-template-columns: 1fr; }
-    }\n
+    }
     /* Mobile nav button placement fixes */
     @media (max-width: 900px) {
       #viewer-ui .bottom { padding-bottom: 58px !important; }
@@ -833,7 +833,7 @@ cursor: pointer;
       }
       #viewer-ui .back-btn { left: 10px !important; }
       #viewer-ui .next-btn { right: 10px !important; }
-    }\n</style>
+    }</style>
 </head>
 <body>
 
@@ -1001,7 +1001,11 @@ cursor: pointer;
   window.controls = controls;
   controls.enablePan = true;
   controls.enableDamping = true;
-  controls.autoRotate = false;\n    controls.enableZoom = true;\n    renderer.domElement.style.touchAction = 'none';\n    controls.touches.ONE = THREE.TOUCH.ROTATE;\n    controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
+  controls.autoRotate = false;
+    controls.enableZoom = true;
+    renderer.domElement.style.touchAction = 'none';
+    controls.touches.ONE = THREE.TOUCH.ROTATE;
+    controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
   let controlsHintHidden = false;
   const controlsOverlay = document.getElementById('controls-overlay');
   function hideControlsOverlay(){
