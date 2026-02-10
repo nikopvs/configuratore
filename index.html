@@ -25,7 +25,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
+      min-height: 95vh;
     }
 
     #header {
@@ -78,7 +78,7 @@
 
       #viewer {
         width: 96vw;
-        height: 100vh;
+        height: 95vh;
         border-width: 3px;
       }
 
@@ -772,7 +772,7 @@ cursor: pointer;
     
     /* Mobile optimization overrides */
     @media (max-width: 900px) {
-      #viewer { height: 100vh; }
+      #viewer { height: 95vh; }
 
       #viewer-ui .bottom {
         max-height: calc(38vh - 10px);
@@ -806,7 +806,7 @@ cursor: pointer;
     }
 
     @media (max-width: 640px) {
-      #viewer { height: 100vh; }
+      #viewer { height: 95vh; }
 
       #viewer-ui .back-btn,
       #viewer-ui .next-btn {
@@ -868,6 +868,12 @@ cursor: pointer;
         transform: none !important;
       }
     }
+
+    /* Mobile: lower title and price by ~10% */
+    @media (max-width: 900px) {
+      #viewer-ui h1 { transform: translateY(10%); }
+      #price-tag { transform: translateY(10%); }
+    }
 </style>
 </head>
 <body>
@@ -884,7 +890,7 @@ cursor: pointer;
       <h1>FISHER 40</h1>
       <div id="price-tag">€ 6.000</div>
       <button id="order-btn" type="button" class="is-hidden" style="display:none;">Ordina</button>
-      <button id="screenshot-btn" type="button" title="Salva screenshot">TAKE A PHOTO</button>
+      <button id="screenshot-btn" type="button" title="Salva screenshot">PHOTO</button>
     </div>
     <div id="controls-overlay" class="controls-overlay">
       Mouse: trascina per ruotare, tasto destro per pan, rotella per zoom.<br>
