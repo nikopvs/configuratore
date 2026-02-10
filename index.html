@@ -874,6 +874,15 @@ cursor: pointer;
       #viewer-ui h1 { transform: translateY(10%); }
       #price-tag { transform: translateY(10%); }
     }
+
+    /* Mobile: lower menus only (keep step title fixed) */
+    @media (max-width: 900px) {
+      #step-finitura,
+      #step-colori,
+      #step-accessori {
+        margin-top: 18px;
+      }
+    }
 </style>
 </head>
 <body>
