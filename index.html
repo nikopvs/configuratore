@@ -78,7 +78,7 @@
 
       #viewer {
         width: 96vw;
-        height: 92vh;
+        height: 100vh;
         border-width: 3px;
       }
 
@@ -772,7 +772,7 @@ cursor: pointer;
     
     /* Mobile optimization overrides */
     @media (max-width: 900px) {
-      #viewer { height: 92vh; }
+      #viewer { height: 100vh; }
 
       #viewer-ui .bottom {
         max-height: calc(38vh - 10px);
@@ -806,7 +806,7 @@ cursor: pointer;
     }
 
     @media (max-width: 640px) {
-      #viewer { height: 92vh; }
+      #viewer { height: 100vh; }
 
       #viewer-ui .back-btn,
       #viewer-ui .next-btn {
@@ -847,6 +847,26 @@ cursor: pointer;
       }
       #viewer-ui .back-btn { left: 12px !important; }
       #viewer-ui .next-btn { right: 12px !important; }
+    }
+
+    /* Mobile: keep Back/Go fully visible in flow */
+    @media (max-width: 900px) {
+      .step-header {
+        position: relative !important;
+        left: auto !important;
+        transform: none !important;
+        width: 100% !important;
+        justify-content: space-between !important;
+        gap: 8px !important;
+        padding: 0 8px !important;
+      }
+      #step-title-wrap { flex: 1 1 auto !important; text-align: center !important; }
+      #viewer-ui .back-btn,
+      #viewer-ui .next-btn {
+        position: static !important;
+        margin: 0 !important;
+        transform: none !important;
+      }
     }
 </style>
 </head>
