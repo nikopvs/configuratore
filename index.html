@@ -1681,7 +1681,41 @@ function updatePrice(){
       const showNext = step !== 'finitura' ? true : finishSelected;
       nextBtn.classList.toggle('is-hidden', !showNext);
     }
-        const title = document.getElementById('step-title');
+
+    const isMobile = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+    if(isMobile){
+      if(backBtn){
+        backBtn.style.display = (step === 'finitura') ? 'none' : 'inline-flex';
+        backBtn.style.position = 'absolute';
+        backBtn.style.top = '-100px';
+        backBtn.style.left = '12px';
+        backBtn.style.right = 'auto';
+      }
+      if(nextBtn){
+        const showNext = step !== 'finitura' ? true : finishSelected;
+        nextBtn.style.display = showNext ? 'inline-flex' : 'none';
+        nextBtn.style.position = 'absolute';
+        nextBtn.style.top = '-100px';
+        nextBtn.style.right = '12px';
+        nextBtn.style.left = 'auto';
+      }
+    }else{
+      if(backBtn){
+        backBtn.style.removeProperty('display');
+        backBtn.style.removeProperty('position');
+        backBtn.style.removeProperty('top');
+        backBtn.style.removeProperty('left');
+        backBtn.style.removeProperty('right');
+      }
+      if(nextBtn){
+        nextBtn.style.removeProperty('display');
+        nextBtn.style.removeProperty('position');
+        nextBtn.style.removeProperty('top');
+        nextBtn.style.removeProperty('left');
+        nextBtn.style.removeProperty('right');
+      }
+    }
+const title = document.getElementById('step-title');
     if(title){
       if(step === 'finitura') title.textContent = 'Finitura';
       else if(step === 'colori') title.textContent = 'Colori';
