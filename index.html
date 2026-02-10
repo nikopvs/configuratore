@@ -1696,29 +1696,7 @@ function updatePrice(){
     document.body.classList.toggle('step-finitura', step === 'finitura');
     document.body.classList.toggle('step-colori', step === 'colori');
     document.body.classList.toggle('step-accessori', step === 'accessori');
-        if(window.matchMedia && window.matchMedia('(max-width: 900px)').matches){
-      if(backBtn){
-        backBtn.style.display = isFirst ? 'none' : 'inline-flex';
-        backBtn.style.position = 'absolute';
-        backBtn.style.top = '-154px';
-        backBtn.style.left = '12px';
-        backBtn.style.right = 'auto';
-      }
-      if(nextBtn){
-        nextBtn.style.display = showNext ? 'inline-flex' : 'none';
-        nextBtn.style.position = 'absolute';
-        nextBtn.style.top = '-154px';
-        nextBtn.style.right = '12px';
-        nextBtn.style.left = 'auto';
-      }
-      if(resetBtn){
-        resetBtn.style.display = step === 'accessori' ? 'inline-flex' : 'none';
-      }
-    } else {
-      if(backBtn){ backBtn.style.removeProperty('display'); backBtn.style.removeProperty('position'); backBtn.style.removeProperty('top'); backBtn.style.removeProperty('left'); backBtn.style.removeProperty('right'); }
-      if(nextBtn){ nextBtn.style.removeProperty('display'); nextBtn.style.removeProperty('position'); nextBtn.style.removeProperty('top'); nextBtn.style.removeProperty('left'); nextBtn.style.removeProperty('right'); }
-      if(resetBtn){ resetBtn.style.removeProperty('display'); }
-    }    currentStep = step;
+    currentStep = step;
   }
 
   const colorPalettes = {
@@ -2720,55 +2698,7 @@ function renderFinishSelect(){
         showStep('colori');
       }
     };
-
-  
-    // Force mobile nav button visibility/position (drastic override)
-    (function(){
-      const mql = window.matchMedia ? window.matchMedia('(max-width: 900px)') : null;
-      const apply = () => {
-        const backBtn = document.querySelector('#viewer-ui .back-btn');
-        const nextBtn = document.querySelector('#viewer-ui .next-btn');
-        if(!backBtn || !nextBtn) return;
-        const isMobile = mql ? mql.matches : (window.innerWidth <= 900);
-        const isFinitura = document.body.classList.contains('step-finitura');
-        if(isMobile){
-          backBtn.style.setProperty('display', isFinitura ? 'none' : 'inline-flex', 'important');
-          backBtn.style.setProperty('visibility', isFinitura ? 'hidden' : 'visible', 'important');
-          backBtn.style.setProperty('position', 'absolute', 'important');
-          backBtn.style.setProperty('top', '-154px', 'important');
-          backBtn.style.setProperty('left', '12px', 'important');
-          backBtn.style.setProperty('right', 'auto', 'important');
-
-          const showNext = !isFinitura;
-          nextBtn.style.setProperty('display', showNext ? 'inline-flex' : 'none', 'important');
-          nextBtn.style.setProperty('visibility', showNext ? 'visible' : 'hidden', 'important');
-          nextBtn.style.setProperty('position', 'absolute', 'important');
-          nextBtn.style.setProperty('top', '-154px', 'important');
-          nextBtn.style.setProperty('right', '12px', 'important');
-          nextBtn.style.setProperty('left', 'auto', 'important');
-        }else{
-          backBtn.style.removeProperty('display');
-          backBtn.style.removeProperty('visibility');
-          backBtn.style.removeProperty('position');
-          backBtn.style.removeProperty('top');
-          backBtn.style.removeProperty('left');
-          backBtn.style.removeProperty('right');
-
-          nextBtn.style.removeProperty('display');
-          nextBtn.style.removeProperty('visibility');
-          nextBtn.style.removeProperty('position');
-          nextBtn.style.removeProperty('top');
-          nextBtn.style.removeProperty('left');
-          nextBtn.style.removeProperty('right');
-        }
-      };
-      const obs = new MutationObserver(() => apply());
-      obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-      window.addEventListener('resize', apply);
-      if(mql) mql.addEventListener('change', apply);
-      document.addEventListener('DOMContentLoaded', apply);
-      setTimeout(apply, 0);
-    })();window.goNext = function(){
+window.goNext = function(){
     if(currentStep === 'finitura'){
       if(!finishSelected) return;
       showStep('colori');
