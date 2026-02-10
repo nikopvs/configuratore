@@ -883,6 +883,15 @@ cursor: pointer;
         margin-top: 18px;
       }
     }
+
+    /* Mobile: force menus down without moving step title */
+    @media (max-width: 900px) {
+      #step-finitura,
+      #step-colori,
+      #step-accessori {
+        transform: translateY(18px) !important;
+      }
+    }
 </style>
 </head>
 <body>
