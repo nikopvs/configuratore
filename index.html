@@ -889,7 +889,16 @@ cursor: pointer;
       #step-finitura,
       #step-colori,
       #step-accessori {
-        transform: translateY(28px) !important;
+        transform: translateY(38px) !important;
+      }
+    }
+
+    /* Mobile: avoid END/RESET overlap in accessori */
+    @media (max-width: 900px) {
+      #step-title-wrap .reset-btn {
+        position: static !important;
+        transform: none !important;
+        margin-left: 8px !important;
       }
     }
 </style>
