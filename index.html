@@ -1696,7 +1696,29 @@ function updatePrice(){
     document.body.classList.toggle('step-finitura', step === 'finitura');
     document.body.classList.toggle('step-colori', step === 'colori');
     document.body.classList.toggle('step-accessori', step === 'accessori');
-    currentStep = step;
+        if(window.matchMedia && window.matchMedia('(max-width: 900px)').matches){
+      if(backBtn){
+        backBtn.style.display = isFirst ? 'none' : 'inline-flex';
+        backBtn.style.position = 'absolute';
+        backBtn.style.top = '-154px';
+        backBtn.style.left = '12px';
+        backBtn.style.right = 'auto';
+      }
+      if(nextBtn){
+        nextBtn.style.display = showNext ? 'inline-flex' : 'none';
+        nextBtn.style.position = 'absolute';
+        nextBtn.style.top = '-154px';
+        nextBtn.style.right = '12px';
+        nextBtn.style.left = 'auto';
+      }
+      if(resetBtn){
+        resetBtn.style.display = step === 'accessori' ? 'inline-flex' : 'none';
+      }
+    } else {
+      if(backBtn){ backBtn.style.removeProperty('display'); backBtn.style.removeProperty('position'); backBtn.style.removeProperty('top'); backBtn.style.removeProperty('left'); backBtn.style.removeProperty('right'); }
+      if(nextBtn){ nextBtn.style.removeProperty('display'); nextBtn.style.removeProperty('position'); nextBtn.style.removeProperty('top'); nextBtn.style.removeProperty('left'); nextBtn.style.removeProperty('right'); }
+      if(resetBtn){ resetBtn.style.removeProperty('display'); }
+    }    currentStep = step;
   }
 
   const colorPalettes = {
