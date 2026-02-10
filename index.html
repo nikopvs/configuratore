@@ -901,6 +901,11 @@ cursor: pointer;
         margin-left: 8px !important;
       }
     }
+
+    /* Mobile: hide Reset to avoid overlap */
+    @media (max-width: 900px) {
+      #step-title-wrap .reset-btn { display: none !important; }
+    }
 </style>
 </head>
 <body>
