@@ -753,6 +753,7 @@ cursor: pointer;
       #viewer-ui .bottom {
         max-height: calc(38vh - 10px);
         overflow-y: auto;
+        overflow-x: visible;
         -webkit-overflow-scrolling: touch;
         padding-bottom: 10px;
       }
@@ -763,14 +764,8 @@ cursor: pointer;
         gap: 6px;
       }
 
-      .color-group {
-        width: 100%;
-        justify-content: space-between;
-      }
-
-      .color-label {
-        min-width: 70px;
-      }
+      .color-group { width: 100%; justify-content: space-between; }
+      .color-label { min-width: 70px; }
 
       #step-finitura select,
       #step-colori select {
@@ -791,7 +786,7 @@ cursor: pointer;
 
       .step-header {
         position: sticky !important;
-        top: -154px !important;
+        top: -20px !important;
         left: auto !important;
         transform: none !important;
         width: 100% !important;
@@ -815,30 +810,37 @@ cursor: pointer;
         transform: none !important;
         margin: 6px 0 0 0 !important;
         display: inline-flex !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+
+      #step-title-wrap .reset-btn .reset-label {
+        color: #ff3b3b !important;
+        text-decoration: underline !important;
+        font-weight: 700 !important;
       }
 
       #viewer-ui .back-btn,
       #viewer-ui .next-btn {
-        position: static !important;
+        position: absolute !important;
+        top: -20px !important;
         left: auto !important;
         right: auto !important;
-        margin: 0 !important;
-        transform: none !important;
-        display: inline-flex !important;
-        visibility: visible !important;
+        pointer-events: auto !important;
       }
+      #viewer-ui .back-btn { left: 12px !important; }
+      #viewer-ui .next-btn { right: 12px !important; }
     }
 
     @media (max-width: 640px) {
       #viewer { height: 85vh; }
       #step-accessori { grid-template-columns: 1fr; }
-    }#step-accessori { grid-template-columns: 1fr; }
-    }
-</style>
+    }\n</style>
 </head>
 <body>
 
-<div id="viewer">
+<div id="mobile-test" style="display:none; position:fixed; top:6px; left:6px; z-index:9999; background:#ff3b3b; color:#fff; padding:4px 6px; font-size:12px; font-weight:700;">TEST MOBILE</div><div id="step-debug" style="position:fixed; bottom:6px; left:6px; z-index:9999; background:#111; color:#7CFF00; padding:4px 6px; font-size:11px; font-weight:700; border:1px solid rgba(255,255,255,0.25);">STEP: -</div><div id="viewer">
   <div id="loading">
     <div id="loading-text">Caricamento modello 0%</div>
     <div id="loading-bar">
@@ -1663,11 +1665,22 @@ function updatePrice(){
     const backBtn = document.querySelector('#viewer-ui .back-btn');
     const resetBtn = document.querySelector('#viewer-ui .reset-btn');
     const nextBtn = document.querySelector('#viewer-ui .next-btn');
+    if(backBtn && !backBtn.dataset.bound){
+      backBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); goBack(); });
+      backBtn.addEventListener('touchend', (e) => { e.preventDefault(); e.stopPropagation(); goBack(); });
+      backBtn.dataset.bound = '1';
+    }
+    if(nextBtn && !nextBtn.dataset.bound){
+      nextBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); goNext(); });
+      nextBtn.addEventListener('touchend', (e) => { e.preventDefault(); e.stopPropagation(); goNext(); });
+      nextBtn.dataset.bound = '1';
+    }
     if(backBtn){
       const isFirst = step === 'finitura';
       backBtn.classList.toggle('is-disabled', isFirst);
       backBtn.setAttribute('aria-disabled', isFirst ? 'true' : 'false');
       backBtn.classList.toggle('is-hidden', isFirst);
+      backBtn.style.display = isFirst ? 'none' : 'inline-flex';
     }
     if(resetBtn){
       resetBtn.classList.toggle('is-hidden', step !== 'accessori');
@@ -1680,47 +1693,51 @@ function updatePrice(){
     if(nextBtn){
       const showNext = step !== 'finitura' ? true : finishSelected;
       nextBtn.classList.toggle('is-hidden', !showNext);
+      nextBtn.style.display = showNext ? 'inline-flex' : 'none';
     }
-
     const isMobile = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
-    if(isMobile){
-      if(backBtn){
-        backBtn.style.display = (step === 'finitura') ? 'none' : 'inline-flex';
+
+    if(backBtn){
+      backBtn.style.display = (step === 'finitura') ? 'none' : 'inline-flex';
+      backBtn.style.pointerEvents = (step === 'finitura') ? 'none' : 'auto';
+      if(isMobile){
         backBtn.style.position = 'absolute';
-        backBtn.style.top = '-100px';
+        backBtn.style.top = '10px';
         backBtn.style.left = '12px';
         backBtn.style.right = 'auto';
-      }
-      if(nextBtn){
-        const showNext = step !== 'finitura' ? true : finishSelected;
-        nextBtn.style.display = showNext ? 'inline-flex' : 'none';
-        nextBtn.style.position = 'absolute';
-        nextBtn.style.top = '-100px';
-        nextBtn.style.right = '12px';
-        nextBtn.style.left = 'auto';
-      }
-    }else{
-      if(backBtn){
-        backBtn.style.removeProperty('display');
+      }else{
         backBtn.style.removeProperty('position');
         backBtn.style.removeProperty('top');
         backBtn.style.removeProperty('left');
         backBtn.style.removeProperty('right');
       }
-      if(nextBtn){
-        nextBtn.style.removeProperty('display');
+    }
+
+    if(nextBtn){
+      const showNext = step !== 'finitura' ? true : finishSelected;
+      nextBtn.style.display = showNext ? 'inline-flex' : 'none';
+      nextBtn.style.pointerEvents = showNext ? 'auto' : 'none';
+      if(isMobile){
+        nextBtn.style.position = 'absolute';
+        nextBtn.style.top = '10px';
+        nextBtn.style.right = '12px';
+        nextBtn.style.left = 'auto';
+      }else{
         nextBtn.style.removeProperty('position');
         nextBtn.style.removeProperty('top');
         nextBtn.style.removeProperty('left');
         nextBtn.style.removeProperty('right');
       }
     }
-const title = document.getElementById('step-title');
+
+    const title = document.getElementById('step-title');
     if(title){
       if(step === 'finitura') title.textContent = 'Finitura';
       else if(step === 'colori') title.textContent = 'Colori';
       else if(step === 'accessori') title.textContent = 'Accessori';
     }
+    const stepDebug = document.getElementById('step-debug');
+    if(stepDebug){ stepDebug.textContent = 'STEP: ' + step.toUpperCase(); }
     const viewerEl = document.getElementById('viewer');
     if(viewerEl){
       viewerEl.classList.toggle('step-finitura', step === 'finitura');
