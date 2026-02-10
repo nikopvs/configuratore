@@ -906,6 +906,20 @@ cursor: pointer;
     @media (max-width: 900px) {
       #step-title-wrap .reset-btn { display: none !important; }
     }
+
+    /* Mobile: center Reset under title */
+    @media (max-width: 900px) {
+      #step-title-wrap {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+      }
+      #step-title-wrap .reset-btn {
+        position: static !important;
+        transform: none !important;
+        margin: 6px 0 0 0 !important;
+      }
+    }
 </style>
 </head>
 <body>
