@@ -1693,6 +1693,9 @@ function updatePrice(){
       viewerEl.classList.toggle('step-colori', step === 'colori');
       viewerEl.classList.toggle('step-accessori', step === 'accessori');
     }
+    document.body.classList.toggle('step-finitura', step === 'finitura');
+    document.body.classList.toggle('step-colori', step === 'colori');
+    document.body.classList.toggle('step-accessori', step === 'accessori');
     currentStep = step;
   }
 
