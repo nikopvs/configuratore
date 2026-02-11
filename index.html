@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
@@ -139,18 +139,11 @@
       #step-accessori {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 6px 8px;
+        gap: 8px 10px;
         text-align: left;
+        padding-top: 0;
       }
-
-          #step-accessori {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px 18px;
-      text-align: left;
-      padding-top: 0;
-    }
-#step-accessori label {
+      #step-accessori label {
         margin-left: 0 !important;
         padding: 6px 6px;
         font-size: 11px;
@@ -573,6 +566,35 @@ cursor: pointer;
     .controls-overlay.is-hidden {
       opacity: 0;
     }
+    .mobile-nav {
+      position: absolute;
+      right: 12px;
+      top: 78px;
+      left: auto;
+      transform: none;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      z-index: 7;
+      pointer-events: auto;
+    }
+    .mobile-nav button {
+      background: rgba(0,0,0,0.62);
+      border: 1px solid rgba(255,255,255,0.35);
+      color: #7CFF00;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      min-width: 34px;
+      line-height: 1.1;
+    }
+    #mobile-mode-btn.is-pan {
+      color: #00d4ff;
+      border-color: rgba(0,212,255,0.65);
+    }
 #screenshot-btn {
       position: absolute;
       top: 12px;
@@ -584,6 +606,22 @@ cursor: pointer;
       letter-spacing: 0.5px;
       text-transform: uppercase;
       color: #7CFF00;
+    }
+    #audio-toggle {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.35);
+      padding: 8px 12px;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #7CFF00;
+    }
+    #audio-toggle.is-muted {
+      color: #ff6b6b;
+      border-color: rgba(255,107,107,0.65);
     }
 
     #order-btn {
@@ -637,9 +675,16 @@ cursor: pointer;
 
     @media (max-width: 900px) {
       .controls-overlay { font-size: 17px; }
+      #audio-toggle { top: 8px; right: 8px; padding: 6px 8px; font-size: 11px; }
 #order-btn { top: 8px; right: 8px; padding: 6px 8px; font-size: 11px; }
       #screenshot-btn { top: 8px; left: 8px; padding: 6px 8px; font-size: 11px; }
-      
+      .mobile-nav {
+        left: 50%;
+        right: auto;
+        top: 110px;
+        transform: translateX(-50%);
+      }
+      .mobile-nav { display: inline-flex; }
     }
   
     .home-link {
@@ -804,6 +849,9 @@ cursor: pointer;
         flex-direction: column !important;
         align-items: center !important;
       }
+      body.step-colori #step-title {
+        transform: translateY(-18px) !important;
+      }
 
       #step-title-wrap .reset-btn {
         position: static !important;
@@ -819,6 +867,12 @@ cursor: pointer;
         color: #ff3b3b !important;
         text-decoration: underline !important;
         font-weight: 700 !important;
+      }
+      body.step-accessori #step-title {
+        transform: translateY(-18px) !important;
+      }
+      body.step-accessori #step-title-wrap .reset-btn {
+        transform: translateY(-18px) !important;
       }
 
       #viewer-ui .back-btn,
@@ -836,11 +890,12 @@ cursor: pointer;
     @media (max-width: 640px) {
       #viewer { height: 85vh; }
       #step-accessori { grid-template-columns: 1fr; }
-    }\n</style>
+    }
+</style>
 </head>
 <body>
 
-<div id="mobile-test" style="display:none; position:fixed; top:6px; left:6px; z-index:9999; background:#ff3b3b; color:#fff; padding:4px 6px; font-size:12px; font-weight:700;">TEST MOBILE</div><div id="step-debug" style="position:fixed; bottom:6px; left:6px; z-index:9999; background:#111; color:#7CFF00; padding:4px 6px; font-size:11px; font-weight:700; border:1px solid rgba(255,255,255,0.25);">STEP: -</div><div id="viewer">
+<div id="viewer">
   <div id="loading">
     <div id="loading-text">Caricamento modello 0%</div>
     <div id="loading-bar">
@@ -850,13 +905,19 @@ cursor: pointer;
   <div id="viewer-ui">
     <div class="top">
       <h1>FISHER 40</h1>
-      <div id="price-tag">� 6.000</div>
+      <div id="price-tag">&euro; 6.000</div>
+      <button id="audio-toggle" type="button" aria-pressed="false">MUTE &#128263;</button>
       <button id="order-btn" type="button" class="is-hidden" style="display:none;">Ordina</button>
       <button id="screenshot-btn" type="button" title="Salva screenshot">PHOTO</button>
     </div>
     <div id="controls-overlay" class="controls-overlay">
       Mouse: trascina per ruotare, tasto destro per pan, rotella per zoom.<br>
       Touch: 1 dito ruota, 2 dita pan, pinch per zoom.
+    </div>
+    <div id="mobile-nav" class="mobile-nav">
+      <button id="mobile-mode-btn" type="button" aria-pressed="false">PAN ✋</button>
+      <button id="mobile-zoom-in" type="button" aria-label="Zoom in">+</button>
+      <button id="mobile-zoom-out" type="button" aria-label="Zoom out">-</button>
     </div>
 <div class="bottom">
       <div class="step-header">
@@ -939,7 +1000,7 @@ cursor: pointer;
       <label>Email<input id="order-email" type="email"></label>
       <label>Telefono<input id="order-telefono" type="tel"></label>
       <label>Indirizzo<input id="order-indirizzo" type="text"></label>
-      <label>Citt�<input id="order-citta" type="text"></label>
+      <label>Cittï¿½<input id="order-citta" type="text"></label>
       <label>CAP<input id="order-cap" type="text"></label>
       <label>Note<textarea id="order-note"></textarea></label>
     </div>
@@ -1005,12 +1066,72 @@ cursor: pointer;
   controls.enablePan = true;
   controls.enableDamping = true;
   controls.autoRotate = false;
-    controls.enableZoom = true;
-    renderer.domElement.style.touchAction = 'none';
-    controls.touches.ONE = THREE.TOUCH.ROTATE;
-    controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
+  controls.enableZoom = true;
+  renderer.domElement.style.touchAction = 'none';
+  controls.touches.ONE = THREE.TOUCH.ROTATE;
+  controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
+  const mobileUiQuery = window.matchMedia('(max-width: 900px)');
+  let mobilePanMode = false;
+  let framedMaxDim = 0;
+  let framedCameraZ = 0;
+  let lastMobileViewport = mobileUiQuery.matches;
   let controlsHintHidden = false;
   const controlsOverlay = document.getElementById('controls-overlay');
+  function updateMobileModeButton(){
+    const modeBtn = document.getElementById('mobile-mode-btn');
+    if(!modeBtn) return;
+    modeBtn.textContent = mobilePanMode ? 'ROTATE ↺' : 'PAN ✋';
+    modeBtn.classList.toggle('is-pan', mobilePanMode);
+    modeBtn.setAttribute('aria-pressed', String(mobilePanMode));
+  }
+  function updateControlsOverlayText(){
+    if(!controlsOverlay) return;
+    if(mobileUiQuery.matches){
+      controlsOverlay.innerHTML = 'Touch: 1 dito ruota.<br>PAN ✋ attiva pan, + / - per zoom.';
+      return;
+    }
+    controlsOverlay.innerHTML = 'Mouse: trascina per ruotare, tasto destro per pan, rotella per zoom.<br>Touch: 1 dito ruota, 2 dita pan, pinch per zoom.';
+  }
+  function applyInteractionScheme(){
+    const isMobile = mobileUiQuery.matches;
+    if(isMobile){
+      controls.enableZoom = false;
+      controls.touches.ONE = mobilePanMode ? THREE.TOUCH.PAN : THREE.TOUCH.ROTATE;
+      controls.touches.TWO = THREE.TOUCH.NONE;
+    }else{
+      mobilePanMode = false;
+      controls.enableZoom = true;
+      controls.touches.ONE = THREE.TOUCH.ROTATE;
+      controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
+    }
+    updateMobileModeButton();
+    updateControlsOverlayText();
+  }
+  function applyFramingForViewport(force = false){
+    const isMobile = mobileUiQuery.matches;
+    if(!force && isMobile === lastMobileViewport) return;
+    lastMobileViewport = isMobile;
+    if(!framedMaxDim || !framedCameraZ) return;
+    camera.fov = isMobile ? 66 : 60;
+    camera.updateProjectionMatrix();
+    const distMul = isMobile ? 1.05 : 0.9;
+    camera.position.set(0.2, framedMaxDim * 0.2, framedCameraZ * distMul);
+    controls.minDistance = framedCameraZ * (isMobile ? 0.5 : 0.4);
+    controls.maxDistance = framedCameraZ * (isMobile ? 1.7 : 1.4);
+    controls.target.set(0, 0, 0);
+    controls.update();
+  }
+  function mobileZoomBy(scale){
+    const offset = camera.position.clone().sub(controls.target);
+    const currentDist = offset.length();
+    if(currentDist <= 0.0001) return;
+    const minD = controls.minDistance || 0.1;
+    const maxD = controls.maxDistance || 1e9;
+    const nextDist = THREE.MathUtils.clamp(currentDist * scale, minD, maxD);
+    offset.setLength(nextDist);
+    camera.position.copy(controls.target).add(offset);
+    controls.update();
+  }
   function hideControlsOverlay(){
     if(controlsHintHidden) return;
     controlsHintHidden = true;
@@ -1128,7 +1249,8 @@ cursor: pointer;
     sounds.off.muted = !enabled;
     const btn = document.getElementById('audio-toggle');
     if(btn){
-      btn.textContent = enabled ? 'Audio On' : 'Audio Off';
+      btn.classList.toggle('is-muted', !enabled);
+      btn.textContent = enabled ? 'MUTE 🔇' : 'UNMUTE 🔊';
       btn.setAttribute('aria-pressed', String(!enabled));
     }
     if(!enabled){
@@ -1460,16 +1582,21 @@ const accessoryDeps = {
     gltf.scene.position.add(new THREE.Vector3(-0.05, 0, 0));
 
     const maxDim = Math.max(size.x, size.y, size.z);
+    camera.fov = mobileUiQuery.matches ? 66 : 60;
+    camera.updateProjectionMatrix();
     const fov = camera.fov * (Math.PI / 180);
     let cameraZ = Math.abs(maxDim / (2 * Math.tan(fov / 2)));
     cameraZ *= 1;
-    camera.position.set(0.2, maxDim * 0.2, cameraZ * 0.9);
+    framedMaxDim = maxDim;
+    framedCameraZ = cameraZ;
+    const distMul = mobileUiQuery.matches ? 1.05 : 0.9;
+    camera.position.set(0.2, maxDim * 0.2, cameraZ * distMul);
     camera.lookAt(0, 0, 0);
     controls.target.set(0, 0, 0);
     controls.update();
 
-    controls.minDistance = cameraZ * 0.4;
-      controls.maxDistance = cameraZ * 1.4;
+    controls.minDistance = cameraZ * (mobileUiQuery.matches ? 0.5 : 0.4);
+      controls.maxDistance = cameraZ * (mobileUiQuery.matches ? 1.7 : 1.4);
 
       waterTargetY = -maxDim * 0.12 + 0.045;
       if(water){
@@ -1511,6 +1638,8 @@ const accessoryDeps = {
     renderer.setSize(viewer.clientWidth, viewer.clientHeight);
     camera.aspect = viewer.clientWidth / viewer.clientHeight;
     camera.updateProjectionMatrix();
+    applyInteractionScheme();
+    applyFramingForViewport();
   }
 
   loadGlb();
@@ -1665,16 +1794,6 @@ function updatePrice(){
     const backBtn = document.querySelector('#viewer-ui .back-btn');
     const resetBtn = document.querySelector('#viewer-ui .reset-btn');
     const nextBtn = document.querySelector('#viewer-ui .next-btn');
-    if(backBtn && !backBtn.dataset.bound){
-      backBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); goBack(); });
-      backBtn.addEventListener('touchend', (e) => { e.preventDefault(); e.stopPropagation(); goBack(); });
-      backBtn.dataset.bound = '1';
-    }
-    if(nextBtn && !nextBtn.dataset.bound){
-      nextBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); goNext(); });
-      nextBtn.addEventListener('touchend', (e) => { e.preventDefault(); e.stopPropagation(); goNext(); });
-      nextBtn.dataset.bound = '1';
-    }
     if(backBtn){
       const isFirst = step === 'finitura';
       backBtn.classList.toggle('is-disabled', isFirst);
@@ -1687,8 +1806,8 @@ function updatePrice(){
     }
     const orderBtn = document.getElementById('order-btn');
     if(orderBtn){
-      orderBtn.classList.toggle('is-hidden', step !== 'accessori');
-      orderBtn.style.display = step === 'accessori' ? 'block' : 'none';
+      orderBtn.classList.add('is-hidden');
+      orderBtn.style.display = 'none';
     }
     if(nextBtn){
       const showNext = step !== 'finitura' ? true : finishSelected;
@@ -1736,8 +1855,6 @@ function updatePrice(){
       else if(step === 'colori') title.textContent = 'Colori';
       else if(step === 'accessori') title.textContent = 'Accessori';
     }
-    const stepDebug = document.getElementById('step-debug');
-    if(stepDebug){ stepDebug.textContent = 'STEP: ' + step.toUpperCase(); }
     const viewerEl = document.getElementById('viewer');
     if(viewerEl){
       viewerEl.classList.toggle('step-finitura', step === 'finitura');
@@ -2729,36 +2846,50 @@ function renderFinishSelect(){
     }
   };
   function checkStep(){
-    if(hullSelected && deckSelected && hatchesSelected){
-      // waiting for "Avanti"
+    if(hullSelected && deckSelected && hatchesSelected && currentStep === 'colori'){
+      accessoriUnlocked = true;
     }
   }
 
   window.goBack = function(){
-      if(currentStep === 'accessori' && (presetLocked || presetName)){
-        unlockConfigurator();
-        accessoriUnlocked = false;
-        resetAllConfig();
-        showStep('finitura');
+      const accessoriEl = document.getElementById('step-accessori');
+      const accessoriVisible = accessoriEl && accessoriEl.offsetParent !== null && accessoriEl.getClientRects().length > 0;
+      const titleEl = document.getElementById('step-title');
+      const titleText = titleEl ? (titleEl.textContent || '').trim().toLowerCase() : '';
+      const stepForBack = titleText === 'accessori' ? 'accessori' : (accessoriVisible ? 'accessori' : currentStep);
+      const finishSel = selectedFinish || (document.querySelector('#finish-select select') && document.querySelector('#finish-select select').value) || '';
+
+      if(stepForBack === 'accessori'){
+        if(presetLocked || presetName){
+          unlockConfigurator();
+          accessoriUnlocked = false;
+          resetAllConfig();
+          showStep('finitura');
+          return;
+        }
+        showStep('colori');
         return;
       }
-      if(currentStep === 'colori'){
+      if(stepForBack === 'colori'){
         resetAllConfig();
         showStep('finitura');
-      }else if(currentStep === 'accessori'){
-        showStep('colori');
       }
     };
-window.goNext = function(){
+  window.goNext = function(){
     if(currentStep === 'finitura'){
       if(!finishSelected) return;
       showStep('colori');
       return;
     }
     if(currentStep === 'colori'){
-      if(!(hullSelected && deckSelected && hatchesSelected)) return;
-      accessoriUnlocked = true;
-      showStep('accessori');
+        if(!(hullSelected && deckSelected && hatchesSelected)) return;
+        accessoriUnlocked = true;
+        showStep('accessori');
+        return;
+      }
+    if(currentStep === 'accessori'){
+      triggerOrderFlow();
+      return;
     }
   };
   window.toggleAccessory = function(name,state, silent = false){
@@ -2999,6 +3130,30 @@ function openOrderModal(){
         new QRCode(qrEl, { text: currentOrderId, width: 128, height: 128 });
       }
     }
+  }
+  let orderFlowBusy = false;
+  async function triggerOrderFlow(){
+    if(orderFlowBusy) return;
+    orderFlowBusy = true;
+    const orderBtn = document.getElementById('order-btn');
+    const prev = orderBtn ? orderBtn.textContent : 'Ordina';
+    if(orderBtn){
+      orderBtn.disabled = true;
+      orderBtn.textContent = 'Caricamento...';
+    }
+    try{
+      lastPresetScreenshots = await capturePresetScreenshots();
+    }catch(err){
+      console.warn('Preset screenshot fallito', err);
+      lastPresetScreenshots = [];
+    }finally{
+      if(orderBtn){
+        orderBtn.disabled = false;
+        orderBtn.textContent = prev;
+      }
+      orderFlowBusy = false;
+    }
+    openOrderModal();
   }
 
   function closeOrderModal(){
@@ -3341,20 +3496,9 @@ window.addEventListener('DOMContentLoaded', () => {
     const orderConfirm = document.getElementById('order-confirm');
     initEmailJs();
     if(orderBtn){
-      orderBtn.addEventListener('click', async () => {
-        const prev = orderBtn.textContent;
-        orderBtn.disabled = true;
-        orderBtn.textContent = 'Caricamento...';
-        try{
-          lastPresetScreenshots = await capturePresetScreenshots();
-        }catch(err){
-          console.warn('Preset screenshot fallito', err);
-          lastPresetScreenshots = [];
-        }finally{
-          orderBtn.disabled = false;
-          orderBtn.textContent = prev;
-        }
-        openOrderModal();
+      orderBtn.addEventListener('click', () => {
+        if(currentStep !== 'accessori') return;
+        triggerOrderFlow();
       });
     }
     if(orderClose){
@@ -3435,6 +3579,31 @@ Note: ${payload.customer.note}`;
       });
       setAudioEnabled(audioEnabled, false);
     }
+    const mobileModeBtn = document.getElementById('mobile-mode-btn');
+    const mobileZoomInBtn = document.getElementById('mobile-zoom-in');
+    const mobileZoomOutBtn = document.getElementById('mobile-zoom-out');
+    if(mobileModeBtn){
+      mobileModeBtn.addEventListener('click', () => {
+        if(!mobileUiQuery.matches) return;
+        mobilePanMode = !mobilePanMode;
+        applyInteractionScheme();
+      });
+    }
+    const zoomStep = 0.88;
+    if(mobileZoomInBtn){
+      mobileZoomInBtn.addEventListener('click', () => {
+        if(!mobileUiQuery.matches) return;
+        mobileZoomBy(zoomStep);
+      });
+    }
+    if(mobileZoomOutBtn){
+      mobileZoomOutBtn.addEventListener('click', () => {
+        if(!mobileUiQuery.matches) return;
+        mobileZoomBy(1 / zoomStep);
+      });
+    }
+    applyInteractionScheme();
+    applyFramingForViewport(true);
     const viewer = document.getElementById('viewer');
     if(viewer){
       viewer.addEventListener('pointerdown', () => {
@@ -3465,6 +3634,8 @@ Note: ${payload.customer.note}`;
 
 </body>
 </html>
+
+
 
 
 
