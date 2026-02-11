@@ -980,7 +980,7 @@ cursor: pointer;
 <div id="order-modal" aria-hidden="true">
   <div class="order-dialog" role="dialog" aria-modal="true" aria-labelledby="order-title">
     <div class="order-header">
-      <h3 id="order-title">Ordine Configurazione</h3>
+      <h3 id="order-title">Configurazione</h3>
       <button class="order-close" type="button">Chiudi</button>
     </div>
     <div class="order-summary">
@@ -1006,7 +1006,7 @@ cursor: pointer;
     </div>
     <div class="order-actions">
       <button id="order-confirm" class="order-confirm" type="button">Conferma Ordine</button>
-      <button id="order-download" type="button">Scarica PDF</button>
+      <button id="order-download" type="button">Scarica Configurazione</button>
     </div>
   </div>
 </div>
@@ -3250,27 +3250,46 @@ function openOrderModal(){
 
   async function capturePresetScreenshots(){
     if(!renderer || !camera || !controls) return [];
+    const captureWidth = 1600;
+    const captureHeight = 900;
+    const prevPixelRatio = renderer.getPixelRatio();
+    const prevAspect = camera.aspect;
+    const prevFov = camera.fov;
+    const prevSize = renderer.getSize(new THREE.Vector2());
     const originalPos = camera.position.clone();
     const originalTarget = controls.target.clone();
-            const target = [-0.10810611905192113, -0.167470325414858, -0.13144927171760207];
+    const target = [-0.10810611905192113, -0.167470325414858, -0.13144927171760207];
     const views = [
       { label: 'Side', pos: [0.0516653740024167, 0.1820664977829592, 0.8294428750065087], target: [-0.05, -0.167470325414858, -0.13144927171760207] },
       { label: 'Rear', pos: [-0.8191399443716609, 0.1300141316619867, 0.3925348763178731] },
       { label: 'Top', pos: [0.4912714944470407, 0.4747723290977302, -0.4437419989992951], target: [0.05, -0.08190660770733932, 0.07343899384140155] }
     ];
     const results = [];
-    for(const view of views){
-      setCameraView(view.pos, view.target || target);
-      await new Promise((resolve) => requestAnimationFrame(() => resolve()));
-      const shot = captureScreenshot();
-      if(shot){
-        results.push({ label: view.label, dataUrl: shot });
+    try{
+      // Force a consistent landscape render target to avoid stretched images on mobile.
+      renderer.setPixelRatio(1);
+      renderer.setSize(captureWidth, captureHeight, false);
+      camera.aspect = captureWidth / captureHeight;
+      camera.updateProjectionMatrix();
+      for(const view of views){
+        setCameraView(view.pos, view.target || target);
+        await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+        const shot = captureScreenshot();
+        if(shot){
+          results.push({ label: view.label, dataUrl: shot });
+        }
       }
+    }finally{
+      camera.position.copy(originalPos);
+      controls.target.copy(originalTarget);
+      camera.fov = prevFov;
+      camera.aspect = prevAspect;
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(prevPixelRatio);
+      renderer.setSize(prevSize.x, prevSize.y, false);
+      controls.update();
+      renderer.render(scene, camera);
     }
-    camera.position.copy(originalPos);
-    controls.target.copy(originalTarget);
-    controls.update();
-    renderer.render(scene, camera);
     return results;
   }
 
