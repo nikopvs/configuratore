@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
@@ -186,6 +186,96 @@
       width: 0%;
       background: linear-gradient(90deg, #7CFF00, #3DFF8C);
       transition: width 0.2s ease;
+    }
+    #interact-hint {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translate(-50%, -50%);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 7;
+      pointer-events: auto;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    #interact-hint .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #00FFFF;
+      box-shadow: 0 0 0 0 rgba(0,255,255,0.75);
+      animation: hintPulse 1.4s infinite;
+    }
+    @keyframes hintPulse {
+      0% { box-shadow: 0 0 0 0 rgba(0,255,255,0.75); }
+      75% { box-shadow: 0 0 0 12px rgba(0,255,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(0,255,255,0); }
+    }
+    #interact-hints {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 7;
+    }
+    .interact-action-dot {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      min-width: 0;
+      min-height: 0;
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      appearance: none;
+      -webkit-appearance: none;
+      outline: none;
+      line-height: 0;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      border: none;
+      background: #00FFFF;
+      box-shadow: 0 0 0 0 rgba(0,255,255,0.75);
+      animation: hintPulse 1.4s infinite;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    .interact-action-dot.is-disabled {
+      opacity: 0.28;
+      cursor: default;
+      pointer-events: none;
+      animation: none;
+      box-shadow: none;
+    }
+    .panca-arrow-btn {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      min-width: 0;
+      min-height: 0;
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      appearance: none;
+      -webkit-appearance: none;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(0,255,255,0.85);
+      background: rgba(0,0,0,0.6);
+      color: #00FFFF;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    .panca-arrow-btn.is-disabled {
+      opacity: 0.3;
+      cursor: default;
+      pointer-events: none;
     }
 
     #viewer-ui {
@@ -902,6 +992,8 @@ cursor: pointer;
       <div id="loading-fill"></div>
     </div>
   </div>
+  <div id="interact-hint" aria-hidden="true" title="Interazione"><span class="dot"></span></div>
+  <div id="interact-hints" aria-hidden="true"></div>
   <div id="viewer-ui">
     <div class="top">
       <h1>FISHER 40</h1>
@@ -915,7 +1007,7 @@ cursor: pointer;
       Touch: 1 dito ruota, 2 dita pan, pinch per zoom.
     </div>
     <div id="mobile-nav" class="mobile-nav">
-      <button id="mobile-mode-btn" type="button" aria-pressed="false">PAN ✋</button>
+      <button id="mobile-mode-btn" type="button" aria-pressed="false">PAN ?</button>
       <button id="mobile-zoom-in" type="button" aria-label="Zoom in">+</button>
       <button id="mobile-zoom-out" type="button" aria-label="Zoom out">-</button>
     </div>
@@ -1000,7 +1092,7 @@ cursor: pointer;
       <label>Email<input id="order-email" type="email"></label>
       <label>Telefono<input id="order-telefono" type="tel"></label>
       <label>Indirizzo<input id="order-indirizzo" type="text"></label>
-      <label>Cittï¿½<input id="order-citta" type="text"></label>
+      <label>Citt�<input id="order-citta" type="text"></label>
       <label>CAP<input id="order-cap" type="text"></label>
       <label>Note<textarea id="order-note"></textarea></label>
     </div>
@@ -1045,6 +1137,36 @@ cursor: pointer;
   import { Water } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/objects/Water.js';
 
   const scene = new THREE.Scene();
+  const SHOW_DEBUG_AXES = false;
+  const INTERACT_HINT_OFFSET = new THREE.Vector3(-0.02, 0.11, 0.01);
+  const raycaster = new THREE.Raycaster();
+  const pointerNdc = new THREE.Vector2();
+  let modelRoot = null;
+  const animationClock = new THREE.Clock();
+  let animationMixer = null;
+  const animationActions = new Map();
+  const animationClipsByNorm = new Map();
+  const interactiveMeshesById = new Map();
+  const interactiveAnchorsById = new Map();
+  const interactiveState = new Map();
+  let pancaAnimatedNode = null;
+  let pancaPosition = 'center';
+  let interactiveBusy = false;
+  const normalizeId = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+  const interactiveDefs = [
+    { id: 'portello_prua', hitTokens: ['portelloprua'], openClips: ['Portello_prua_open'] },
+    { id: 'portello_esa_prua', hitTokens: ['portelloesaprua'], openClips: ['Portello_esa_prua_open'] },
+    { id: 'portello_esa_centro', hitTokens: ['portelloesacentro'], openClips: ['Portello_esa_centro_open'] },
+    { id: 'portello_esa_poppa', hitTokens: ['portelloesapoppa'], openClips: ['Portello_esa_poppa_open'] },
+    { id: 'motore', hitTokens: ['fuoribordomotore'], openClips: ['Fuoribordo.motore_alza'], closeClips: ['Fuoribordo.motore_abbassa'], accessoryKey: 'motore' },
+    { id: 'panca', hitTokens: ['panca'], openClips: ['Panca_move_rear'], closeClips: ['Panca_move_front'], accessoryKey: 'panca' },
+    { id: 'tientibene_f', hitTokens: ['tientibenef'], openClips: ['Tientibene_close'], accessoryKey: 'tientibene' }
+  ];
+  let modelAxesHelper = null;
+  if(SHOW_DEBUG_AXES){
+    const worldAxesHelper = new THREE.AxesHelper(0.6);
+    scene.add(worldAxesHelper);
+  }
 
   const camera = new THREE.PerspectiveCamera(60, 1.6, 0.1, 100);
   camera.position.set(0, 1.5, 5);
@@ -1055,6 +1177,12 @@ cursor: pointer;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.15;
   const viewer = document.getElementById('viewer');
+  const interactHint = document.getElementById('interact-hint');
+  const interactHintsLayer = document.getElementById('interact-hints');
+  const hintWorldPos = new THREE.Vector3();
+  const actionHintEls = new Map();
+  let pancaArrowFrontEl = null;
+  let pancaArrowRearEl = null;
   renderer.setSize(viewer.clientWidth, viewer.clientHeight);
   viewer.appendChild(renderer.domElement);
 
@@ -1080,14 +1208,14 @@ cursor: pointer;
   function updateMobileModeButton(){
     const modeBtn = document.getElementById('mobile-mode-btn');
     if(!modeBtn) return;
-    modeBtn.textContent = mobilePanMode ? 'ROTATE ↺' : 'PAN ✋';
+    modeBtn.textContent = mobilePanMode ? 'ROTATE ?' : 'PAN ?';
     modeBtn.classList.toggle('is-pan', mobilePanMode);
     modeBtn.setAttribute('aria-pressed', String(mobilePanMode));
   }
   function updateControlsOverlayText(){
     if(!controlsOverlay) return;
     if(mobileUiQuery.matches){
-      controlsOverlay.innerHTML = 'Touch: 1 dito ruota.<br>PAN ✋ attiva pan, + / - per zoom.';
+      controlsOverlay.innerHTML = 'Touch: 1 dito ruota.<br>PAN ? attiva pan, + / - per zoom.';
       return;
     }
     controlsOverlay.innerHTML = 'Mouse: trascina per ruotare, tasto destro per pan, rotella per zoom.<br>Touch: 1 dito ruota, 2 dita pan, pinch per zoom.';
@@ -1139,6 +1267,458 @@ cursor: pointer;
   }
   controls.addEventListener('start', hideControlsOverlay);
 
+  function resetAnimationSystem(clips){
+    animationMixer = modelRoot ? new THREE.AnimationMixer(modelRoot) : null;
+    animationActions.clear();
+    animationClipsByNorm.clear();
+    (clips || []).forEach((clip) => {
+      const key = normalizeId(clip?.name);
+      if(key) animationClipsByNorm.set(key, clip);
+    });
+  }
+  function findClipByAliases(aliases){
+    const list = Array.isArray(aliases) ? aliases : [aliases];
+    for(const raw of list){
+      const key = normalizeId(raw);
+      if(!key) continue;
+      if(animationClipsByNorm.has(key)) return animationClipsByNorm.get(key);
+      for(const [k, clip] of animationClipsByNorm.entries()){
+        if(k.includes(key) || key.includes(k)) return clip;
+      }
+    }
+    return null;
+  }
+  function findClipExact(name){
+    const key = normalizeId(name);
+    if(!key) return null;
+    return animationClipsByNorm.get(key) || null;
+  }
+  function findFirstAvailableClip(aliases){
+    const list = Array.isArray(aliases) ? aliases : [aliases];
+    for(const alias of list){
+      const clip = findClipByAliases(alias);
+      if(clip) return clip;
+    }
+    return null;
+  }
+  function getClipAction(clip){
+    if(!animationMixer || !clip) return null;
+    const key = clip.name || clip.uuid;
+    if(animationActions.has(key)) return animationActions.get(key);
+    const action = animationMixer.clipAction(clip);
+    action.clampWhenFinished = true;
+    action.enabled = true;
+    action.setLoop(THREE.LoopOnce, 1);
+    animationActions.set(key, action);
+    return action;
+  }
+  function playClipOnce(clip, reverse = false){
+    if(!animationMixer || !clip) return Promise.resolve(false);
+    const action = getClipAction(clip);
+    if(!action) return Promise.resolve(false);
+    action.reset();
+    action.paused = false;
+    action.enabled = true;
+    action.setLoop(THREE.LoopOnce, 1);
+    action.clampWhenFinished = true;
+    if(reverse){
+      action.timeScale = -1;
+      action.time = Math.max(0.001, clip.duration || 0.001);
+    }else{
+      action.timeScale = 1;
+      action.time = 0;
+    }
+    action.play();
+    return new Promise((resolve) => {
+      const onFinished = (e) => {
+        if(e.action !== action) return;
+        animationMixer.removeEventListener('finished', onFinished);
+        resolve(true);
+      };
+      animationMixer.addEventListener('finished', onFinished);
+    });
+  }
+  function stopDefActions(def, exceptClip = null){
+    const clips = []
+      .concat(def?.openClips || [])
+      .concat(def?.closeClips || [])
+      .map((alias) => findClipByAliases(alias))
+      .filter(Boolean);
+    clips.forEach((clip) => {
+      if(exceptClip && clip === exceptClip) return;
+      const action = getClipAction(clip);
+      if(!action) return;
+      action.stop();
+      action.reset();
+      action.enabled = false;
+    });
+  }
+  function addInteractiveMesh(id, mesh){
+    if(!mesh || !id) return;
+    const list = interactiveMeshesById.get(id) || [];
+    if(!list.includes(mesh)) list.push(mesh);
+    mesh.userData.interactiveId = id;
+    interactiveMeshesById.set(id, list);
+  }
+  function addInteractiveAnchor(id, obj){
+    if(!obj || !id) return;
+    const list = interactiveAnchorsById.get(id) || [];
+    if(!list.includes(obj)) list.push(obj);
+    interactiveAnchorsById.set(id, list);
+  }
+  function getInteractiveDef(id){
+    return interactiveDefs.find((d) => d.id === id);
+  }
+  function getEsaPairForPanca(){
+    if(pancaPosition === 'rear') return ['portello_esa_centro', 'portello_esa_prua'];
+    if(pancaPosition === 'front') return ['portello_esa_poppa', 'portello_esa_centro'];
+    return ['portello_esa_poppa', 'portello_esa_prua'];
+  }
+  function movePancaTo(target){
+    if(target === pancaPosition) return Promise.resolve(false);
+    const rearClip = findClipExact('Panca_move_rear') || findFirstAvailableClip(['Panca_move_rear']);
+    const frontClip = findClipExact('Panca_move_front') || findFirstAvailableClip(['Panca_move_front']);
+    if(!rearClip && !frontClip) return Promise.resolve(false);
+    const resetPancaActions = (exceptClip = null) => {
+      [rearClip, frontClip].forEach((clip) => {
+        if(!clip || clip === exceptClip) return;
+        const action = getClipAction(clip);
+        if(!action) return;
+        action.stop();
+        action.reset();
+        action.enabled = false;
+      });
+    };
+    const playRear = (rev = false) => {
+      if(!rearClip) return Promise.resolve(false);
+      resetPancaActions(rearClip);
+      return playClipOnce(rearClip, rev);
+    };
+    const playFront = (rev = false) => {
+      if(!frontClip) return Promise.resolve(false);
+      resetPancaActions(frontClip);
+      return playClipOnce(frontClip, rev);
+    };
+    if(pancaPosition === 'center'){
+      if(target === 'rear') return playRear(false).then((ok) => { if(ok) pancaPosition = 'rear'; return ok; });
+      if(target === 'front') return playFront(false).then((ok) => { if(ok) pancaPosition = 'front'; return ok; });
+    }
+    if(pancaPosition === 'rear'){
+      if(target === 'center') return playRear(true).then((ok) => { if(ok) pancaPosition = 'center'; return ok; });
+      if(target === 'front'){
+        return playRear(true).then((ok) => {
+          if(ok) pancaPosition = 'center';
+          return playFront(false).then((ok2) => { if(ok2) pancaPosition = 'front'; return ok && ok2; });
+        });
+      }
+    }
+    if(pancaPosition === 'front'){
+      if(target === 'center') return playFront(true).then((ok) => { if(ok) pancaPosition = 'center'; return ok; });
+      if(target === 'rear'){
+        return playFront(true).then((ok) => {
+          if(ok) pancaPosition = 'center';
+          return playRear(false).then((ok2) => { if(ok2) pancaPosition = 'rear'; return ok && ok2; });
+        });
+      }
+    }
+    return Promise.resolve(false);
+  }
+  function triggerEsaPairAction(){
+    const esaIds = ['portello_esa_prua', 'portello_esa_centro', 'portello_esa_poppa'];
+    const pair = getEsaPairForPanca();
+    const pairAlreadyOpen = pair.every((id) => Boolean(interactiveState.get(id)));
+    const targetOpenSet = new Set(pairAlreadyOpen ? [] : pair);
+    const jobs = [];
+    esaIds.forEach((esaId) => {
+      const def = getInteractiveDef(esaId);
+      if(!def) return;
+      const wantOpen = targetOpenSet.has(esaId);
+      const isOpen = Boolean(interactiveState.get(esaId));
+      if(wantOpen === isOpen) return;
+      const openClip = findFirstAvailableClip(def.openClips || []);
+      if(!openClip) return;
+      stopDefActions(def, openClip);
+      jobs.push(playClipOnce(openClip, !wantOpen).then((ok) => {
+        if(ok) interactiveState.set(esaId, wantOpen);
+        return ok;
+      }));
+    });
+    if(!jobs.length) return Promise.resolve(false);
+    return Promise.all(jobs).then((arr) => arr.some(Boolean));
+  }
+  function closeAllEsaOpen(){
+    const esaIds = ['portello_esa_prua', 'portello_esa_centro', 'portello_esa_poppa'];
+    const jobs = [];
+    esaIds.forEach((esaId) => {
+      const isOpen = Boolean(interactiveState.get(esaId));
+      if(!isOpen) return;
+      const def = getInteractiveDef(esaId);
+      if(!def) return;
+      const openClip = findFirstAvailableClip(def.openClips || []);
+      if(!openClip) return;
+      stopDefActions(def, openClip);
+      jobs.push(
+        playClipOnce(openClip, true).then((ok) => {
+          if(ok) interactiveState.set(esaId, false);
+          return ok;
+        })
+      );
+    });
+    if(!jobs.length) return Promise.resolve(false);
+    return Promise.all(jobs).then((arr) => arr.some(Boolean));
+  }
+  function toggleInteractiveById(id){
+    const def = getInteractiveDef(id);
+    if(!def) return Promise.resolve(false);
+    const isOpen = Boolean(interactiveState.get(id));
+    const shouldOpen = !isOpen;
+    const openClip = findFirstAvailableClip(def.openClips || []);
+    const closeClip = findFirstAvailableClip(def.closeClips || []);
+    if(!openClip && !closeClip) return Promise.resolve(false);
+    const targetClip = shouldOpen ? openClip : (closeClip || openClip);
+    stopDefActions(def, targetClip || null);
+    const op = shouldOpen
+      ? (openClip ? playClipOnce(openClip, false) : Promise.resolve(false))
+      : (closeClip ? playClipOnce(closeClip, false) : playClipOnce(openClip, true));
+    return op.then((ok) => {
+      if(ok) interactiveState.set(id, shouldOpen);
+      return ok;
+    });
+  }
+  function triggerInteractiveAction(id){
+    const def = interactiveDefs.find((d) => d.id === id);
+    if(!def || interactiveBusy) return false;
+    if(id === 'panca'){
+      return false;
+    }
+    if(id.startsWith('portello_esa_')){
+      interactiveBusy = true;
+      triggerEsaPairAction().finally(() => { interactiveBusy = false; });
+      return true;
+    }
+    const isOpen = Boolean(interactiveState.get(id));
+    const shouldOpen = !isOpen;
+    let openClip = findFirstAvailableClip(def.openClips || []);
+    let closeClip = findFirstAvailableClip(def.closeClips || []);
+    if(!openClip && !closeClip) return false;
+    const targetClip = shouldOpen ? openClip : (closeClip || openClip);
+    stopDefActions(def, targetClip || null);
+    interactiveBusy = true;
+    const op = shouldOpen
+      ? (openClip ? playClipOnce(openClip, false) : Promise.resolve(false))
+      : (closeClip ? playClipOnce(closeClip, false) : playClipOnce(openClip, true));
+    op.finally(() => {
+      interactiveState.set(id, shouldOpen);
+      interactiveBusy = false;
+    });
+    return true;
+  }
+  function ensureActionHintElements(){
+    if(!interactHintsLayer) return;
+    interactiveDefs.forEach((def) => {
+      if(def.id === 'panca') return;
+      if(def.id === 'tientibene_f') return;
+      if(actionHintEls.has(def.id)) return;
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'interact-action-dot';
+      el.title = def.id;
+      el.setAttribute('aria-label', def.id);
+      el.style.display = 'none';
+      el.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+      });
+      el.addEventListener('pointerup', (e) => {
+        e.stopPropagation();
+        triggerInteractiveAction(def.id);
+      });
+      interactHintsLayer.appendChild(el);
+      actionHintEls.set(def.id, el);
+    });
+  }
+  function ensurePancaArrowElements(){
+    if(!interactHintsLayer) return;
+    if(!pancaArrowRearEl){
+      pancaArrowRearEl = document.createElement('button');
+      pancaArrowRearEl.type = 'button';
+      pancaArrowRearEl.className = 'panca-arrow-btn';
+      pancaArrowRearEl.textContent = '<';
+      pancaArrowRearEl.title = 'Panca indietro';
+      pancaArrowRearEl.setAttribute('aria-label', 'Panca indietro');
+      pancaArrowRearEl.style.display = 'none';
+      pancaArrowRearEl.addEventListener('pointerdown', (e) => e.stopPropagation());
+      pancaArrowRearEl.addEventListener('pointerup', (e) => {
+        e.stopPropagation();
+        triggerPancaDirection('rear');
+      });
+      interactHintsLayer.appendChild(pancaArrowRearEl);
+    }
+    if(!pancaArrowFrontEl){
+      pancaArrowFrontEl = document.createElement('button');
+      pancaArrowFrontEl.type = 'button';
+      pancaArrowFrontEl.className = 'panca-arrow-btn';
+      pancaArrowFrontEl.textContent = '>';
+      pancaArrowFrontEl.title = 'Panca avanti';
+      pancaArrowFrontEl.setAttribute('aria-label', 'Panca avanti');
+      pancaArrowFrontEl.style.display = 'none';
+      pancaArrowFrontEl.addEventListener('pointerdown', (e) => e.stopPropagation());
+      pancaArrowFrontEl.addEventListener('pointerup', (e) => {
+        e.stopPropagation();
+        triggerPancaDirection('front');
+      });
+      interactHintsLayer.appendChild(pancaArrowFrontEl);
+    }
+  }
+  function triggerPancaDirection(target){
+    if(interactiveBusy) return false;
+    if(currentStep !== 'accessori') return false;
+    if(target === 'front' && pancaPosition === 'center'){
+      interactiveBusy = true;
+      closeAllEsaOpen()
+        .then(() => movePancaTo('rear'))
+        .then(() => toggleInteractiveById('tientibene_f'))
+        .then(() => movePancaTo('front'))
+        .then(() => toggleInteractiveById('tientibene_f'))
+        .finally(() => { interactiveBusy = false; });
+      return true;
+    }
+    if(target === 'rear' && pancaPosition === 'front'){
+      interactiveBusy = true;
+      closeAllEsaOpen()
+        .then(() => toggleInteractiveById('tientibene_f'))
+        .then(() => movePancaTo('rear'))
+        .then(() => toggleInteractiveById('tientibene_f'))
+        .then(() => movePancaTo('center'))
+        .finally(() => { interactiveBusy = false; });
+      return true;
+    }
+    let desired = target;
+    if((pancaPosition === 'rear' && target === 'front') || (pancaPosition === 'front' && target === 'rear')){
+      desired = 'center';
+    }
+    interactiveBusy = true;
+    closeAllEsaOpen()
+      .then(() => movePancaTo(desired))
+      .finally(() => { interactiveBusy = false; });
+    return true;
+  }
+  function updatePancaArrows(){
+    ensurePancaArrowElements();
+    if(!pancaArrowFrontEl || !pancaArrowRearEl) return;
+    const show = currentStep === 'accessori' &&
+      Boolean(document.querySelector('#step-accessori input[data-accessory=\"panca\"]')?.checked);
+    if(!show){
+      pancaArrowFrontEl.style.display = 'none';
+      pancaArrowRearEl.style.display = 'none';
+      return;
+    }
+    if(!getInteractiveAnchorCenter('panca', hintWorldPos)){
+      pancaArrowFrontEl.style.display = 'none';
+      pancaArrowRearEl.style.display = 'none';
+      return;
+    }
+    hintWorldPos.project(camera);
+    if(hintWorldPos.z < -1 || hintWorldPos.z > 1){
+      pancaArrowFrontEl.style.display = 'none';
+      pancaArrowRearEl.style.display = 'none';
+      return;
+    }
+    const x = (hintWorldPos.x * 0.5 + 0.5) * viewer.clientWidth;
+    const y = (-hintWorldPos.y * 0.5 + 0.5) * viewer.clientHeight;
+    pancaArrowRearEl.style.left = `${x - 18}px`;
+    pancaArrowRearEl.style.top = `${y}px`;
+    pancaArrowFrontEl.style.left = `${x + 18}px`;
+    pancaArrowFrontEl.style.top = `${y}px`;
+    pancaArrowRearEl.classList.toggle('is-disabled', pancaPosition === 'rear');
+    pancaArrowFrontEl.classList.toggle('is-disabled', pancaPosition === 'front');
+    pancaArrowRearEl.style.display = 'block';
+    pancaArrowFrontEl.style.display = 'block';
+  }
+  function getInteractiveAnchorCenter(id, out){
+    if(id === 'panca' && pancaAnimatedNode){
+      const boxP = new THREE.Box3().setFromObject(pancaAnimatedNode);
+      if(!boxP.isEmpty()){
+        boxP.getCenter(out);
+        return true;
+      }
+    }
+    const anchors = (interactiveAnchorsById.get(id) || []).filter(Boolean);
+    if(anchors.length){
+      const box = new THREE.Box3();
+      anchors.forEach((obj) => box.expandByObject(obj));
+      if(!box.isEmpty()){
+        box.getCenter(out);
+        return true;
+      }
+    }
+    const meshes = (interactiveMeshesById.get(id) || []).filter((m) => m?.visible);
+    if(!meshes.length) return false;
+    const box = new THREE.Box3();
+    meshes.forEach((mesh) => box.expandByObject(mesh));
+    if(box.isEmpty()) return false;
+    box.getCenter(out);
+    return true;
+  }
+  function updateActionHints(){
+    ensureActionHintElements();
+    if(!interactHintsLayer) return;
+    if(currentStep !== 'accessori'){
+      actionHintEls.forEach((el) => { el.style.display = 'none'; });
+      return;
+    }
+    const enabledEsaSet = new Set(getEsaPairForPanca());
+    actionHintEls.forEach((el, id) => {
+      const def = interactiveDefs.find((d) => d.id === id);
+      const isEsa = id.startsWith('portello_esa_');
+      const isEnabledByPancaRule = !isEsa || enabledEsaSet.has(id);
+      el.classList.toggle('is-disabled', !isEnabledByPancaRule);
+      if(def?.accessoryKey){
+        const enabled = Boolean(document.querySelector(`#step-accessori input[data-accessory="${def.accessoryKey}"]`)?.checked);
+        if(!enabled){
+          el.style.display = 'none';
+          return;
+        }
+      }
+      const hasClip = Boolean(findFirstAvailableClip(def?.openClips || []) || findFirstAvailableClip(def?.closeClips || []));
+      if(!hasClip){
+        el.style.display = 'none';
+        return;
+      }
+      if(!getInteractiveAnchorCenter(id, hintWorldPos)){
+        el.style.display = 'none';
+        return;
+      }
+      hintWorldPos.project(camera);
+      if(hintWorldPos.z < -1 || hintWorldPos.z > 1){
+        el.style.display = 'none';
+        return;
+      }
+      const x = (hintWorldPos.x * 0.5 + 0.5) * viewer.clientWidth;
+      const y = (-hintWorldPos.y * 0.5 + 0.5) * viewer.clientHeight;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+      el.style.display = 'block';
+    });
+  }
+  function tryToggleInteractiveActionFromPointer(event){
+    if(currentStep !== 'accessori') return false;
+    if(interactiveBusy) return false;
+    const rect = renderer.domElement.getBoundingClientRect();
+    if(!rect.width || !rect.height) return false;
+    pointerNdc.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    pointerNdc.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    const candidates = [];
+    interactiveMeshesById.forEach((meshes) => meshes.forEach((m) => m && candidates.push(m)));
+    if(!candidates.length) return false;
+    raycaster.setFromCamera(pointerNdc, camera);
+    const hits = raycaster.intersectObjects(candidates, false);
+    if(!hits.length) return false;
+    const id = hits[0]?.object?.userData?.interactiveId;
+    if(!id) return false;
+    if(id === 'panca') return false;
+    return triggerInteractiveAction(id);
+  }
+
   const ambient = new THREE.AmbientLight(0xffffff, 0.25);
   scene.add(ambient);
 
@@ -1167,7 +1747,7 @@ cursor: pointer;
   const pmremGenerator = new THREE.PMREMGenerator(renderer);
   let environmentLoaded = false;
   let water;
-  let waterTargetY = -0.49;
+  let waterTargetY = -0.43;
 
   function loadEnvironment(){
     if(environmentLoaded) return;
@@ -1211,12 +1791,15 @@ cursor: pointer;
 
   let hullMat, deckMat, hatchesMat;
   let bottazzoMat, scrittaMat;
+  const scrittaMats = [];
   let chirpTexture = null;
   const accessories = {};
   const antiskidEvaMeshes = [];
   const schienaleMeshes = [];
   const chirpMeshes = [];
   const trollingMeshes = [];
+  const trollingDeployMeshes = [];
+  let trollingDeployed = false;
   const accessoryMeshMap = {
     schienale: ['mesh_0_2'],
     antiskid_eva: ['mesh_0_1'],
@@ -1250,7 +1833,7 @@ cursor: pointer;
     const btn = document.getElementById('audio-toggle');
     if(btn){
       btn.classList.toggle('is-muted', !enabled);
-      btn.textContent = enabled ? 'MUTE 🔇' : 'UNMUTE 🔊';
+      btn.textContent = enabled ? 'MUTE ??' : 'UNMUTE ??';
       btn.setAttribute('aria-pressed', String(!enabled));
     }
     if(!enabled){
@@ -1307,6 +1890,29 @@ cursor: pointer;
     if(mat.includes('trolling')) return 'trolling';
     if(mat.includes('fuoribordo')) return 'motore';
     return '';
+  }
+
+  const TEXTURE_TILING_MULTIPLIER = 1;
+  const TEXTURE_STRETCH_U = 1;
+  const TEXTURE_STRETCH_V = 1;
+  function tileU(v){ return v * TEXTURE_TILING_MULTIPLIER * TEXTURE_STRETCH_U; }
+  function tileV(v){ return v * TEXTURE_TILING_MULTIPLIER * TEXTURE_STRETCH_V; }
+  function addScrittaMaterial(mat){
+    if(!mat) return;
+    if(scrittaMats.includes(mat)) return;
+    scrittaMats.push(mat);
+    if(!scrittaMat) scrittaMat = mat;
+  }
+  function applyScrittaAppearance(tex, color = '#ffffff'){
+    if(!tex || !scrittaMats.length) return;
+    scrittaMats.forEach((mat) => {
+      if(!mat) return;
+      mat.map = tex;
+      if(mat.color) mat.color.set(color);
+      mat.transparent = true;
+      mat.alphaTest = 0.5;
+      mat.needsUpdate = true;
+    });
   }
 
   const loader = new GLTFLoader();
@@ -1389,7 +1995,7 @@ const accessoryDeps = {
     syncAccessoryUI();
   }
   const glbUrls = [
-    'models/fisher40_base_free_softsafe.glb?v=6',
+    'models/fisher40_action3_light_noq.glb?v=1',
     'models/fisher40_base_nodraco.glb?v=6'
   ];
   let glbIndex = 0;
@@ -1421,13 +2027,25 @@ const accessoryDeps = {
     loader.load(url, (gltf) => {
     if(token !== loadToken) return;
     if(loadTimeout) clearTimeout(loadTimeout);
-    gltf.scene.scale.set(0.3,0.3,0.3);
-    gltf.scene.position.set(0,-1,0);
-    scene.add(gltf.scene);
+    modelRoot = gltf.scene;
+    resetAnimationSystem(gltf.animations || []);
+    interactiveMeshesById.clear();
+    interactiveAnchorsById.clear();
+    interactiveState.clear();
+    pancaAnimatedNode = null;
+    pancaPosition = 'center';
+    interactiveDefs.forEach((d) => interactiveState.set(d.id, false));
+    modelRoot.scale.set(0.3,0.3,0.3);
+    modelRoot.position.set(0,-1,0);
+    scene.add(modelRoot);
 
     // Removed axes helper for clean view
 
-    gltf.scene.traverse(obj => {
+    scrittaMats.length = 0;
+    scrittaMat = null;
+    trollingMeshes.length = 0;
+    trollingDeployMeshes.length = 0;
+    modelRoot.traverse(obj => {
       if(obj.isMesh){
         const matName = obj.material?.name || '';
         const matNameLower = matName.toLowerCase();
@@ -1435,14 +2053,27 @@ const accessoryDeps = {
         if(matName === 'Deck') deckMat=obj.material;
         if(matName === 'Hatches' || matName === 'hatches' || matName === 'Portelli') hatchesMat=obj.material;
         if(matName === 'Gomma') bottazzoMat=obj.material;
-        if(matName === 'Scritta' || matNameLower.includes('scritta')) scrittaMat=obj.material;
-        if(!scrittaMat && obj.name==='Scritta') scrittaMat=obj.material;
+        if(matName === 'Scritta' || matNameLower.includes('scritta')) addScrittaMaterial(obj.material);
+        if(!scrittaMat && obj.name==='Scritta') addScrittaMaterial(obj.material);
         if(!scrittaMat && typeof obj.material?.name === 'string' && obj.material.name.toLowerCase().includes('scritta')) {
-          scrittaMat = obj.material;
+          addScrittaMaterial(obj.material);
         }
+        const objNameLower = (obj.name || '').toLowerCase();
+        const objMaterials = Array.isArray(obj.material) ? obj.material : [obj.material];
+        if(objNameLower.includes('scritta')){
+          objMaterials.forEach((m) => addScrittaMaterial(m));
+        }
+        objMaterials.forEach((m) => {
+          const name = (m?.name || '').toLowerCase();
+          if(name.includes('scritta')) addScrittaMaterial(m);
+        });
         if(matNameLower.includes('chirp') || obj.name?.toLowerCase().includes('chirp')) chirpMeshes.push(obj);
         if(obj.name==='Tientibene') accessories.tientibene=obj;
         if(obj.name==='Panca') accessories.panca=obj;
+        if(normalizeId(obj.name) === 'panca'){
+          pancaAnimatedNode = obj;
+          addInteractiveAnchor('panca', obj);
+        }
         if(obj.name==='Schienale' || obj.name?.toLowerCase()==='schienale') accessories.schienale=obj;
         if(obj.name==='Motore') accessories.motore=obj;
         if(obj.name==='Fuoribordo') accessories.motore=obj;
@@ -1452,10 +2083,25 @@ const accessoryDeps = {
         if(obj.name==='Impianto' || obj.name?.toLowerCase()==='impianto' || obj.name==='ImpiantoElettrico' || obj.name?.toLowerCase()==='impiantoelettrico') accessories.impianto = obj;
         if(obj.name==='Batteria' || obj.name?.toLowerCase()==='batteria' || obj.name==='BatteriaLitio' || obj.name?.toLowerCase()==='batterialitio') accessories.batteria = obj;
 
-        const objNameLower = (obj.name || '').toLowerCase();
         const parentNameLower = (obj.parent?.name || '').toLowerCase();
         const grandParentNameLower = (obj.parent?.parent?.name || '').toLowerCase();
         const nameCandidates = [objNameLower, parentNameLower, grandParentNameLower];
+        const nameCandidatesNorm = nameCandidates.map((n) => normalizeId(n));
+        const isTrollingDeploy = nameCandidates.some((n) => n.includes('trolling_deploy'));
+        interactiveDefs.forEach((def) => {
+          const matches = (def.hitTokens || []).some((token) => nameCandidatesNorm.some((n) => n.includes(token)));
+          if(matches){
+            addInteractiveMesh(def.id, obj);
+            const objNameNorm = normalizeId(obj.name || '');
+            const isDirectAnchor = (def.hitTokens || []).some((token) => objNameNorm.includes(token));
+            if(isDirectAnchor){
+              addInteractiveAnchor(def.id, obj);
+            }
+          }
+        });
+        if(normalizeId(obj.name) === 'panca001'){
+          addInteractiveAnchor('panca', obj);
+        }
         const isAccessoryName = (n) => (
           n.includes('tientibene') ||
           n.includes('panca') ||
@@ -1499,8 +2145,11 @@ const accessoryDeps = {
         if(obj.name?.toLowerCase()==='schienale' || obj.name === 'mesh_0_2'){
           schienaleMeshes.push(obj);
         }
-        if(obj.name?.toLowerCase().includes('trolling')){
+        if(obj.name?.toLowerCase().includes('trolling') && !isTrollingDeploy){
           trollingMeshes.push(obj);
+        }
+        if(isTrollingDeploy){
+          trollingDeployMeshes.push(obj);
         }
 
         const groupKey =
@@ -1515,25 +2164,29 @@ const accessoryDeps = {
           (accessoryMeshMap.supporto?.includes(obj.name) ? 'supporto' : '') ||
           (accessoryMeshMap.motore?.includes(obj.name) ? 'motore' : '') ||
           (accessoryMeshMap.trolling?.includes(obj.name) ? 'trolling' : '');
-        if(groupKey && accessoryGroups[groupKey]) accessoryGroups[groupKey].push(obj);
+        if(groupKey && accessoryGroups[groupKey] && !isTrollingDeploy) accessoryGroups[groupKey].push(obj);
       }
     });
 
     // Preload scritta textures once
     if(!scrittaTextures.black){
       scrittaTextures.black = textureLoader.load('images/Scritta_black.png', (t) => {
-        t.wrapS = t.wrapT = THREE.MirroredRepeatWrapping;
-        t.repeat.x = -1;
-        t.repeat.y = -1;
+        t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
+        t.repeat.set(1, 1);
+        t.offset.set(0, 0);
+        t.colorSpace = THREE.SRGBColorSpace;
         t.flipY = false;
+        t.needsUpdate = true;
       });
     }
     if(!scrittaTextures.white){
       scrittaTextures.white = textureLoader.load('images/Scritta_white.png', (t) => {
-        t.wrapS = t.wrapT = THREE.MirroredRepeatWrapping;
-        t.repeat.x = -1;
-        t.repeat.y = -1;
+        t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
+        t.repeat.set(1, 1);
+        t.offset.set(0, 0);
+        t.colorSpace = THREE.SRGBColorSpace;
         t.flipY = false;
+        t.needsUpdate = true;
       });
     }
     if(!chirpTexture){
@@ -1548,7 +2201,7 @@ const accessoryDeps = {
     if(!antiskidTexture){
       antiskidTexture = textureLoader.load('images/antiskid.jpg', (t) => {
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
-        t.repeat.set(0.8, 0.8);
+        t.repeat.set(tileU(0.8), tileV(0.8));
       });
     }
 
@@ -1556,32 +2209,35 @@ const accessoryDeps = {
     if(deckMat) deckMat.color.set('#ffffff');
     if(hatchesMat) hatchesMat.color.set('#ffffff');
     if(bottazzoMat) bottazzoMat.color.set('#000000');
-    if(scrittaMat){
-      scrittaMat.map = scrittaTextures.black;
-      scrittaMat.color.set('#ffffff');
-      scrittaMat.transparent = true;
-      scrittaMat.alphaTest = 0.5;
-      scrittaMat.needsUpdate = true;
-    }
+    applyScrittaAppearance(scrittaTextures.black, '#ffffff');
     applyChirpTextureToMeshes();
     Object.values(accessories).forEach(a=>a.visible=false);
     Object.values(accessoryGroups).forEach(list => list.forEach(a => a.visible = false));
+    trollingDeployMeshes.forEach((m) => m.visible = false);
     antiskidEvaMeshes.forEach(mesh => mesh.visible = false);
     applyEvaTextureToMeshes(antiskidEvaMeshes);
     syncSchienaleMaterial();
     syncTrollingMaterial();
-    applyMaterialOverrides(gltf.scene);
+    applyMaterialOverrides(modelRoot);
+    applyChirpTextureToMeshes();
 
     // Auto-center and frame model in the camera view
-    const box = new THREE.Box3().setFromObject(gltf.scene);
+    const box = new THREE.Box3().setFromObject(modelRoot);
     const size = new THREE.Vector3();
     const center = new THREE.Vector3();
     box.getSize(size);
     box.getCenter(center);
-    gltf.scene.position.sub(center);
-    gltf.scene.position.add(new THREE.Vector3(-0.05, 0, 0));
+    modelRoot.position.sub(center);
+    modelRoot.position.add(new THREE.Vector3(-0.05, 0, 0));
 
     const maxDim = Math.max(size.x, size.y, size.z);
+    if(SHOW_DEBUG_AXES){
+      if(modelAxesHelper && modelRoot){
+        modelRoot.remove(modelAxesHelper);
+      }
+      modelAxesHelper = new THREE.AxesHelper(Math.max(0.2, maxDim * 0.25));
+      modelRoot.add(modelAxesHelper);
+    }
     camera.fov = mobileUiQuery.matches ? 66 : 60;
     camera.updateProjectionMatrix();
     const fov = camera.fov * (Math.PI / 180);
@@ -1598,7 +2254,7 @@ const accessoryDeps = {
     controls.minDistance = cameraZ * (mobileUiQuery.matches ? 0.5 : 0.4);
       controls.maxDistance = cameraZ * (mobileUiQuery.matches ? 1.7 : 1.4);
 
-      waterTargetY = -maxDim * 0.12 + 0.045;
+      waterTargetY = -maxDim * 0.12 + 0.105;
       if(water){
         water.position.y = waterTargetY;
       }
@@ -1682,7 +2338,6 @@ const accessoryDeps = {
   function applyMaterialOverrides(root){
     if(!root) return;
     let yamahaMat = null;
-    let plasticMat = null;
     root.traverse((obj) => {
       if(!obj.isMesh || !obj.material) return;
       const list = Array.isArray(obj.material) ? obj.material : [obj.material];
@@ -1690,25 +2345,77 @@ const accessoryDeps = {
         if(!m?.name) return;
         const name = m.name.toLowerCase();
         if(name === 'yamaha') yamahaMat = m;
-        if(name === 'plastic') plasticMat = m;
       });
     });
-    if(!yamahaMat && !plasticMat) return;
     if(yamahaMat && yamahaMat.color) yamahaMat.color.set('#696969');
-    if(plasticMat && plasticMat.color) plasticMat.color.set('#000000');
+    const toBlackPlastic = (mat) => {
+      if(!mat) return mat;
+      const m = mat.clone?.() || mat;
+      if(m.color) m.color.set('#000000');
+      m.map = null;
+      m.emissiveMap = null;
+      if(m.emissive) m.emissive.set('#000000');
+      m.transparent = false;
+      m.opacity = 1;
+      m.alphaTest = 0;
+      if('metalness' in m) m.metalness = 0;
+      if('roughness' in m) m.roughness = 1;
+      m.needsUpdate = true;
+      return m;
+    };
 
     const toKey = (name) => (name || '').toLowerCase().replace(/\./g, '');
-    const yamahaTargets = new Set(['fuoribordostl001','fuoribordostl002','fuoribordostl004']);
-    const plasticTargets = new Set(['fuoribordostl','fuoribordostl003','fishfinder','trolling002','trolling003','trolling004','trolling005']);
+    const yamahaTargets = new Set([
+      'fuoribordostl001',
+      'fuoribordostl002',
+      'fuoribordostl004',
+      'fuoribordomotore',
+      'fuoribordomanetta',
+      'fuoribordoattacco'
+    ]);
+    const plasticTargets = new Set([
+      'fuoribordostl',
+      'fuoribordostl003',
+      'fuoribordomanopola',
+      'manopola',
+      'fishfinder',
+      'trolling002',
+      'trolling003',
+      'trolling004',
+      'trolling005',
+      'trolling_deploy001',
+      'trolling_deploy002',
+      'trolling_deploy003',
+      'trolling_deploy005'
+    ]);
 
     root.traverse((obj) => {
       if(!obj.isMesh) return;
       const key = toKey(obj.name);
-      if(yamahaMat && yamahaTargets.has(key)){
-        obj.material = yamahaMat;
+      const parentKey = toKey(obj.parent?.name);
+      const grandParentKey = toKey(obj.parent?.parent?.name);
+      const candidateKeys = [key, parentKey, grandParentKey];
+      const isChirpMesh =
+        candidateKeys.some((k) => k.includes('chirp')) ||
+        String(obj.name || '').toLowerCase().includes('chirp') ||
+        (Array.isArray(obj.material) ? obj.material : [obj.material]).some((m) =>
+          String(m?.name || '').toLowerCase().includes('chirp')
+        );
+
+      if(isChirpMesh){
+        return;
       }
-      if(plasticMat && plasticTargets.has(key)){
-        obj.material = plasticMat;
+
+      if(candidateKeys.some((k) => plasticTargets.has(k))){
+        if(Array.isArray(obj.material)){
+          obj.material = obj.material.map((m) => toBlackPlastic(m));
+        }else{
+          obj.material = toBlackPlastic(obj.material);
+        }
+        return;
+      }
+      if(yamahaMat && candidateKeys.some((k) => yamahaTargets.has(k))){
+        obj.material = yamahaMat;
       }
     });
   }
@@ -2197,7 +2904,7 @@ function updateAntiskidOptions(finish){
       mat.needsUpdate = true;
       antiskidTexture = textureLoader.load('images/antiskid.jpg', (t) => {
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
-        t.repeat.set(0.8, 0.8);
+        t.repeat.set(tileU(0.8), tileV(0.8));
         t.colorSpace = THREE.SRGBColorSpace;
         t.flipY = false;
         mat.map = t;
@@ -2215,7 +2922,7 @@ function updateAntiskidOptions(finish){
     if(!ruggedTexture){
       ruggedTexture = textureLoader.load('images/rugged.jpg', (t) => {
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
-        t.repeat.set(0.5, 0.5);
+        t.repeat.set(tileU(0.5), tileV(0.5));
         t.colorSpace = THREE.SRGBColorSpace;
         t.flipY = false;
         t.needsUpdate = true;
@@ -2245,7 +2952,7 @@ function updateAntiskidOptions(finish){
     if(!meshes?.length) return;
     const applyTexture = (tex) => {
       tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-      tex.repeat.set(0.4, 0.4);
+      tex.repeat.set(tileU(0.4), tileV(0.4));
         tex.center.set(0.5, 0.5);
         tex.rotation = Math.PI / 2;
       tex.colorSpace = THREE.SRGBColorSpace;
@@ -2279,7 +2986,7 @@ function updateAntiskidOptions(finish){
       if(!meshes?.length) return;
       const applyTexture = (tex) => {
         tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-        tex.repeat.set(1, 1);
+        tex.repeat.set(tileU(1), tileV(1));
         tex.colorSpace = THREE.SRGBColorSpace;
         tex.flipY = false;
         tex.needsUpdate = true;
@@ -2364,7 +3071,7 @@ function applyChirpTextureToMeshes(){
   function applyPrintTextureToMeshes(meshes, color){
     if(!meshes?.length) return;
     const applyTexture = (tex) => {
-      tex.repeat.set(5, 5);
+      tex.repeat.set(tileU(5), tileV(5));
       tex.needsUpdate = true;
       meshes.forEach((mesh) => {
         if(!mesh) return;
@@ -2381,14 +3088,14 @@ function applyChirpTextureToMeshes(){
       });
     };
     if(antiskidPrintTexture){
-      antiskidPrintTexture.repeat.set(5, 5);
+      antiskidPrintTexture.repeat.set(tileU(5), tileV(5));
       antiskidPrintTexture.needsUpdate = true;
       applyTexture(antiskidPrintTexture);
       return;
     }
     antiskidPrintTexture = textureLoader.load('images/millepunte2.jpg', (t) => {
       t.wrapS = t.wrapT = THREE.RepeatWrapping;
-      t.repeat.set(5, 5);
+      t.repeat.set(tileU(5), tileV(5));
       t.colorSpace = THREE.SRGBColorSpace;
       t.flipY = false;
       t.needsUpdate = true;
@@ -2437,8 +3144,9 @@ function applyChirpTextureToMeshes(){
   }
 
   function syncTrollingMaterial(){
-    if(!trollingMeshes.length) return;
-    trollingMeshes.forEach((mesh) => {
+    const allTrolling = [...trollingMeshes, ...trollingDeployMeshes];
+    if(!allTrolling.length) return;
+    allTrolling.forEach((mesh) => {
       if(!mesh) return;
       if(!mesh.userData?.trollingFixed){
         mesh.material = mesh.material?.clone?.() || mesh.material;
@@ -2472,7 +3180,7 @@ function applyChirpTextureToMeshes(){
       textureLoader.load(texturePath, (t) => {
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
         const s = Number.isFinite(scale) ? scale : 2;
-        t.repeat.set(s, s);
+        t.repeat.set(tileU(s), tileV(s));
         mat.map = t;
         mat.needsUpdate = true;
       });
@@ -2509,22 +3217,14 @@ function applyChirpTextureToMeshes(){
       bottazzoMat.color.set(color);
       bottazzoMat.needsUpdate = true;
     }
-    if(scrittaMat){
+    if(scrittaMats.length){
       const tex = makeWhite ? scrittaTextures.white : scrittaTextures.black;
       if(tex){
-        scrittaMat.map = tex;
-        scrittaMat.color.set('#ffffff');
-        scrittaMat.transparent = true;
-        scrittaMat.alphaTest = 0.5;
-        scrittaMat.needsUpdate = true;
+        applyScrittaAppearance(tex, '#ffffff');
       }else{
         const texPath = makeWhite ? 'images/Scritta_white.png' : 'images/Scritta_black.png';
         textureLoader.load(texPath, (t) => {
-          scrittaMat.map = t;
-          scrittaMat.color.set('#ffffff');
-          scrittaMat.transparent = true;
-          scrittaMat.alphaTest = 0.5;
-          scrittaMat.needsUpdate = true;
+          applyScrittaAppearance(t, '#ffffff');
         });
       }
     }
@@ -2840,10 +3540,11 @@ function renderFinishSelect(){
   };
 
   window.setScrittaColor = function(color){
-    if(scrittaMat){
-      scrittaMat.color.set(color);
-      scrittaMat.needsUpdate = true;
-    }
+    scrittaMats.forEach((mat) => {
+      if(!mat?.color) return;
+      mat.color.set(color);
+      mat.needsUpdate = true;
+    });
   };
   function checkStep(){
     if(hullSelected && deckSelected && hatchesSelected && currentStep === 'colori'){
@@ -2898,9 +3599,15 @@ function renderFinishSelect(){
     if(name === 'schienale' && state){
       syncSchienaleMaterial();
     }
-    if(name === 'trolling' && state){
+    if(name === 'trolling'){
       syncTrollingMaterial();
-    applyMaterialOverrides(gltf.scene);
+      trollingDeployed = false;
+      trollingMeshes.forEach((m) => m.visible = Boolean(state));
+      trollingDeployMeshes.forEach((m) => m.visible = false);
+      if(modelRoot){
+        applyMaterialOverrides(modelRoot);
+        applyChirpTextureToMeshes();
+      }
     }
     if(!silent){
       const sfx = state ? sounds.on : sounds.off;
@@ -2917,6 +3624,73 @@ function renderFinishSelect(){
     updateAccessoryRules();
     updatePrice();
   };
+
+  // Prepared for interactive control: swaps base trolling with deploy variant.
+  window.setTrollingDeployState = function(deployed){
+    const baseVisible = Boolean(document.querySelector('#step-accessori input[data-accessory="trolling"]')?.checked);
+    if(!baseVisible){
+      trollingDeployed = false;
+      trollingMeshes.forEach((m) => m.visible = false);
+      trollingDeployMeshes.forEach((m) => m.visible = false);
+      return;
+    }
+    trollingDeployed = Boolean(deployed);
+    trollingMeshes.forEach((m) => m.visible = !deployed);
+    trollingDeployMeshes.forEach((m) => m.visible = deployed);
+  };
+
+  function tryToggleTrollingDeployFromPointer(event){
+    if(currentStep !== 'accessori') return false;
+    const trollingChecked = Boolean(document.querySelector('#step-accessori input[data-accessory="trolling"]')?.checked);
+    if(!trollingChecked) return false;
+    const rect = renderer.domElement.getBoundingClientRect();
+    if(!rect.width || !rect.height) return false;
+    pointerNdc.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    pointerNdc.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    const candidates = [...trollingMeshes, ...trollingDeployMeshes].filter(Boolean);
+    if(!candidates.length) return false;
+    raycaster.setFromCamera(pointerNdc, camera);
+    const hits = raycaster.intersectObjects(candidates, false);
+    if(!hits.length) return false;
+    window.setTrollingDeployState(!trollingDeployed);
+    return true;
+  }
+
+  function updateInteractHint(){
+    if(!interactHint) return;
+    if(currentStep !== 'accessori'){
+      interactHint.style.display = 'none';
+      return;
+    }
+    const trollingChecked = Boolean(document.querySelector('#step-accessori input[data-accessory="trolling"]')?.checked);
+    if(!trollingChecked){
+      interactHint.style.display = 'none';
+      return;
+    }
+    const pool = trollingDeployMeshes.filter(Boolean);
+    if(!pool.length){
+      interactHint.style.display = 'none';
+      return;
+    }
+    const box = new THREE.Box3();
+    pool.forEach((mesh) => box.expandByObject(mesh));
+    if(box.isEmpty()){
+      interactHint.style.display = 'none';
+      return;
+    }
+    box.getCenter(hintWorldPos);
+    hintWorldPos.add(INTERACT_HINT_OFFSET);
+    hintWorldPos.project(camera);
+    if(hintWorldPos.z < -1 || hintWorldPos.z > 1){
+      interactHint.style.display = 'none';
+      return;
+    }
+    const x = (hintWorldPos.x * 0.5 + 0.5) * viewer.clientWidth;
+    const y = (-hintWorldPos.y * 0.5 + 0.5) * viewer.clientHeight;
+    interactHint.style.left = `${x}px`;
+    interactHint.style.top = `${y}px`;
+    interactHint.style.display = 'inline-flex';
+  }
 
   window.resetAllAccessories = function(){
     resetAccessoryUI();
@@ -3624,12 +4398,37 @@ Note: ${payload.customer.note}`;
     applyInteractionScheme();
     applyFramingForViewport(true);
     const viewer = document.getElementById('viewer');
+    if(interactHint){
+      interactHint.addEventListener('pointerdown', (e) => e.stopPropagation());
+      interactHint.addEventListener('pointerup', (e) => {
+        e.stopPropagation();
+        const trollingChecked = Boolean(document.querySelector('#step-accessori input[data-accessory="trolling"]')?.checked);
+        if(!trollingChecked) return;
+        window.setTrollingDeployState(!trollingDeployed);
+      });
+    }
     if(viewer){
+      let pointerDownPos = null;
       viewer.addEventListener('pointerdown', () => {
+        pointerDownPos = null;
         unlockAudio();
         if(audioEnabled){
           sounds.bg.play().catch(() => {});
         }
+      });
+      viewer.addEventListener('pointerdown', (e) => {
+        pointerDownPos = { x: e.clientX, y: e.clientY };
+      });
+      viewer.addEventListener('pointerup', (e) => {
+        if(e.target?.closest?.('#viewer-ui')) return;
+        if(!pointerDownPos) return;
+        const dx = e.clientX - pointerDownPos.x;
+        const dy = e.clientY - pointerDownPos.y;
+        const moved = Math.hypot(dx, dy) > 8;
+        pointerDownPos = null;
+        if(moved) return;
+        if(tryToggleTrollingDeployFromPointer(e)) return;
+        tryToggleInteractiveActionFromPointer(e);
       });
     }
   
@@ -3637,7 +4436,12 @@ Note: ${payload.customer.note}`;
 
   function animate(){
     requestAnimationFrame(animate);
+    const delta = animationClock.getDelta();
+    if(animationMixer) animationMixer.update(delta);
     controls.update();
+    updateInteractHint();
+    updateActionHints();
+    updatePancaArrows();
     if(water){
       water.material.uniforms['time'].value += 1.0 / 600.0;
     }
@@ -3653,6 +4457,22 @@ Note: ${payload.customer.note}`;
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
