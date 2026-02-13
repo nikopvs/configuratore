@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
@@ -369,6 +369,44 @@ padding: 10px 14px;
       opacity: 0.85;
       margin-right: 4px;
     }
+    .info-pill {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      min-height: 16px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.85);
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+    #info-panel {
+      position: absolute;
+      left: 50%;
+      top: 54%;
+      transform: translate(-50%, -50%);
+      width: min(420px, calc(100% - 28px));
+      background: rgba(8,16,8,0.92);
+      border: 1px solid rgba(124,255,0,0.45);
+      border-radius: 10px;
+      padding: 12px 14px 10px;
+      z-index: 9;
+      display: none;
+      pointer-events: auto;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    }
+    #info-panel.is-open { display: block; }
+    .info-panel-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px; }
+    #info-title { margin:0; font-size:13px; color:#7CFF00; text-transform:uppercase; letter-spacing:0.4px; }
+    #info-close { border:1px solid rgba(255,255,255,0.35); background:rgba(0,0,0,0.45); color:#fff; font-size:11px; padding:4px 8px; border-radius:6px; cursor:pointer; text-transform:uppercase; }
+    #info-body { margin:0; color:rgba(255,255,255,0.9); font-size:12px; line-height:1.45; white-space:pre-wrap; }
 
     .nav-btn {
       position: relative;
@@ -697,6 +735,23 @@ cursor: pointer;
       text-transform: uppercase;
       color: #7CFF00;
     }
+    #rx-btn {
+      position: absolute;
+      top: 52px;
+      left: 12px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.35);
+      padding: 8px 12px;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #FFFF00;
+      display: none;
+    }
+    #rx-btn.is-active {
+      color: #00d4ff;
+      border-color: rgba(0,212,255,0.65);
+    }
     #audio-toggle {
       position: absolute;
       top: 12px;
@@ -768,6 +823,7 @@ cursor: pointer;
       #audio-toggle { top: 8px; right: 8px; padding: 6px 8px; font-size: 11px; }
 #order-btn { top: 8px; right: 8px; padding: 6px 8px; font-size: 11px; }
       #screenshot-btn { top: 8px; left: 8px; padding: 6px 8px; font-size: 11px; }
+      #rx-btn { top: 40px; left: 8px; padding: 6px 8px; font-size: 11px; }
       .mobile-nav {
         left: 50%;
         right: auto;
@@ -1001,13 +1057,14 @@ cursor: pointer;
       <button id="audio-toggle" type="button" aria-pressed="false">MUTE &#128263;</button>
       <button id="order-btn" type="button" class="is-hidden" style="display:none;">Ordina</button>
       <button id="screenshot-btn" type="button" title="Salva screenshot">PHOTO</button>
+      <button id="rx-btn" type="button" title="Vista semitrasparente">RX</button>
     </div>
     <div id="controls-overlay" class="controls-overlay">
       Mouse: trascina per ruotare, tasto destro per pan, rotella per zoom.<br>
       Touch: 1 dito ruota, 2 dita pan, pinch per zoom.
     </div>
     <div id="mobile-nav" class="mobile-nav">
-      <button id="mobile-mode-btn" type="button" aria-pressed="false">PAN ?</button>
+      <button id="mobile-mode-btn" type="button" aria-pressed="false">PAN <-></button>
       <button id="mobile-zoom-in" type="button" aria-label="Zoom in">+</button>
       <button id="mobile-zoom-out" type="button" aria-label="Zoom out">-</button>
     </div>
@@ -1018,7 +1075,7 @@ cursor: pointer;
           <span class="sr-only">Back</span>            <span class="nav-label">Back</span>
         </button>
         <div id="step-title-wrap">
-          <div id="step-title">Finitura</div>
+          <div id="step-title">Finitura</div><button class="info-pill" type="button" data-info-key="finitura" aria-label="Info Finitura">i</button>
           <button class="nav-btn reset-btn is-hidden" onclick="resetAllAccessories()" aria-label="Reset accessori">
             <span class="sr-only">Reset accessori</span>
               <span class="reset-label">RESET</span>
@@ -1068,6 +1125,13 @@ cursor: pointer;
 </div>
 
 <div class="home-link"><a href="https://ninga-skiffs.jimdosite.com/" target="_blank" rel="noopener">www.ningaskiffs.com</a></div>
+<div id="info-panel" aria-hidden="true">
+  <div class="info-panel-head">
+    <h3 id="info-title">Informazioni</h3>
+    <button id="info-close" type="button">Chiudi</button>
+  </div>
+  <p id="info-body"></p>
+</div>
 
 <div id="order-modal" aria-hidden="true">
   <div class="order-dialog" role="dialog" aria-modal="true" aria-labelledby="order-title">
@@ -1092,7 +1156,7 @@ cursor: pointer;
       <label>Email<input id="order-email" type="email"></label>
       <label>Telefono<input id="order-telefono" type="tel"></label>
       <label>Indirizzo<input id="order-indirizzo" type="text"></label>
-      <label>Citt�<input id="order-citta" type="text"></label>
+      <label>Cittï¿½<input id="order-citta" type="text"></label>
       <label>CAP<input id="order-cap" type="text"></label>
       <label>Note<textarea id="order-note"></textarea></label>
     </div>
@@ -1158,8 +1222,9 @@ cursor: pointer;
     { id: 'portello_esa_prua', hitTokens: ['portelloesaprua'], openClips: ['Portello_esa_prua_open'] },
     { id: 'portello_esa_centro', hitTokens: ['portelloesacentro'], openClips: ['Portello_esa_centro_open'] },
     { id: 'portello_esa_poppa', hitTokens: ['portelloesapoppa'], openClips: ['Portello_esa_poppa_open'] },
+    { id: 'deck_toggle', hitTokens: [] },
     { id: 'motore', hitTokens: ['fuoribordomotore'], openClips: ['Fuoribordo.motore_alza'], closeClips: ['Fuoribordo.motore_abbassa'], accessoryKey: 'motore' },
-    { id: 'panca', hitTokens: ['panca'], openClips: ['Panca_move_rear'], closeClips: ['Panca_move_front'], accessoryKey: 'panca' },
+    { id: 'panca', hitTokens: ['panca'], openClips: ['panca_center_rear'], closeClips: ['panca_center_front'], accessoryKey: 'panca' },
     { id: 'tientibene_f', hitTokens: ['tientibenef'], openClips: ['Tientibene_close'], accessoryKey: 'tientibene' }
   ];
   let modelAxesHelper = null;
@@ -1180,7 +1245,23 @@ cursor: pointer;
   const interactHint = document.getElementById('interact-hint');
   const interactHintsLayer = document.getElementById('interact-hints');
   const hintWorldPos = new THREE.Vector3();
+  const hintAdjustedWorldPos = new THREE.Vector3();
   const actionHintEls = new Map();
+  const SHOW_NON_PANCA_HINTS = false;
+  const ACTION_HINT_WORLD_OFFSETS = {
+    portello_prua: { x: -0.055, y: 0, z: 0 },
+    portello_esa_prua: { x: 0, y: 0, z: 0.03 },
+    portello_esa_centro: { x: 0, y: 0, z: 0.03 },
+    portello_esa_poppa: { x: 0, y: 0, z: 0.03 }
+  };
+  const INFO_CONTENT = {
+    finitura: {
+      title: 'Finitura',
+      body: 'Qui puoi scegliere il tipo di finitura della barca.\nSostituisci questo testo con la descrizione tecnica/commerciale che preferisci.'
+    }
+  };
+  let deckTransparent = false;
+  let deckRxSavedAntiskid = 'none';
   let pancaArrowFrontEl = null;
   let pancaArrowRearEl = null;
   renderer.setSize(viewer.clientWidth, viewer.clientHeight);
@@ -1208,14 +1289,14 @@ cursor: pointer;
   function updateMobileModeButton(){
     const modeBtn = document.getElementById('mobile-mode-btn');
     if(!modeBtn) return;
-    modeBtn.textContent = mobilePanMode ? 'ROTATE ?' : 'PAN ?';
+    modeBtn.textContent = mobilePanMode ? 'ROTATE <->' : 'PAN <->';
     modeBtn.classList.toggle('is-pan', mobilePanMode);
     modeBtn.setAttribute('aria-pressed', String(mobilePanMode));
   }
   function updateControlsOverlayText(){
     if(!controlsOverlay) return;
     if(mobileUiQuery.matches){
-      controlsOverlay.innerHTML = 'Touch: 1 dito ruota.<br>PAN ? attiva pan, + / - per zoom.';
+      controlsOverlay.innerHTML = 'Touch: 1 dito ruota.<br>PAN <-> attiva pan, + / - per zoom.';
       return;
     }
     controlsOverlay.innerHTML = 'Mouse: trascina per ruotare, tasto destro per pan, rotella per zoom.<br>Touch: 1 dito ruota, 2 dita pan, pinch per zoom.';
@@ -1372,15 +1453,16 @@ cursor: pointer;
   function getEsaPairForPanca(){
     if(pancaPosition === 'rear') return ['portello_esa_centro', 'portello_esa_prua'];
     if(pancaPosition === 'front') return ['portello_esa_poppa', 'portello_esa_centro'];
+    if(pancaPosition === 'center') return ['portello_esa_poppa', 'portello_esa_prua'];
     return ['portello_esa_poppa', 'portello_esa_prua'];
   }
   function movePancaTo(target){
     if(target === pancaPosition) return Promise.resolve(false);
-    const rearClip = findClipExact('Panca_move_rear') || findFirstAvailableClip(['Panca_move_rear']);
-    const frontClip = findClipExact('Panca_move_front') || findFirstAvailableClip(['Panca_move_front']);
-    if(!rearClip && !frontClip) return Promise.resolve(false);
+    const centerRearClip = findClipExact('panca_center_rear') || findFirstAvailableClip(['panca_center_rear', 'Panca_move_rear']);
+    const centerFrontClip = findClipExact('panca_center_front') || findFirstAvailableClip(['panca_center_front', 'Panca_move_front']);
+    const rearFrontClip = findClipExact('panca_rear_front') || findFirstAvailableClip(['panca_rear_front', 'Panca_rear_front']);
     const resetPancaActions = (exceptClip = null) => {
-      [rearClip, frontClip].forEach((clip) => {
+      [centerRearClip, centerFrontClip, rearFrontClip].forEach((clip) => {
         if(!clip || clip === exceptClip) return;
         const action = getClipAction(clip);
         if(!action) return;
@@ -1389,62 +1471,34 @@ cursor: pointer;
         action.enabled = false;
       });
     };
-    const playRear = (rev = false) => {
-      if(!rearClip) return Promise.resolve(false);
-      resetPancaActions(rearClip);
-      return playClipOnce(rearClip, rev);
+    const playCenterRear = (rev = false) => {
+      if(!centerRearClip) return Promise.resolve(false);
+      resetPancaActions(centerRearClip);
+      return playClipOnce(centerRearClip, rev);
     };
-    const playFront = (rev = false) => {
-      if(!frontClip) return Promise.resolve(false);
-      resetPancaActions(frontClip);
-      return playClipOnce(frontClip, rev);
+    const playCenterFront = (rev = false) => {
+      if(!centerFrontClip) return Promise.resolve(false);
+      resetPancaActions(centerFrontClip);
+      return playClipOnce(centerFrontClip, rev);
+    };
+    const playRearFront = (rev = false) => {
+      if(!rearFrontClip) return Promise.resolve(false);
+      resetPancaActions(rearFrontClip);
+      return playClipOnce(rearFrontClip, rev);
     };
     if(pancaPosition === 'center'){
-      if(target === 'rear') return playRear(false).then((ok) => { if(ok) pancaPosition = 'rear'; return ok; });
-      if(target === 'front') return playFront(false).then((ok) => { if(ok) pancaPosition = 'front'; return ok; });
+      if(target === 'rear') return playCenterRear(false).then((ok) => { if(ok) pancaPosition = 'rear'; return ok; });
+      if(target === 'front') return playCenterFront(false).then((ok) => { if(ok) pancaPosition = 'front'; return ok; });
     }
     if(pancaPosition === 'rear'){
-      if(target === 'center') return playRear(true).then((ok) => { if(ok) pancaPosition = 'center'; return ok; });
-      if(target === 'front'){
-        return playRear(true).then((ok) => {
-          if(ok) pancaPosition = 'center';
-          return playFront(false).then((ok2) => { if(ok2) pancaPosition = 'front'; return ok && ok2; });
-        });
-      }
+      if(target === 'center') return playCenterRear(true).then((ok) => { if(ok) pancaPosition = 'center'; return ok; });
+      if(target === 'front') return playRearFront(false).then((ok) => { if(ok) pancaPosition = 'front'; return ok; });
     }
     if(pancaPosition === 'front'){
-      if(target === 'center') return playFront(true).then((ok) => { if(ok) pancaPosition = 'center'; return ok; });
-      if(target === 'rear'){
-        return playFront(true).then((ok) => {
-          if(ok) pancaPosition = 'center';
-          return playRear(false).then((ok2) => { if(ok2) pancaPosition = 'rear'; return ok && ok2; });
-        });
-      }
+      if(target === 'center') return playCenterFront(true).then((ok) => { if(ok) pancaPosition = 'center'; return ok; });
+      if(target === 'rear') return playRearFront(true).then((ok) => { if(ok) pancaPosition = 'rear'; return ok; });
     }
     return Promise.resolve(false);
-  }
-  function triggerEsaPairAction(){
-    const esaIds = ['portello_esa_prua', 'portello_esa_centro', 'portello_esa_poppa'];
-    const pair = getEsaPairForPanca();
-    const pairAlreadyOpen = pair.every((id) => Boolean(interactiveState.get(id)));
-    const targetOpenSet = new Set(pairAlreadyOpen ? [] : pair);
-    const jobs = [];
-    esaIds.forEach((esaId) => {
-      const def = getInteractiveDef(esaId);
-      if(!def) return;
-      const wantOpen = targetOpenSet.has(esaId);
-      const isOpen = Boolean(interactiveState.get(esaId));
-      if(wantOpen === isOpen) return;
-      const openClip = findFirstAvailableClip(def.openClips || []);
-      if(!openClip) return;
-      stopDefActions(def, openClip);
-      jobs.push(playClipOnce(openClip, !wantOpen).then((ok) => {
-        if(ok) interactiveState.set(esaId, wantOpen);
-        return ok;
-      }));
-    });
-    if(!jobs.length) return Promise.resolve(false);
-    return Promise.all(jobs).then((arr) => arr.some(Boolean));
   }
   function closeAllEsaOpen(){
     const esaIds = ['portello_esa_prua', 'portello_esa_centro', 'portello_esa_poppa'];
@@ -1467,11 +1521,45 @@ cursor: pointer;
     if(!jobs.length) return Promise.resolve(false);
     return Promise.all(jobs).then((arr) => arr.some(Boolean));
   }
+
+  function isPancaAccessoryEnabled(){
+    return Boolean(document.querySelector('#step-accessori input[data-accessory="panca"]')?.checked);
+  }
+  function canExecuteInteractive(id, shouldOpen){
+    if(!shouldOpen) return { ok: true };
+    if(id.startsWith('portello_esa_') && !isPancaAccessoryEnabled()) return { ok: true };
+    if(id === 'motore' && pancaPosition === 'rear') return { ok: false };
+    if(id === 'tientibene_f' && pancaPosition === 'center') return { ok: false };
+    if(id === 'portello_esa_poppa' && pancaPosition === 'rear') return { ok: false };
+    if(id === 'portello_esa_centro' && (pancaPosition === 'center' || Boolean(interactiveState.get('tientibene_f')))) return { ok: false };
+    if(id === 'portello_esa_prua' && pancaPosition === 'front') return { ok: false };
+    return { ok: true };
+  }
+  function ensureMotoreLowered(){
+    const isEnabled = Boolean(document.querySelector('#step-accessori input[data-accessory="motore"]')?.checked);
+    if(!isEnabled) return Promise.resolve(false);
+    if(!Boolean(interactiveState.get('motore'))) return Promise.resolve(false);
+    return toggleInteractiveById('motore');
+  }
+  function ensureTientibeneState(lowered){
+    const isEnabled = Boolean(document.querySelector('#step-accessori input[data-accessory="tientibene"]')?.checked);
+    if(!isEnabled) return Promise.resolve(false);
+    const current = Boolean(interactiveState.get('tientibene_f'));
+    if(current == Boolean(lowered)) return Promise.resolve(false);
+    return toggleInteractiveById('tientibene_f');
+  }
+
   function toggleInteractiveById(id){
     const def = getInteractiveDef(id);
     if(!def) return Promise.resolve(false);
+    if(id === 'deck_toggle'){
+      setDeckTransparency(!deckTransparent);
+      return Promise.resolve(true);
+    }
     const isOpen = Boolean(interactiveState.get(id));
     const shouldOpen = !isOpen;
+    const gate = canExecuteInteractive(id, shouldOpen);
+    if(!gate.ok) return Promise.resolve(false);
     const openClip = findFirstAvailableClip(def.openClips || []);
     const closeClip = findFirstAvailableClip(def.closeClips || []);
     if(!openClip && !closeClip) return Promise.resolve(false);
@@ -1488,29 +1576,13 @@ cursor: pointer;
   function triggerInteractiveAction(id){
     const def = interactiveDefs.find((d) => d.id === id);
     if(!def || interactiveBusy) return false;
-    if(id === 'panca'){
-      return false;
-    }
-    if(id.startsWith('portello_esa_')){
-      interactiveBusy = true;
-      triggerEsaPairAction().finally(() => { interactiveBusy = false; });
-      return true;
-    }
-    const isOpen = Boolean(interactiveState.get(id));
-    const shouldOpen = !isOpen;
-    let openClip = findFirstAvailableClip(def.openClips || []);
-    let closeClip = findFirstAvailableClip(def.closeClips || []);
-    if(!openClip && !closeClip) return false;
-    const targetClip = shouldOpen ? openClip : (closeClip || openClip);
-    stopDefActions(def, targetClip || null);
+    if(currentStep !== 'accessori') return false;
+    if(id === 'panca') return false;
     interactiveBusy = true;
-    const op = shouldOpen
-      ? (openClip ? playClipOnce(openClip, false) : Promise.resolve(false))
-      : (closeClip ? playClipOnce(closeClip, false) : playClipOnce(openClip, true));
-    op.finally(() => {
-      interactiveState.set(id, shouldOpen);
-      interactiveBusy = false;
-    });
+    toggleInteractiveById(id)
+      .finally(() => {
+        interactiveBusy = false;
+      });
     return true;
   }
   function ensureActionHintElements(){
@@ -1518,6 +1590,7 @@ cursor: pointer;
     interactiveDefs.forEach((def) => {
       if(def.id === 'panca') return;
       if(def.id === 'tientibene_f') return;
+      if(def.id === 'deck_toggle') return;
       if(actionHintEls.has(def.id)) return;
       const el = document.createElement('button');
       el.type = 'button';
@@ -1572,35 +1645,42 @@ cursor: pointer;
   function triggerPancaDirection(target){
     if(interactiveBusy) return false;
     if(currentStep !== 'accessori') return false;
-    if(target === 'front' && pancaPosition === 'center'){
+    const run = (job) => {
       interactiveBusy = true;
       closeAllEsaOpen()
-        .then(() => movePancaTo('rear'))
-        .then(() => toggleInteractiveById('tientibene_f'))
-        .then(() => movePancaTo('front'))
-        .then(() => toggleInteractiveById('tientibene_f'))
+        .then(() => job())
         .finally(() => { interactiveBusy = false; });
       return true;
+    };
+
+    if(target === 'rear'){
+      if(pancaPosition === 'center'){
+        return run(() => ensureMotoreLowered().then(() => movePancaTo('rear')));
+      }
+      if(pancaPosition === 'front'){
+        return run(() => ensureTientibeneState(true)
+          .then(() => movePancaTo('rear'))
+          .then(() => ensureTientibeneState(false))
+          .then(() => movePancaTo('center')));
+      }
+      return false;
     }
-    if(target === 'rear' && pancaPosition === 'front'){
-      interactiveBusy = true;
-      closeAllEsaOpen()
-        .then(() => toggleInteractiveById('tientibene_f'))
-        .then(() => movePancaTo('rear'))
-        .then(() => toggleInteractiveById('tientibene_f'))
-        .then(() => movePancaTo('center'))
-        .finally(() => { interactiveBusy = false; });
-      return true;
+
+    if(target === 'front'){
+      if(pancaPosition === 'center'){
+        return run(() => ensureMotoreLowered()
+          .then(() => movePancaTo('rear'))
+          .then(() => ensureTientibeneState(true))
+          .then(() => movePancaTo('front'))
+          .then(() => ensureTientibeneState(false)));
+      }
+      if(pancaPosition === 'rear'){
+        return run(() => movePancaTo('center'));
+      }
+      return false;
     }
-    let desired = target;
-    if((pancaPosition === 'rear' && target === 'front') || (pancaPosition === 'front' && target === 'rear')){
-      desired = 'center';
-    }
-    interactiveBusy = true;
-    closeAllEsaOpen()
-      .then(() => movePancaTo(desired))
-      .finally(() => { interactiveBusy = false; });
-    return true;
+
+    return false;
   }
   function updatePancaArrows(){
     ensurePancaArrowElements();
@@ -1666,12 +1746,12 @@ cursor: pointer;
       actionHintEls.forEach((el) => { el.style.display = 'none'; });
       return;
     }
-    const enabledEsaSet = new Set(getEsaPairForPanca());
+    if(!SHOW_NON_PANCA_HINTS){
+      actionHintEls.forEach((el) => { el.style.display = 'none'; });
+      return;
+    }
     actionHintEls.forEach((el, id) => {
       const def = interactiveDefs.find((d) => d.id === id);
-      const isEsa = id.startsWith('portello_esa_');
-      const isEnabledByPancaRule = !isEsa || enabledEsaSet.has(id);
-      el.classList.toggle('is-disabled', !isEnabledByPancaRule);
       if(def?.accessoryKey){
         const enabled = Boolean(document.querySelector(`#step-accessori input[data-accessory="${def.accessoryKey}"]`)?.checked);
         if(!enabled){
@@ -1679,6 +1759,9 @@ cursor: pointer;
           return;
         }
       }
+      const isOpen = Boolean(interactiveState.get(id));
+      const gate = canExecuteInteractive(id, !isOpen);
+      el.classList.toggle('is-disabled', !gate.ok);
       const hasClip = Boolean(findFirstAvailableClip(def?.openClips || []) || findFirstAvailableClip(def?.closeClips || []));
       if(!hasClip){
         el.style.display = 'none';
@@ -1688,13 +1771,20 @@ cursor: pointer;
         el.style.display = 'none';
         return;
       }
-      hintWorldPos.project(camera);
-      if(hintWorldPos.z < -1 || hintWorldPos.z > 1){
+      hintAdjustedWorldPos.copy(hintWorldPos);
+      const off = ACTION_HINT_WORLD_OFFSETS[id];
+      if(off){
+        hintAdjustedWorldPos.x += off.x || 0;
+        hintAdjustedWorldPos.y += off.y || 0;
+        hintAdjustedWorldPos.z += off.z || 0;
+      }
+      hintAdjustedWorldPos.project(camera);
+      if(hintAdjustedWorldPos.z < -1 || hintAdjustedWorldPos.z > 1){
         el.style.display = 'none';
         return;
       }
-      const x = (hintWorldPos.x * 0.5 + 0.5) * viewer.clientWidth;
-      const y = (-hintWorldPos.y * 0.5 + 0.5) * viewer.clientHeight;
+      const x = (hintAdjustedWorldPos.x * 0.5 + 0.5) * viewer.clientWidth;
+      const y = (-hintAdjustedWorldPos.y * 0.5 + 0.5) * viewer.clientHeight;
       el.style.left = `${x}px`;
       el.style.top = `${y}px`;
       el.style.display = 'block';
@@ -1787,6 +1877,27 @@ cursor: pointer;
     water.rotation.x = -Math.PI / 2;
     water.position.y = waterTargetY;
     scene.add(water);
+    water.renderOrder = 4;
+    configureWaterMaskMeshes();
+  }
+
+  function configureWaterMaskMeshes(){
+    waterMaskMeshes.forEach((mesh) => {
+      if(!mesh || !mesh.isMesh) return;
+      const base = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
+      if(!base) return;
+      const maskMat = base.clone ? base.clone() : base;
+      maskMat.colorWrite = false;
+      maskMat.depthWrite = true;
+      maskMat.depthTest = true;
+      maskMat.transparent = false;
+      maskMat.opacity = 1;
+      maskMat.side = THREE.DoubleSide;
+      maskMat.needsUpdate = true;
+      mesh.material = maskMat;
+      mesh.visible = true;
+      mesh.renderOrder = 3;
+    });
   }
 
   let hullMat, deckMat, hatchesMat;
@@ -1799,6 +1910,7 @@ cursor: pointer;
   const chirpMeshes = [];
   const trollingMeshes = [];
   const trollingDeployMeshes = [];
+  const waterMaskMeshes = [];
   let trollingDeployed = false;
   const accessoryMeshMap = {
     schienale: ['mesh_0_2'],
@@ -1833,7 +1945,7 @@ cursor: pointer;
     const btn = document.getElementById('audio-toggle');
     if(btn){
       btn.classList.toggle('is-muted', !enabled);
-      btn.textContent = enabled ? 'MUTE ??' : 'UNMUTE ??';
+      btn.textContent = enabled ? 'MUTE' : 'UNMUTE';
       btn.setAttribute('aria-pressed', String(!enabled));
     }
     if(!enabled){
@@ -1995,7 +2107,7 @@ const accessoryDeps = {
     syncAccessoryUI();
   }
   const glbUrls = [
-    'models/fisher40_action3_light_noq.glb?v=1',
+    'models/fisher40_action6_light_noq.glb?v=3',
     'models/fisher40_base_nodraco.glb?v=6'
   ];
   let glbIndex = 0;
@@ -2045,6 +2157,7 @@ const accessoryDeps = {
     scrittaMat = null;
     trollingMeshes.length = 0;
     trollingDeployMeshes.length = 0;
+    waterMaskMeshes.length = 0;
     modelRoot.traverse(obj => {
       if(obj.isMesh){
         const matName = obj.material?.name || '';
@@ -2219,6 +2332,7 @@ const accessoryDeps = {
     syncSchienaleMaterial();
     syncTrollingMaterial();
     applyMaterialOverrides(modelRoot);
+    configureWaterMaskMeshes();
     applyChirpTextureToMeshes();
 
     // Auto-center and frame model in the camera view
@@ -2338,6 +2452,7 @@ const accessoryDeps = {
   function applyMaterialOverrides(root){
     if(!root) return;
     let yamahaMat = null;
+    let ossaturaMat = null;
     root.traverse((obj) => {
       if(!obj.isMesh || !obj.material) return;
       const list = Array.isArray(obj.material) ? obj.material : [obj.material];
@@ -2345,9 +2460,12 @@ const accessoryDeps = {
         if(!m?.name) return;
         const name = m.name.toLowerCase();
         if(name === 'yamaha') yamahaMat = m;
+        if(name === 'ossatura') ossaturaMat = m;
       });
     });
     if(yamahaMat && yamahaMat.color) yamahaMat.color.set('#696969');
+    if(ossaturaMat && ossaturaMat.color) ossaturaMat.color.set('#808080');
+
     const toBlackPlastic = (mat) => {
       if(!mat) return mat;
       const m = mat.clone?.() || mat;
@@ -2360,6 +2478,14 @@ const accessoryDeps = {
       m.alphaTest = 0;
       if('metalness' in m) m.metalness = 0;
       if('roughness' in m) m.roughness = 1;
+      m.needsUpdate = true;
+      return m;
+    };
+
+    const cloneWithColor = (mat, color) => {
+      if(!mat) return mat;
+      const m = mat.clone?.() || mat;
+      if(m.color) m.color.set(color);
       m.needsUpdate = true;
       return m;
     };
@@ -2391,18 +2517,42 @@ const accessoryDeps = {
 
     root.traverse((obj) => {
       if(!obj.isMesh) return;
+      const objNameLower = String(obj.name || '').toLowerCase();
+      if(objNameLower.includes('water_blocker') || objNameLower.includes('waterblocker') || objNameLower.includes('waterblock')){
+        if(!waterMaskMeshes.includes(obj)) waterMaskMeshes.push(obj);
+        return;
+      }
+
       const key = toKey(obj.name);
       const parentKey = toKey(obj.parent?.name);
       const grandParentKey = toKey(obj.parent?.parent?.name);
       const candidateKeys = [key, parentKey, grandParentKey];
       const isChirpMesh =
         candidateKeys.some((k) => k.includes('chirp')) ||
-        String(obj.name || '').toLowerCase().includes('chirp') ||
+        objNameLower.includes('chirp') ||
         (Array.isArray(obj.material) ? obj.material : [obj.material]).some((m) =>
           String(m?.name || '').toLowerCase().includes('chirp')
         );
 
       if(isChirpMesh){
+        return;
+      }
+
+      if(objNameLower == 'ossatura'){
+        if(Array.isArray(obj.material)){
+          obj.material = obj.material.map((m) => cloneWithColor(m, '#00FF00'));
+        }else{
+          obj.material = cloneWithColor(obj.material, '#00FF00');
+        }
+        return;
+      }
+
+      if(objNameLower.includes('shiumata') || objNameLower.includes('schiumata')){
+        if(Array.isArray(obj.material)){
+          obj.material = obj.material.map((m) => cloneWithColor(m, '#9400D3'));
+        }else{
+          obj.material = cloneWithColor(obj.material, '#9400D3');
+        }
         return;
       }
 
@@ -2572,6 +2722,10 @@ function updatePrice(){
     document.body.classList.toggle('step-colori', step === 'colori');
     document.body.classList.toggle('step-accessori', step === 'accessori');
     currentStep = step;
+    if(step !== 'accessori' && deckTransparent){
+      setDeckTransparency(false);
+    }
+    updateRxButtonState();
   }
 
   const colorPalettes = {
@@ -3295,6 +3449,9 @@ function applyChirpTextureToMeshes(){
         const antiskidSelect = document.querySelector('#antiskid-select select');
         if(antiskidSelect) antiskidSelect.value = '';
         updatePrice();
+        if(deckTransparent){
+          setDeckTransparency(false);
+        }
       }
 
 
@@ -3658,39 +3815,58 @@ function renderFinishSelect(){
 
   function updateInteractHint(){
     if(!interactHint) return;
-    if(currentStep !== 'accessori'){
-      interactHint.style.display = 'none';
-      return;
-    }
-    const trollingChecked = Boolean(document.querySelector('#step-accessori input[data-accessory="trolling"]')?.checked);
-    if(!trollingChecked){
-      interactHint.style.display = 'none';
-      return;
-    }
-    const pool = trollingDeployMeshes.filter(Boolean);
-    if(!pool.length){
-      interactHint.style.display = 'none';
-      return;
-    }
-    const box = new THREE.Box3();
-    pool.forEach((mesh) => box.expandByObject(mesh));
-    if(box.isEmpty()){
-      interactHint.style.display = 'none';
-      return;
-    }
-    box.getCenter(hintWorldPos);
-    hintWorldPos.add(INTERACT_HINT_OFFSET);
-    hintWorldPos.project(camera);
-    if(hintWorldPos.z < -1 || hintWorldPos.z > 1){
-      interactHint.style.display = 'none';
-      return;
-    }
-    const x = (hintWorldPos.x * 0.5 + 0.5) * viewer.clientWidth;
-    const y = (-hintWorldPos.y * 0.5 + 0.5) * viewer.clientHeight;
-    interactHint.style.left = `${x}px`;
-    interactHint.style.top = `${y}px`;
-    interactHint.style.display = 'inline-flex';
+    interactHint.style.display = 'none';
   }
+
+  function updateRxButtonState(){
+    const btn = document.getElementById('rx-btn');
+    if(!btn) return;
+    const show = currentStep === 'accessori';
+    btn.style.display = show ? 'inline-block' : 'none';
+    btn.classList.toggle('is-active', show && deckTransparent);
+    btn.setAttribute('aria-pressed', String(show && deckTransparent));
+  }
+
+  function setDeckTransparency(enabled){
+    const next = Boolean(enabled);
+    if(deckTransparent === next){
+      updateRxButtonState();
+      return;
+    }
+    deckTransparent = next;
+    const setMat = (mat) => {
+      if(!mat) return;
+      mat.transparent = next;
+      mat.opacity = next ? 0.18 : 1;
+      mat.depthWrite = !next;
+      mat.needsUpdate = true;
+    };
+    setMat(deckMat);
+    setMat(hatchesMat);
+
+    const antiskidSel = document.querySelector('#antiskid-select select');
+    if(next){
+      deckRxSavedAntiskid = selectedAntiskid || 'none';
+      selectedAntiskid = 'none';
+      if(antiskidSel){
+        antiskidSel.value = 'none';
+        antiskidSel.disabled = true;
+      }
+      updateAntiskidFinish();
+    }else{
+      if(antiskidSel) antiskidSel.disabled = false;
+      selectedAntiskid = deckRxSavedAntiskid || 'none';
+      if(antiskidSel) antiskidSel.value = selectedAntiskid;
+      updateAntiskidFinish();
+    }
+    updatePrice();
+    updateRxButtonState();
+  }
+
+  function toggleDeckTransparency(){
+    setDeckTransparency(!deckTransparent);
+  }
+
 
   window.resetAllAccessories = function(){
     resetAccessoryUI();
@@ -4372,6 +4548,38 @@ Note: ${payload.customer.note}`;
       });
       setAudioEnabled(audioEnabled, false);
     }
+    const rxBtn = document.getElementById('rx-btn');
+    if(rxBtn){
+      rxBtn.addEventListener('click', () => {
+        if(currentStep !== 'accessori') return;
+        toggleDeckTransparency();
+      });
+    }
+    updateRxButtonState();
+
+    const infoPanel = document.getElementById('info-panel');
+    const infoTitle = document.getElementById('info-title');
+    const infoBody = document.getElementById('info-body');
+    const infoClose = document.getElementById('info-close');
+    const closeInfoPanel = () => {
+      if(!infoPanel) return;
+      infoPanel.classList.remove('is-open');
+      infoPanel.setAttribute('aria-hidden', 'true');
+    };
+    if(infoClose){
+      infoClose.addEventListener('click', closeInfoPanel);
+    }
+    document.querySelectorAll('.info-pill[data-info-key]').forEach((el) => {
+      el.addEventListener('click', () => {
+        const key = el.getAttribute('data-info-key') || '';
+        const content = INFO_CONTENT[key];
+        if(!content || !infoPanel || !infoTitle || !infoBody) return;
+        infoTitle.textContent = content.title || 'Informazioni';
+        infoBody.textContent = content.body || '';
+        infoPanel.classList.add('is-open');
+        infoPanel.setAttribute('aria-hidden', 'false');
+      });
+    });
     const mobileModeBtn = document.getElementById('mobile-mode-btn');
     const mobileZoomInBtn = document.getElementById('mobile-zoom-in');
     const mobileZoomOutBtn = document.getElementById('mobile-zoom-out');
@@ -4457,6 +4665,7 @@ Note: ${payload.customer.note}`;
 
 </body>
 </html>
+
 
 
 
