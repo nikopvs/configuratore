@@ -170,6 +170,7 @@
       font-size: 12px;
       color: #7CFF00;
       pointer-events: none;
+      overflow: hidden;
     }
 
     #loading-bar {
@@ -187,6 +188,30 @@
       background: linear-gradient(90deg, #7CFF00, #3DFF8C);
       transition: width 0.2s ease;
     }
+    #loading-intro-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 0;
+      overflow: hidden;
+      background: #000;
+      box-shadow: none;
+    }
+    #loading-intro-video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    #loading-text,
+    #loading-bar {
+      position: relative;
+      z-index: 2;
+    }
+
     #interact-hint {
       position: absolute;
       left: 0;
@@ -276,6 +301,7 @@
       opacity: 0.3;
       cursor: default;
       pointer-events: none;
+      overflow: hidden;
     }
 
     #viewer-ui {
@@ -285,6 +311,7 @@
       flex-direction: column;
       justify-content: space-between;
       pointer-events: none;
+      overflow: hidden;
     }
 
     #viewer-ui .top,
@@ -450,16 +477,19 @@ transition: background 0.2s ease, transform 0.2s ease;
     .nav-btn.is-disabled {
       opacity: 0.35;
       pointer-events: none;
+      overflow: hidden;
     }
 
     .nav-btn.is-hidden {
       visibility: hidden;
       pointer-events: none;
+      overflow: hidden;
     }
 
     .ghost-btn {
       visibility: hidden;
       pointer-events: none;
+      overflow: hidden;
     }
 
     .step-header {
@@ -673,9 +703,9 @@ cursor: pointer;
   
     /* Extra UI */
     .controls-overlay {
+      display: none;
       position: absolute;
       inset: 0;
-      display: flex;
       align-items: flex-start;
       justify-content: center;
       text-align: center;
@@ -904,8 +934,15 @@ cursor: pointer;
       justify-content: center !important;
       gap: 10px !important;
     }
-    #step-title { text-align: center !important; min-width: 120px !important; display: inline-block !important; }
+    #step-title { text-align: center !important; min-width: 0 !important; width: max-content !important; display: inline-block !important; }
     #step-title-wrap { position: relative !important; display: inline-block !important; }
+    #step-title-wrap .info-pill {
+      position: absolute !important;
+      right: calc(100% + 8px) !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      margin: 0 !important;
+    }
     #step-title-wrap .reset-btn { position: absolute !important; left: calc(100% + 10px) !important; top: calc(50% - 5px) !important; transform: translateY(-50%) !important; }
     .step-header .ghost-btn { display: none !important; }
 
@@ -994,9 +1031,14 @@ cursor: pointer;
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
+        transform: translateY(-30px) !important;
       }
-      body.step-colori #step-title {
-        transform: translateY(-18px) !important;
+      #step-title-wrap .info-pill {
+        position: static !important;
+        order: -1 !important;
+        transform: none !important;
+        margin: 0 0 8px 0 !important;
+        align-self: center !important;
       }
 
       #step-title-wrap .reset-btn {
@@ -1014,12 +1056,6 @@ cursor: pointer;
         text-decoration: underline !important;
         font-weight: 700 !important;
       }
-      body.step-accessori #step-title {
-        transform: translateY(-18px) !important;
-      }
-      body.step-accessori #step-title-wrap .reset-btn {
-        transform: translateY(-18px) !important;
-      }
 
       #viewer-ui .back-btn,
       #viewer-ui .next-btn {
@@ -1028,6 +1064,7 @@ cursor: pointer;
         left: auto !important;
         right: auto !important;
         pointer-events: auto !important;
+        z-index: 10 !important;
       }
       #viewer-ui .back-btn { left: 12px !important; }
       #viewer-ui .next-btn { right: 12px !important; }
@@ -1047,6 +1084,11 @@ cursor: pointer;
     <div id="loading-bar">
       <div id="loading-fill"></div>
     </div>
+    <div id="loading-intro-wrap" aria-hidden="true">
+      <video id="loading-intro-video" autoplay muted loop playsinline preload="auto">
+        <source src="video/intro.mp4" type="video/mp4" />
+      </video>
+    </div>
   </div>
   <div id="interact-hint" aria-hidden="true" title="Interazione"><span class="dot"></span></div>
   <div id="interact-hints" aria-hidden="true"></div>
@@ -1064,7 +1106,7 @@ cursor: pointer;
       Touch: 1 dito ruota, 2 dita pan, pinch per zoom.
     </div>
     <div id="mobile-nav" class="mobile-nav">
-      <button id="mobile-mode-btn" type="button" aria-pressed="false">PAN <-></button>
+      <button id="mobile-mode-btn" type="button" aria-pressed="false">PAN ↔</button>
       <button id="mobile-zoom-in" type="button" aria-label="Zoom in">+</button>
       <button id="mobile-zoom-out" type="button" aria-label="Zoom out">-</button>
     </div>
@@ -1289,17 +1331,13 @@ cursor: pointer;
   function updateMobileModeButton(){
     const modeBtn = document.getElementById('mobile-mode-btn');
     if(!modeBtn) return;
-    modeBtn.textContent = mobilePanMode ? 'ROTATE <->' : 'PAN <->';
+    modeBtn.textContent = mobilePanMode ? 'ROTATE ↻' : 'PAN ↔';
     modeBtn.classList.toggle('is-pan', mobilePanMode);
     modeBtn.setAttribute('aria-pressed', String(mobilePanMode));
   }
   function updateControlsOverlayText(){
     if(!controlsOverlay) return;
-    if(mobileUiQuery.matches){
-      controlsOverlay.innerHTML = 'Touch: 1 dito ruota.<br>PAN <-> attiva pan, + / - per zoom.';
-      return;
-    }
-    controlsOverlay.innerHTML = 'Mouse: trascina per ruotare, tasto destro per pan, rotella per zoom.<br>Touch: 1 dito ruota, 2 dita pan, pinch per zoom.';
+    controlsOverlay.style.display = 'none';
   }
   function applyInteractionScheme(){
     const isMobile = mobileUiQuery.matches;
@@ -1836,22 +1874,28 @@ cursor: pointer;
 
   const pmremGenerator = new THREE.PMREMGenerator(renderer);
   let environmentLoaded = false;
+  let environmentLoadingPromise = null;
   let water;
   let waterTargetY = -0.43;
 
   function loadEnvironment(){
-    if(environmentLoaded) return;
+    if(environmentLoadingPromise) return environmentLoadingPromise;
     environmentLoaded = true;
 
-    new RGBELoader()
-      .setPath('hdr/')
-      .load('puresky.hdr', (hdrTexture) => {
-        const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
-        scene.background = envMap;
-        scene.environment = envMap;
-        hdrTexture.dispose();
-        pmremGenerator.dispose();
-      });
+    environmentLoadingPromise = new Promise((resolve) => {
+      new RGBELoader()
+        .setPath('hdr/')
+        .load('puresky.hdr', (hdrTexture) => {
+          const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
+          scene.background = envMap;
+          scene.environment = envMap;
+          hdrTexture.dispose();
+          pmremGenerator.dispose();
+          resolve(true);
+        }, undefined, () => {
+          resolve(false);
+        });
+    });
 
     const waterGeometry = new THREE.PlaneGeometry(10000, 10000);
     water = new Water(
@@ -1879,6 +1923,8 @@ cursor: pointer;
     scene.add(water);
     water.renderOrder = 4;
     configureWaterMaskMeshes();
+
+    return environmentLoadingPromise;
   }
 
   function configureWaterMaskMeshes(){
@@ -1924,7 +1970,7 @@ cursor: pointer;
     off: new Audio('audio/blip.mp3')
   };
   sounds.bg.loop = true;
-  sounds.bg.volume = 0.35;
+  sounds.bg.volume = 0.18;
   sounds.on.volume = 0.8;
   sounds.off.volume = 0.8;
   let audioUnlocked = false;
@@ -1945,7 +1991,7 @@ cursor: pointer;
     const btn = document.getElementById('audio-toggle');
     if(btn){
       btn.classList.toggle('is-muted', !enabled);
-      btn.textContent = enabled ? 'MUTE' : 'UNMUTE';
+      btn.textContent = enabled ? 'MUTE 🔇' : 'UNMUTE 🔊';
       btn.setAttribute('aria-pressed', String(!enabled));
     }
     if(!enabled){
@@ -2368,15 +2414,21 @@ const accessoryDeps = {
     controls.minDistance = cameraZ * (mobileUiQuery.matches ? 0.5 : 0.4);
       controls.maxDistance = cameraZ * (mobileUiQuery.matches ? 1.7 : 1.4);
 
-      waterTargetY = -maxDim * 0.12 + 0.105;
+      waterTargetY = -maxDim * 0.12 + 0.110;
       if(water){
         water.position.y = waterTargetY;
       }
       syncAccessoryUI();
-      if(loadingOverlay){
-        loadingOverlay.style.display = 'none';
-      }
-      loadEnvironment();
+      const envReady = loadEnvironment();
+      Promise.race([
+        envReady,
+        new Promise((resolve) => setTimeout(resolve, 2500))
+      ]).finally(() => {
+        if(token !== loadToken) return;
+        if(loadingOverlay){
+          loadingOverlay.style.display = 'none';
+        }
+      });
     }, (xhr) => {
       if(token !== loadToken) return;
       progressSeen = true;
@@ -2412,6 +2464,7 @@ const accessoryDeps = {
     applyFramingForViewport();
   }
 
+  loadEnvironment();
   loadGlb();
 
   let finishSelected = false;
@@ -4561,10 +4614,12 @@ Note: ${payload.customer.note}`;
     const infoTitle = document.getElementById('info-title');
     const infoBody = document.getElementById('info-body');
     const infoClose = document.getElementById('info-close');
+    let currentInfoKey = '';
     const closeInfoPanel = () => {
       if(!infoPanel) return;
       infoPanel.classList.remove('is-open');
       infoPanel.setAttribute('aria-hidden', 'true');
+      currentInfoKey = '';
     };
     if(infoClose){
       infoClose.addEventListener('click', closeInfoPanel);
@@ -4574,6 +4629,12 @@ Note: ${payload.customer.note}`;
         const key = el.getAttribute('data-info-key') || '';
         const content = INFO_CONTENT[key];
         if(!content || !infoPanel || !infoTitle || !infoBody) return;
+        const isOpen = infoPanel.classList.contains('is-open') && infoPanel.getAttribute('aria-hidden') !== 'true';
+        if(isOpen && currentInfoKey === key){
+          closeInfoPanel();
+          return;
+        }
+        currentInfoKey = key;
         infoTitle.textContent = content.title || 'Informazioni';
         infoBody.textContent = content.body || '';
         infoPanel.classList.add('is-open');
@@ -4665,6 +4726,13 @@ Note: ${payload.customer.note}`;
 
 </body>
 </html>
+
+
+
+
+
+
+
 
 
 
