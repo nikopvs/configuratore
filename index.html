@@ -30,7 +30,7 @@
 
     #header {
       width: 60vw;
-      margin-top: 16px;
+      margin-top: 27px;
       text-align: center;
     }
 
@@ -91,7 +91,7 @@
       }
 
       #price-tag {
-  margin-top: 20px;
+  margin-top: 27px;
   font-size: 20px;
   letter-spacing: 0.5px;
   color: #7CFF00;;
@@ -277,23 +277,24 @@
     }
     .panca-arrow-btn {
       position: absolute;
-      width: 22px;
-      height: 22px;
-      min-width: 0;
+      min-width: 62px;
+      height: 24px;
       min-height: 0;
-      padding: 0;
+      padding: 0 8px;
       margin: 0;
       box-sizing: border-box;
       appearance: none;
       -webkit-appearance: none;
-      border-radius: 50%;
+      border-radius: 999px;
       transform: translate(-50%, -50%);
       border: 1px solid rgba(0,255,255,0.85);
       background: rgba(0,0,0,0.6);
       color: #00FFFF;
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 11px;
+      font-weight: 600;
       line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
       cursor: pointer;
       pointer-events: auto;
     }
@@ -311,7 +312,7 @@
       flex-direction: column;
       justify-content: space-between;
       pointer-events: none;
-      overflow: hidden;
+      overflow: visible;
     }
 
     #viewer-ui .top,
@@ -366,7 +367,7 @@ padding: 10px 14px;
     }
 
     #price-tag {
-  margin-top: 20px;
+  margin-top: 27px;
   font-size: 20px;
   letter-spacing: 0.5px;
   color: #7CFF00;;
@@ -545,6 +546,24 @@ transition: background 0.2s ease, transform 0.2s ease;
       margin: 3px;
     }
 
+
+    #step-colori .info-pill,
+    #step-title-wrap .info-pill {
+      width: 16px !important;
+      height: 16px !important;
+      min-width: 16px !important;
+      min-height: 16px !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border-radius: 50% !important;
+      font-size: 11px !important;
+      line-height: 1 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      box-sizing: border-box !important;
+    }
+
     #step-finitura select,
     #step-colori select {
       min-width: 140px;
@@ -694,6 +713,159 @@ transition: background 0.2s ease, transform 0.2s ease;
   color: #7CFF00;
 }
 
+#step-colori .color-choice-dropdown {
+  position: relative;
+  display: inline-flex;
+  min-width: 124px;
+  max-width: none;
+}
+#step-colori .color-choice-dropdown .choice-btn.trigger {
+  min-width: 124px;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 6px;
+  font-size: 10px;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.15;
+}
+#step-colori .color-choice-dropdown .choice-btn.trigger::after {
+  content: '\25BE';
+  margin-left: 8px;
+  font-size: 10px;
+  color: #7CFF00;
+}
+#step-colori .color-choice-dropdown .choice-menu {
+  display: none;
+  min-width: 260px;
+  width: max-content;
+  max-width: min(92vw, 560px);
+  top: auto;
+  bottom: calc(100% + 6px);
+  max-height: min(52vh, 360px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 30;
+  background: rgba(6, 12, 18, 0.98);
+  border: 1px solid rgba(255,255,255,0.28);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.55);
+  backdrop-filter: none;
+}
+#step-colori .color-choice-dropdown.open-up .choice-menu {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+#step-colori .color-choice-dropdown.is-open .choice-menu {
+  display: flex;
+}
+#step-colori .choice-menu > .choice-option {
+  background: rgba(12, 18, 26, 0.98);
+}
+#step-colori .color-choice-dropdown.is-open {
+  z-index: 120;
+}
+#step-colori .choice-sub {
+  display: block;
+  width: 100%;
+}
+#step-colori .choice-submenu {
+  position: static;
+  left: auto;
+  bottom: auto;
+  margin: 4px 0 0 0;
+  min-width: 112px;
+  width: max-content;
+  border-radius: 6px;
+  z-index: 121;
+  overflow-x: hidden;
+  background: rgba(6, 12, 18, 0.98);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+#step-colori .choice-submenu .choice-option {
+  padding: 3px 4px;
+  font-size: 9px;
+  white-space: normal;
+  line-height: 1.2;
+  background: rgba(12, 18, 26, 0.98);
+}
+#step-colori .choice-sub.is-open .choice-submenu {
+  display: flex;
+}
+#step-colori .choice-sub:hover .choice-submenu,
+#step-colori .choice-sub:focus-within .choice-submenu {
+  display: none;
+}
+#step-colori .choice-sub.is-open:hover .choice-submenu,
+#step-colori .choice-sub.is-open:focus-within .choice-submenu {
+  display: flex;
+}
+.color-swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 28px);
+  gap: 2px;
+  min-width: max-content;
+}
+.texture-swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 28px);
+  gap: 4px;
+  min-width: max-content;
+}
+.color-swatch-option {
+  border: 1px solid rgba(255,255,255,0.65);
+  background: transparent;
+  color: #fff;
+  border-radius: 2px;
+  margin: 0 !important;
+  padding: 0;
+  font-size: 0;
+  display: block;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  max-width: 28px;
+  max-height: 28px;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.color-swatch-option .swatch {
+  display: none;
+}
+.color-swatch-option.is-selected {
+  outline: 1px solid #7CFF00;
+  outline-offset: 1px;
+}
+.texture-swatch-option {
+  border: 1px solid rgba(255,255,255,0.65);
+  background-color: #101820;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: transparent;
+  border-radius: 4px;
+  margin: 0 !important;
+  padding: 0;
+  font-size: 0;
+  display: block;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  max-width: 28px;
+  max-height: 28px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.texture-swatch-option.is-selected {
+  outline: 1px solid #7CFF00;
+  outline-offset: 1px;
+}
+
 #viewer-ui label,
       #viewer-ui input,
       #viewer-ui select,
@@ -782,6 +954,103 @@ cursor: pointer;
       color: #00d4ff;
       border-color: rgba(0,212,255,0.65);
     }
+    #live-summary {
+      position: absolute;
+      top: 96px;
+      left: 12px;
+      width: min(340px, calc(100vw - 24px));
+      padding: 8px 10px;
+      border: none;
+      background: transparent;
+      color: #d9f7ff;
+      font-size: 11px;
+      line-height: 1.35;
+      text-align: left;
+      border-radius: 8px;
+      z-index: 7;
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+    #live-summary .live-summary-title {
+      margin: 0 0 4px 0;
+      color: #7CFF00;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    #live-summary ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 3px;
+    }
+    #live-summary li {
+      margin: 0;
+      padding: 0;
+      color: rgba(255,255,255,0.9);
+      word-break: break-word;
+    }
+    #live-summary b {
+      color: #9fe8ff;
+      font-weight: 700;
+    }
+
+    .lang-switch {
+      position: absolute;
+      top: 27px;
+      right: 112px;
+      display: inline-flex;
+      gap: 8px;
+      z-index: 7;
+      align-items: center;
+    }
+    .currency-switch {
+      position: absolute;
+      top: 27px;
+      left: 112px;
+      display: inline-flex;
+      gap: 8px;
+      z-index: 7;
+      align-items: center;
+    }
+    .lang-btn {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      padding: 0;
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      line-height: 1;
+      min-width: 0;
+      cursor: pointer;
+    }
+    .currency-btn {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      padding: 0;
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      line-height: 1;
+      min-width: 0;
+      cursor: pointer;
+    }
+    .lang-btn.is-active {
+      color: #00d4ff;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .currency-btn.is-active {
+      color: #00d4ff;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
     #audio-toggle {
       position: absolute;
       top: 12px;
@@ -851,14 +1120,20 @@ cursor: pointer;
     @media (max-width: 900px) {
       .controls-overlay { font-size: 17px; }
       #audio-toggle { top: 8px; right: 8px; padding: 6px 8px; font-size: 11px; }
+      .lang-switch { top: 55px; right: 15px; gap: 4px; flex-direction: column; align-items: flex-end; }
+      .currency-switch { top: 55px; left: 15px; right: auto; gap: 4px; flex-direction: column; align-items: flex-start; }
+      .lang-btn { font-size: 10px; }
+      .currency-btn { font-size: 10px; }
 #order-btn { top: 8px; right: 8px; padding: 6px 8px; font-size: 11px; }
       #screenshot-btn { top: 8px; left: 8px; padding: 6px 8px; font-size: 11px; }
-      #rx-btn { top: 40px; left: 8px; padding: 6px 8px; font-size: 11px; }
+      #rx-btn { top: 88px; right: 8px; left: auto; padding: 6px 8px; font-size: 11px; }
       .mobile-nav {
-        left: 50%;
-        right: auto;
-        top: 110px;
-        transform: translateX(-50%);
+        left: auto;
+        right: 8px;
+        top: 120px;
+        transform: none;
+        flex-direction: column;
+        align-items: flex-end;
       }
       .mobile-nav { display: inline-flex; }
     }
@@ -925,6 +1200,70 @@ cursor: pointer;
 
     /* Step header alignment */
     #viewer-ui .bottom { position: relative !important; }
+    #viewer-ui .bottom { overflow-x: hidden !important; }
+    body.step-colori #viewer-ui .bottom {
+      overflow: visible !important;
+    }
+    body.step-accessori #viewer-ui .bottom,
+    #viewer.step-accessori #viewer-ui .bottom {
+      overflow: visible !important;
+    }
+    body.step-colori #viewer,
+    body.step-colori #viewer-ui,
+    body.step-colori #viewer-ui .bottom,
+    body.step-colori #step-colori,
+    body.step-colori #step-colori .color-row,
+    body.step-colori #step-colori .color-group,
+    #viewer.step-colori,
+    #viewer.step-colori #viewer-ui,
+    #viewer.step-colori #viewer-ui .bottom,
+    #viewer.step-colori #step-colori,
+    #viewer.step-colori #step-colori .color-row,
+    #viewer.step-colori #step-colori .color-group {
+      overflow: visible !important;
+    }
+    body.step-accessori #viewer,
+    body.step-accessori #viewer-ui,
+    body.step-accessori #viewer-ui .bottom,
+    body.step-accessori #step-accessori,
+    #viewer.step-accessori,
+    #viewer.step-accessori #viewer-ui,
+    #viewer.step-accessori #viewer-ui .bottom,
+    #viewer.step-accessori #step-accessori {
+      overflow: visible !important;
+    }
+    body.step-colori .step-header,
+    #viewer.step-colori .step-header {
+      z-index: 200 !important;
+      pointer-events: auto !important;
+    }
+    body.step-colori #step-colori,
+    #viewer.step-colori #step-colori {
+      position: relative !important;
+      z-index: auto !important;
+    }
+    body.step-colori #step-colori .color-choice-dropdown.is-open,
+    #viewer.step-colori #step-colori .color-choice-dropdown.is-open {
+      z-index: 5000 !important;
+    }
+    body.step-colori #step-colori .color-choice-dropdown .choice-menu,
+    #viewer.step-colori #step-colori .color-choice-dropdown .choice-menu {
+      z-index: 5001 !important;
+    }
+    body.step-colori #step-colori .choice-submenu,
+    #viewer.step-colori #step-colori .choice-submenu {
+      z-index: 5002 !important;
+    }
+    body.step-accessori #viewer-ui .back-btn,
+    body.step-accessori #viewer-ui .next-btn,
+    #viewer.step-accessori #viewer-ui .back-btn,
+    #viewer.step-accessori #viewer-ui .next-btn {
+      display: inline-flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      z-index: 600 !important;
+    }
     .step-header {
       position: absolute !important;
       top: 8px !important;
@@ -985,6 +1324,11 @@ cursor: pointer;
         -webkit-overflow-scrolling: touch;
         padding-bottom: 10px;
       }
+      body.step-colori #viewer-ui .bottom {
+        max-height: none !important;
+        overflow: visible !important;
+        -webkit-overflow-scrolling: auto !important;
+      }
 
       .color-row {
         flex-direction: column;
@@ -993,12 +1337,132 @@ cursor: pointer;
       }
 
       .color-group { width: 100%; justify-content: space-between; }
+
+      #group-antiskid {
+        justify-content: flex-start !important;
+      }
+      #group-antiskid .color-label {
+        order: 1;
+        min-width: 0;
+        margin-right: 4px;
+      }
+      #group-antiskid .info-pill {
+        order: 2;
+        margin: 0 0 0 4px !important;
+      }
+      #group-antiskid #antiskid-select {
+        order: 3;
+        margin-left: auto;
+      }
+
       .color-label { min-width: 70px; }
 
       #step-finitura select,
       #step-colori select {
         width: 100%;
         min-width: 0;
+      }
+      #step-colori select {
+        display: none !important;
+      }
+      #step-colori .color-choice-dropdown {
+        display: inline-flex !important;
+      }
+      #step-colori .color-choice-dropdown .choice-btn.trigger {
+        min-width: 0;
+      }
+      #step-colori .color-choice-dropdown .choice-menu {
+        top: calc(100% + 6px) !important;
+        bottom: auto !important;
+        left: auto !important;
+        right: 0 !important;
+        max-height: min(40vh, 260px);
+        z-index: 9000 !important;
+        min-width: 0 !important;
+        width: min(128px, calc(96vw - 26px)) !important;
+        max-width: calc(96vw - 26px) !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+        background: #060c12 !important;
+      }
+      #step-colori .color-choice-dropdown.is-open .choice-menu {
+        position: fixed !important;
+        left: 50% !important;
+        top: 80% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: translate(-50%, -50%) !important;
+        width: min(320px, calc(100vw - 24px)) !important;
+        max-width: calc(100vw - 24px) !important;
+        max-height: min(70vh, 520px) !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        z-index: 9505 !important;
+        border: 1px solid rgba(255,255,255,0.28) !important;
+        box-shadow: 0 14px 34px rgba(0,0,0,0.65) !important;
+      }
+      #step-colori .color-choice-dropdown.is-open {
+        z-index: 9504 !important;
+      }
+      body.step-colori.color-menu-open #step-colori .color-choice-dropdown.is-open,
+      #viewer.step-colori.color-menu-open #step-colori .color-choice-dropdown.is-open {
+        z-index: 9504 !important;
+      }
+      #step-colori .choice-submenu {
+        display: none;
+        z-index: 9002 !important;
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        background: #060c12 !important;
+      }
+      #step-colori .color-swatch-grid {
+        display: grid !important;
+        min-width: 0 !important;
+        width: auto !important;
+        grid-template-columns: repeat(8, 28px) !important;
+        gap: 2px !important;
+        justify-content: start !important;
+      }
+      #step-colori .color-swatch-option {
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        min-height: 28px !important;
+        max-width: 28px !important;
+        max-height: 28px !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      #step-colori .color-swatch-option .swatch {
+        display: none !important;
+      }
+      #step-colori .texture-swatch-grid {
+        display: grid !important;
+        min-width: 0 !important;
+        width: auto !important;
+        grid-template-columns: repeat(8, 28px) !important;
+        gap: 4px !important;
+        justify-content: start !important;
+      }
+      #step-colori .texture-swatch-option {
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        min-height: 28px !important;
+        max-width: 28px !important;
+        max-height: 28px !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      #step-colori .choice-submenu {
+        padding: 6px !important;
+      }
+      #step-colori .choice-sub.is-open .choice-submenu {
+        display: flex !important;
       }
 
       #step-accessori { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1072,11 +1536,30 @@ cursor: pointer;
       }
       #viewer-ui .back-btn { left: 12px !important; }
       #viewer-ui .next-btn { right: 12px !important; }
+
+      #info-panel {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: calc(100vw - 24px);
+        max-width: min(420px, calc(100vw - 24px));
+        max-height: 62vh;
+        overflow: auto;
+        box-sizing: border-box;
+        z-index: 30;
+      }
     }
 
     @media (max-width: 640px) {
       #viewer { height: 85vh; }
       #step-accessori { grid-template-columns: 1fr; }
+      #live-summary {
+        top: 96px;
+        left: 10px;
+        width: min(320px, calc(100vw - 20px));
+        font-size: 10px;
+      }
     }
 </style>
 </head>
@@ -1100,17 +1583,20 @@ cursor: pointer;
     <div class="top">
       <h1>FISHER 40</h1>
       <div id="price-tag">&euro; 6.000</div>
-      <button id="audio-toggle" type="button" aria-pressed="false">MUTE &#128263;</button>
+      <div id="lang-switch" class="lang-switch" aria-label="Language selector"><button id="lang-it" class="lang-btn is-active" type="button">IT</button><button id="lang-en" class="lang-btn" type="button">EN</button></div>
+      <div id="currency-switch" class="currency-switch" aria-label="Currency selector"><button id="currency-eur" class="currency-btn is-active" type="button">EUR</button><button id="currency-usd" class="currency-btn" type="button">USD</button></div>
+      <button id="audio-toggle" type="button" aria-pressed="false">MUTO</button>
       <button id="order-btn" type="button" class="is-hidden" style="display:none;">Ordina</button>
-      <button id="screenshot-btn" type="button" title="Salva screenshot">PHOTO</button>
+      <button id="screenshot-btn" type="button" title="Salva screenshot">FOTO</button>
       <button id="rx-btn" type="button" title="Vista semitrasparente">RX</button>
+      <div id="live-summary" aria-live="polite" aria-atomic="true"></div>
     </div>
     <div id="controls-overlay" class="controls-overlay">
       Mouse: trascina per ruotare, tasto destro per pan, rotella per zoom.<br>
       Touch: 1 dito ruota, 2 dita pan, pinch per zoom.
     </div>
     <div id="mobile-nav" class="mobile-nav">
-      <button id="mobile-mode-btn" type="button" aria-pressed="false">PAN ↔</button>
+      <button id="mobile-mode-btn" type="button" aria-pressed="false">PAN ?</button>
       <button id="mobile-zoom-in" type="button" aria-label="Zoom in">+</button>
       <button id="mobile-zoom-out" type="button" aria-label="Zoom out">-</button>
     </div>
@@ -1121,10 +1607,10 @@ cursor: pointer;
           <span class="sr-only">Back</span>            <span class="nav-label">Back</span>
         </button>
         <div id="step-title-wrap">
-          <div id="step-title">Finitura</div><button class="info-pill" type="button" data-info-key="finitura" aria-label="Info Finitura">i</button>
+          <div id="step-title">Finitura</div><button class="info-pill" type="button" data-info-key="finitura" data-info-dynamic="step" aria-label="Info Finitura">i</button>
           <button class="nav-btn reset-btn is-hidden" onclick="resetAllAccessories()" aria-label="Reset accessori">
             <span class="sr-only">Reset accessori</span>
-              <span class="reset-label">RESET</span>
+              <span class="reset-label">RESETTA</span>
           </button>
         </div>
         <button class="nav-btn next-btn is-hidden" onclick="goNext()" aria-label="Go">
@@ -1138,19 +1624,20 @@ cursor: pointer;
       <div id="step-colori" class="step hidden">
         <div class="color-row">
           <div class="color-group" id="group-hull">
-            <span class="color-label">Hull</span>
+            <span class="color-label" data-color-label="hull">CHIGLIA</span>
             <div id="hull-colors"></div>
           </div>
           <div class="color-group" id="group-deck">
-            <span class="color-label">Deck</span>
+            <span class="color-label" data-color-label="deck">PONTE</span>
             <div id="deck-colors"></div>
           </div>
           <div class="color-group" id="group-hatches">
-            <span class="color-label">Doors</span>
+            <span class="color-label" data-color-label="hatches">PORTELLI</span>
             <div id="hatches-colors"></div>
           </div>
           <div class="color-group" id="group-antiskid">
-            <span class="color-label">Antiskid</span>
+            <button class="info-pill" type="button" data-info-key="antiskid" aria-label="Info Antiscivolo">i</button>
+            <span class="color-label" data-color-label="antiskid">ANTISCIVOLO</span>
             <div id="antiskid-select"></div>
           </div>
         </div>
@@ -1163,15 +1650,15 @@ cursor: pointer;
         <label><input type="checkbox" data-accessory="motore" onchange="toggleAccessory('motore', this.checked)"> Motore</label>
         <label><input type="checkbox" data-accessory="impianto" onchange="toggleAccessory('impianto', this.checked)"> Impianto elettrico</label>
         <label><input type="checkbox" data-accessory="batteria" onchange="toggleAccessory('batteria', this.checked)"> Batteria al Litio</label>
-        <label><input type="checkbox" data-accessory="fishfinder" onchange="toggleAccessory('fishfinder', this.checked)"> Fishfinder</label>
-        <label><input type="checkbox" data-accessory="trolling" onchange="toggleAccessory('trolling', this.checked)"> Trolling motor</label>
+        <label><input type="checkbox" data-accessory="fishfinder" onchange="toggleAccessory('fishfinder', this.checked)"> Ecoscandaglio</label>
+        <label><input type="checkbox" data-accessory="trolling" onchange="toggleAccessory('trolling', this.checked)"> Motore di prua</label>
       </div>
     </div>
   </div>
 </div>
 
 <div class="home-link"><a href="https://ninga-skiffs.jimdosite.com/" target="_blank" rel="noopener">www.ningaskiffs.com</a></div>
-<div id="info-panel" aria-hidden="true">
+<div id="info-panel" aria-hidden="true" inert>
   <div class="info-panel-head">
     <h3 id="info-title">Informazioni</h3>
     <button id="info-close" type="button">Chiudi</button>
@@ -1187,27 +1674,27 @@ cursor: pointer;
     </div>
     <div class="order-summary">
       <div>
-        <div><span class="label">ID</span> <span id="order-id"></span></div>
-        <div><span class="label">Finitura</span> <span id="order-finish"></span></div>
-        <div><span class="label">Colori</span> <span id="order-colors"></span></div>
-        <div><span class="label">Antiskid</span> <span id="order-antiskid"></span></div>
-        <div><span class="label">Accessori</span> <span id="order-accessories"></span></div>
-        <div><span class="label">Prezzo</span> <span id="order-price"></span></div>
+        <div><span class="label" id="order-label-id">ID</span> <span id="order-id"></span></div>
+        <div><span class="label" id="order-label-finish">Finitura</span> <span id="order-finish"></span></div>
+        <div><span class="label" id="order-label-colors">Colori</span> <span id="order-colors"></span></div>
+        <div><span class="label" id="order-label-antiskid">Antiskid</span> <span id="order-antiskid"></span></div>
+        <div><span class="label" id="order-label-accessories">Accessori</span> <span id="order-accessories"></span></div>
+        <div><span class="label" id="order-label-price">Prezzo</span> <span id="order-price"></span></div>
       </div>
       <div class="order-qr" id="order-qr"></div>
     </div>
     <div class="order-grid">
-      <label>Nome<input id="order-nome" type="text"></label>
-      <label>Cognome<input id="order-cognome" type="text"></label>
-      <label>Email<input id="order-email" type="email"></label>
-      <label>Telefono<input id="order-telefono" type="tel"></label>
-      <label>Indirizzo<input id="order-indirizzo" type="text"></label>
-      <label>Cittï¿½<input id="order-citta" type="text"></label>
-      <label>CAP<input id="order-cap" type="text"></label>
-      <label>Note<textarea id="order-note"></textarea></label>
+      <label><span id="order-field-nome">Nome</span><input id="order-nome" type="text"></label>
+      <label><span id="order-field-cognome">Cognome</span><input id="order-cognome" type="text"></label>
+      <label><span id="order-field-email">Email</span><input id="order-email" type="email"></label>
+      <label><span id="order-field-telefono">Telefono</span><input id="order-telefono" type="tel"></label>
+      <label><span id="order-field-indirizzo">Indirizzo</span><input id="order-indirizzo" type="text"></label>
+      <label><span id="order-field-citta">Citta</span><input id="order-citta" type="text"></label>
+      <label><span id="order-field-cap">CAP</span><input id="order-cap" type="text"></label>
+      <label><span id="order-field-note">Note</span><textarea id="order-note"></textarea></label>
     </div>
     <div class="order-actions">
-      <button id="order-confirm" class="order-confirm" type="button">Conferma Ordine</button>
+      <button id="order-confirm" class="order-confirm" type="button">Conferma Configurazione</button>
       <button id="order-download" type="button">Scarica Configurazione</button>
     </div>
   </div>
@@ -1239,6 +1726,8 @@ cursor: pointer;
   const EMAILJS_SERVICE_ID = 'service_pgrsf1t';
   const EMAILJS_TEMPLATE_ID_CLIENT = 'template_pcbac3j';
   const EMAILJS_TEMPLATE_ID_ADMIN = 'template_sq2cwmp';
+  // Optional EN client template (if empty, code falls back to IT client template)
+  const EMAILJS_TEMPLATE_ID_CLIENT_EN = '';
   const EMAILJS_PUBLIC_KEY = 'Ds3gpi437iatxxEg1';
   const UPLOAD_ENDPOINT = 'https://ninga-upload-api.vercel.app/api/upload';
   let emailJsReady = false;
@@ -1271,7 +1760,7 @@ cursor: pointer;
     { id: 'deck_toggle', hitTokens: [] },
     { id: 'motore', hitTokens: ['fuoribordomotore'], openClips: ['Fuoribordo.motore_alza'], closeClips: ['Fuoribordo.motore_abbassa'], accessoryKey: 'motore' },
     { id: 'panca', hitTokens: ['panca'], openClips: ['panca_center_rear'], closeClips: ['panca_center_front'], accessoryKey: 'panca' },
-    { id: 'tientibene_f', hitTokens: ['tientibenef'], openClips: ['Tientibene_close'], accessoryKey: 'tientibene' }
+    { id: 'tientibene_f', hitTokens: ['tientibenef', 'tientibene'], openClips: ['Tientibene_close'], accessoryKey: 'tientibene' }
   ];
   let modelAxesHelper = null;
   if(SHOW_DEBUG_AXES){
@@ -1290,6 +1779,7 @@ cursor: pointer;
   const viewer = document.getElementById('viewer');
   const interactHint = document.getElementById('interact-hint');
   const interactHintsLayer = document.getElementById('interact-hints');
+  const liveSummaryEl = document.getElementById('live-summary');
   const hintWorldPos = new THREE.Vector3();
   const hintAdjustedWorldPos = new THREE.Vector3();
   const actionHintEls = new Map();
@@ -1303,13 +1793,97 @@ cursor: pointer;
   const INFO_CONTENT = {
     finitura: {
       title: 'Finitura',
-      body: 'Qui puoi scegliere il tipo di finitura della barca.\nSostituisci questo testo con la descrizione tecnica/commerciale che preferisci.'
+      body: `Scegli il tipo di finitura dello scafo e delle superfici principali.
+Ogni opzione influisce sull’estetica, sulla resistenza nel tempo e sulla facilità di manutenzione. Dal gelcoat classico alle soluzioni più moderne, seleziona lo stile che meglio rappresenta la tua barca.
+
+GELCOAT -> Rivestimento protettivo tipico della nautica, applicato direttamente sullo stampo durante la costruzione dello scafo.
+Offre una superficie liscia, resistente ai raggi UV e all’acqua salata, con un aspetto lucido e duraturo nel tempo.
+
+ACRILICO -> Finitura verniciata con prodotti acrilici ad alta resistenza, applicata direttamente alla stampata in fase di postproduzione.
+Garantisce colori profondi, elevata brillantezza e una buona protezione dagli agenti atmosferici, ideale per chi cerca una barca pi\u00F9 leggera e non deve lasciarla in acqua a lungo.`
+    },
+    colori: {
+      title: 'Colori',
+      body: `Personalizza i colori per rendere unica la tua configurazione.
+Puoi combinare tonalit\u00E0 dello scafo, dettagli e finiture per creare un look sportivo, elegante o completamente su misura. Visualizza in tempo reale il risultato direttamente sul modello 3D.
+
+WRAPPING -> Pellicola tecnica adesiva applicata sopra la superficie originale.
+Permette di cambiare colore o stile senza interventi permanenti, con ampia scelta di texture e possibilit\u00E0 di rimozione futura.
+
+RUGGED -> Finitura acrilica resistente ai graffi con effetto bucciato, per una barca pratica e resistente.`
+    },
+    antiskid: {
+      title: 'Antiscivolo',
+      body: `Trattamento superficiale progettato per aumentare l\u2019aderenza nelle zone calpestabili.  Riduce il rischio di scivolamento anche con superfici bagnate, migliorando sicurezza e comfort a bordo. Disponibile nelle varianti:
+
+EVA -> Rivestimento in schiuma tecnica EVA, morbido al tatto e ad alta aderenza.
+Garantisce comfort sotto i piedi, isolamento termico e un look moderno, con ottima resistenza ad acqua e raggi UV.
+
+VERNICIATO -> Superficie trattata con vernice antiscivolo contenente microgranuli.
+Mantiene un aspetto uniforme con lo scafo e offre buona resistenza e facilit\u00E0 di pulizia, ideale per uno stile pi\u00F9 tradizionale.
+
+STAMPATO -> Texture antiscivolo integrata direttamente nello stampo durante la produzione.
+Soluzione resistente e duratura, senza applicazioni aggiuntive, pensata per garantire grip costante nel tempo.`
+    },
+    accessori: {
+      title: 'Accessori',
+      body: `In questa sezione puoi aggiungere optional tecnici ed estetici pensati per migliorare comfort, funzionalità e stile a bordo.
+Ogni scelta viene aggiornata in tempo reale e resa interattiva nella visualizzazione 3D per mostrarti subito il risultato finale della configurazione. Cliccando su RX rendi trasparente il ponte così da osservare la struttura interna della barca. Il viola rappresenta il volume schiumato per rendere innaffondabile il mezzo.`
     }
   };
-  let deckTransparent = false;
+  const INFO_CONTENT_EN = {
+    finitura: {
+      title: 'Finish',
+      body: `Choose the finish type for the hull and main surfaces.
+Each option affects aesthetics, long-term resistance, and ease of maintenance. From classic gelcoat to more modern solutions, select the style that best represents your boat.
+
+GELCOAT -> A protective coating commonly used in boating, applied directly to the mold during hull production.
+It provides a smooth surface, UV and saltwater resistance, and a glossy look that lasts over time.
+
+ACRYLIC -> A high-resistance acrylic paint finish, applied directly to the molded part during post-production.
+It ensures deep colors, high gloss, and good weather protection, ideal for those looking for a lighter boat that is not left in the water for long periods.`
+    },
+    colori: {
+      title: 'Colors',
+      body: `Customize colors to make your configuration unique.
+You can combine hull tones, details, and finishes to create a sporty, elegant, or fully custom look. View the result in real time directly on the 3D model.
+
+WRAPPING -> Technical adhesive film applied over the original surface.
+It allows you to change color or style without permanent work, with a wide range of textures and the possibility of future removal.
+
+RUGGED -> Scratch-resistant acrylic finish with a textured effect, for a practical and durable boat.`
+    },
+    antiskid: {
+      title: 'Antiskid',
+      body: `Surface treatment designed to increase grip in walkable areas. It reduces slipping risk even on wet surfaces, improving onboard safety and comfort. Available variants:
+
+EVA -> Technical EVA foam covering, soft to the touch and highly grippy.
+It provides underfoot comfort, thermal insulation, and a modern look, with excellent resistance to water and UV rays.
+
+PAINTED -> Surface treated with antiskid paint containing micro-granules.
+It keeps a uniform look with the hull and offers good resistance and easy cleaning, ideal for a more traditional style.
+
+PRINTED -> Antiskid texture integrated directly into the mold during production.
+A durable, long-lasting solution without additional applications, designed to ensure consistent grip over time.`
+    },
+    accessori: {
+      title: 'Accessories',
+      body: `In this section you can add technical and aesthetic options designed to improve comfort, functionality, and onboard style.
+Each choice is updated in real time and made interactive in the 3D view so you can immediately see the final configuration result. By clicking RX, you make the deck transparent so you can observe the boat's internal structure. Purple highlights the foamed volume used to make the boat unsinkable.`
+    }
+  };
+  function getInfoContentForLang(key){
+    const k = String(key || '').toLowerCase();
+    if(currentLang === 'en' && INFO_CONTENT_EN[k]) return INFO_CONTENT_EN[k];
+    return INFO_CONTENT[k] || null;
+  }
+    let deckTransparent = false;
   let deckRxSavedAntiskid = 'none';
   let pancaArrowFrontEl = null;
   let pancaArrowRearEl = null;
+  let pancaChoiceVisible = false;
+  let pancaChoiceLeftTarget = null;
+  let pancaChoiceRightTarget = null;
   renderer.setSize(viewer.clientWidth, viewer.clientHeight);
   viewer.appendChild(renderer.domElement);
 
@@ -1326,16 +1900,22 @@ cursor: pointer;
   controls.touches.ONE = THREE.TOUCH.ROTATE;
   controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
   const mobileUiQuery = window.matchMedia('(max-width: 900px)');
+  const MOBILE_FRAMING_DIST_MUL = 2.0;
+  const DESKTOP_FRAMING_DIST_MUL = 0.9;
+  const MOBILE_MIN_DIST_MUL = 0.6;
+  const MOBILE_MAX_DIST_MUL = 2.8;
+  const DESKTOP_MIN_DIST_MUL = 0.4;
+  const DESKTOP_MAX_DIST_MUL = 1.4;
   let mobilePanMode = false;
   let framedMaxDim = 0;
   let framedCameraZ = 0;
-  let lastMobileViewport = mobileUiQuery.matches;
+  let lastMobileViewport = null;
   let controlsHintHidden = false;
   const controlsOverlay = document.getElementById('controls-overlay');
   function updateMobileModeButton(){
     const modeBtn = document.getElementById('mobile-mode-btn');
     if(!modeBtn) return;
-    modeBtn.textContent = mobilePanMode ? 'ROTATE ↻' : 'PAN ↔';
+    modeBtn.textContent = mobilePanMode ? 'ROTATE ?' : 'PAN ?';
     modeBtn.classList.toggle('is-pan', mobilePanMode);
     modeBtn.setAttribute('aria-pressed', String(mobilePanMode));
   }
@@ -1365,10 +1945,10 @@ cursor: pointer;
     if(!framedMaxDim || !framedCameraZ) return;
     camera.fov = isMobile ? 66 : 60;
     camera.updateProjectionMatrix();
-    const distMul = isMobile ? 1.05 : 0.9;
+    const distMul = isMobile ? MOBILE_FRAMING_DIST_MUL : DESKTOP_FRAMING_DIST_MUL;
     camera.position.set(0.2, framedMaxDim * 0.2, framedCameraZ * distMul);
-    controls.minDistance = framedCameraZ * (isMobile ? 0.5 : 0.4);
-    controls.maxDistance = framedCameraZ * (isMobile ? 1.7 : 1.4);
+    controls.minDistance = framedCameraZ * (isMobile ? MOBILE_MIN_DIST_MUL : DESKTOP_MIN_DIST_MUL);
+    controls.maxDistance = framedCameraZ * (isMobile ? MOBILE_MAX_DIST_MUL : DESKTOP_MAX_DIST_MUL);
     controls.target.set(0, 0, 0);
     controls.update();
   }
@@ -1571,8 +2151,7 @@ cursor: pointer;
     if(!shouldOpen) return { ok: true };
     if(id.startsWith('portello_esa_') && !isPancaAccessoryEnabled()) return { ok: true };
     if(id === 'motore' && pancaPosition === 'rear') return { ok: false };
-    if(id === 'tientibene_f' && pancaPosition === 'center') return { ok: false };
-    if(id === 'portello_esa_poppa' && pancaPosition === 'rear') return { ok: false };
+    if(id === 'portello_esa_poppa' && (pancaPosition === 'rear' || Boolean(interactiveState.get('tientibene_f')))) return { ok: false };
     if(id === 'portello_esa_centro' && (pancaPosition === 'center' || Boolean(interactiveState.get('tientibene_f')))) return { ok: false };
     if(id === 'portello_esa_prua' && pancaPosition === 'front') return { ok: false };
     return { ok: true };
@@ -1619,7 +2198,29 @@ cursor: pointer;
     const def = interactiveDefs.find((d) => d.id === id);
     if(!def || interactiveBusy) return false;
     if(currentStep !== 'accessori') return false;
-    if(id === 'panca') return false;
+    if(id === 'panca'){
+      const isEnabled = Boolean(document.querySelector('#step-accessori input[data-accessory="panca"]')?.checked);
+      if(!isEnabled) return false;
+      pancaChoiceVisible = true;
+      return true;
+    }
+    if(id === 'tientibene_f'){
+      const isEnabled = Boolean(document.querySelector('#step-accessori input[data-accessory="tientibene"]')?.checked);
+      if(!isEnabled) return false;
+      const isLowered = Boolean(interactiveState.get('tientibene_f'));
+      const wantLowered = !isLowered;
+      if(!wantLowered && pancaPosition === 'center') return false;
+      interactiveBusy = true;
+      const run = wantLowered
+        ? closeAllEsaOpen()
+          .then(() => (pancaPosition === 'center' ? movePancaTo('rear') : Promise.resolve(false)))
+          .then(() => toggleInteractiveById('tientibene_f'))
+        : toggleInteractiveById('tientibene_f');
+      run.finally(() => {
+        interactiveBusy = false;
+      });
+      return true;
+    }
     interactiveBusy = true;
     toggleInteractiveById(id)
       .finally(() => {
@@ -1657,14 +2258,14 @@ cursor: pointer;
       pancaArrowRearEl = document.createElement('button');
       pancaArrowRearEl.type = 'button';
       pancaArrowRearEl.className = 'panca-arrow-btn';
-      pancaArrowRearEl.textContent = '<';
-      pancaArrowRearEl.title = 'Panca indietro';
-      pancaArrowRearEl.setAttribute('aria-label', 'Panca indietro');
+      pancaArrowRearEl.textContent = 'centro';
+      pancaArrowRearEl.title = 'Panca centro';
+      pancaArrowRearEl.setAttribute('aria-label', 'Panca centro');
       pancaArrowRearEl.style.display = 'none';
       pancaArrowRearEl.addEventListener('pointerdown', (e) => e.stopPropagation());
       pancaArrowRearEl.addEventListener('pointerup', (e) => {
         e.stopPropagation();
-        triggerPancaDirection('rear');
+        if(pancaChoiceLeftTarget) triggerPancaDirection(pancaChoiceLeftTarget);
       });
       interactHintsLayer.appendChild(pancaArrowRearEl);
     }
@@ -1672,52 +2273,68 @@ cursor: pointer;
       pancaArrowFrontEl = document.createElement('button');
       pancaArrowFrontEl.type = 'button';
       pancaArrowFrontEl.className = 'panca-arrow-btn';
-      pancaArrowFrontEl.textContent = '>';
+      pancaArrowFrontEl.textContent = 'avanti';
       pancaArrowFrontEl.title = 'Panca avanti';
       pancaArrowFrontEl.setAttribute('aria-label', 'Panca avanti');
       pancaArrowFrontEl.style.display = 'none';
       pancaArrowFrontEl.addEventListener('pointerdown', (e) => e.stopPropagation());
       pancaArrowFrontEl.addEventListener('pointerup', (e) => {
         e.stopPropagation();
-        triggerPancaDirection('front');
+        if(pancaChoiceRightTarget) triggerPancaDirection(pancaChoiceRightTarget);
       });
       interactHintsLayer.appendChild(pancaArrowFrontEl);
     }
   }
+  function getPancaChoiceLabel(target){
+    if(target === 'rear') return 'indietro';
+    if(target === 'center') return 'centro';
+    if(target === 'front') return 'avanti';
+    return '';
+  }
   function triggerPancaDirection(target){
     if(interactiveBusy) return false;
     if(currentStep !== 'accessori') return false;
-    const run = (job) => {
+    const run = (job, closeEsaFirst = false) => {
       interactiveBusy = true;
-      closeAllEsaOpen()
-        .then(() => job())
+      pancaChoiceVisible = false;
+      const start = closeEsaFirst ? closeAllEsaOpen() : Promise.resolve(false);
+      start.then(() => job())
         .finally(() => { interactiveBusy = false; });
       return true;
     };
 
     if(target === 'rear'){
       if(pancaPosition === 'center'){
-        return run(() => ensureMotoreLowered().then(() => movePancaTo('rear')));
+        return run(() => ensureMotoreLowered().then(() => movePancaTo('rear')), true);
       }
       if(pancaPosition === 'front'){
-        return run(() => ensureTientibeneState(true)
-          .then(() => movePancaTo('rear'))
-          .then(() => ensureTientibeneState(false))
-          .then(() => movePancaTo('center')));
+        return run(() => ensureMotoreLowered()
+          .then(() => ensureTientibeneState(true))
+          .then(() => movePancaTo('rear')), true);
       }
       return false;
     }
 
     if(target === 'front'){
-      if(pancaPosition === 'center'){
-        return run(() => ensureMotoreLowered()
-          .then(() => movePancaTo('rear'))
-          .then(() => ensureTientibeneState(true))
-          .then(() => movePancaTo('front'))
-          .then(() => ensureTientibeneState(false)));
-      }
       if(pancaPosition === 'rear'){
-        return run(() => movePancaTo('center'));
+        return run(() => ensureTientibeneState(true).then(() => movePancaTo('front')), true);
+      }
+      if(pancaPosition === 'center'){
+        return run(() => movePancaTo('rear')
+          .then(() => ensureTientibeneState(true))
+          .then(() => movePancaTo('front')), true);
+      }
+      return false;
+    }
+
+    if(target === 'center'){
+      if(pancaPosition === 'rear'){
+        const tientibeneLowered = Boolean(interactiveState.get('tientibene_f'));
+        const tientibeneRaised = !tientibeneLowered;
+        return run(() => movePancaTo('center'), tientibeneRaised);
+      }
+      if(pancaPosition === 'front'){
+        return run(() => ensureTientibeneState(true).then(() => movePancaTo('center')), true);
       }
       return false;
     }
@@ -1726,33 +2343,43 @@ cursor: pointer;
   }
   function updatePancaArrows(){
     ensurePancaArrowElements();
-    if(!pancaArrowFrontEl || !pancaArrowRearEl) return;
-    const show = currentStep === 'accessori' &&
-      Boolean(document.querySelector('#step-accessori input[data-accessory=\"panca\"]')?.checked);
-    if(!show){
-      pancaArrowFrontEl.style.display = 'none';
-      pancaArrowRearEl.style.display = 'none';
+    if(!pancaArrowFrontEl || !pancaArrowRearEl || !interactHintsLayer) return;
+    pancaArrowFrontEl.style.display = 'none';
+    pancaArrowRearEl.style.display = 'none';
+    if(currentStep !== 'accessori') return;
+    const pancaEnabled = Boolean(document.querySelector('#step-accessori input[data-accessory="panca"]')?.checked);
+    if(!pancaEnabled) return;
+    if(!pancaChoiceVisible) return;
+    if(pancaPosition === 'center'){
+      pancaChoiceLeftTarget = 'rear';
+      pancaChoiceRightTarget = 'front';
+    }else if(pancaPosition === 'rear'){
+      pancaChoiceLeftTarget = 'center';
+      pancaChoiceRightTarget = 'front';
+    }else if(pancaPosition === 'front'){
+      pancaChoiceLeftTarget = 'rear';
+      pancaChoiceRightTarget = 'center';
+    }else{
       return;
     }
-    if(!getInteractiveAnchorCenter('panca', hintWorldPos)){
-      pancaArrowFrontEl.style.display = 'none';
-      pancaArrowRearEl.style.display = 'none';
-      return;
-    }
-    hintWorldPos.project(camera);
-    if(hintWorldPos.z < -1 || hintWorldPos.z > 1){
-      pancaArrowFrontEl.style.display = 'none';
-      pancaArrowRearEl.style.display = 'none';
-      return;
-    }
-    const x = (hintWorldPos.x * 0.5 + 0.5) * viewer.clientWidth;
-    const y = (-hintWorldPos.y * 0.5 + 0.5) * viewer.clientHeight;
-    pancaArrowRearEl.style.left = `${x - 18}px`;
-    pancaArrowRearEl.style.top = `${y}px`;
-    pancaArrowFrontEl.style.left = `${x + 18}px`;
-    pancaArrowFrontEl.style.top = `${y}px`;
-    pancaArrowRearEl.classList.toggle('is-disabled', pancaPosition === 'rear');
-    pancaArrowFrontEl.classList.toggle('is-disabled', pancaPosition === 'front');
+    const leftLabel = getPancaChoiceLabel(pancaChoiceLeftTarget);
+    const rightLabel = getPancaChoiceLabel(pancaChoiceRightTarget);
+    pancaArrowRearEl.textContent = leftLabel;
+    pancaArrowRearEl.title = `Panca ${leftLabel}`;
+    pancaArrowRearEl.setAttribute('aria-label', `Panca ${leftLabel}`);
+    pancaArrowFrontEl.textContent = rightLabel;
+    pancaArrowFrontEl.title = `Panca ${rightLabel}`;
+    pancaArrowFrontEl.setAttribute('aria-label', `Panca ${rightLabel}`);
+    if(!getInteractiveAnchorCenter('panca', hintWorldPos)) return;
+    hintAdjustedWorldPos.copy(hintWorldPos);
+    hintAdjustedWorldPos.project(camera);
+    if(hintAdjustedWorldPos.z < -1 || hintAdjustedWorldPos.z > 1) return;
+    const x = (hintAdjustedWorldPos.x * 0.5 + 0.5) * viewer.clientWidth;
+    const y = (-hintAdjustedWorldPos.y * 0.5 + 0.5) * viewer.clientHeight;
+    pancaArrowRearEl.style.left = `${x - 38}px`;
+    pancaArrowRearEl.style.top = `${y + 18}px`;
+    pancaArrowFrontEl.style.left = `${x + 38}px`;
+    pancaArrowFrontEl.style.top = `${y + 18}px`;
     pancaArrowRearEl.style.display = 'block';
     pancaArrowFrontEl.style.display = 'block';
   }
@@ -1847,7 +2474,6 @@ cursor: pointer;
     if(!hits.length) return false;
     const id = hits[0]?.object?.userData?.interactiveId;
     if(!id) return false;
-    if(id === 'panca') return false;
     return triggerInteractiveAction(id);
   }
 
@@ -1880,6 +2506,7 @@ cursor: pointer;
   let environmentLoaded = false;
   let environmentLoadingPromise = null;
   let water;
+  const WATER_LEVEL_OFFSET = -0.008;
   let waterTargetY = -0.43;
 
   function loadEnvironment(){
@@ -1905,6 +2532,7 @@ cursor: pointer;
     water = new Water(
       waterGeometry,
       {
+        clipBias: 0.003,
         textureWidth: 512,
         textureHeight: 512,
         waterNormals: new THREE.TextureLoader().load(
@@ -1917,7 +2545,7 @@ cursor: pointer;
         sunColor: 0xffffff,
         waterColor: 0x0f7a4a,
         alpha: 0.65,
-        distortionScale: 0.05,
+        distortionScale: 0.02,
         fog: scene.fog !== undefined
       }
     );
@@ -1995,7 +2623,8 @@ cursor: pointer;
     const btn = document.getElementById('audio-toggle');
     if(btn){
       btn.classList.toggle('is-muted', !enabled);
-      btn.textContent = enabled ? 'MUTE 🔇' : 'UNMUTE 🔊';
+      const dict = I18N[currentLang] || I18N.it;
+      btn.textContent = enabled ? dict.muteOn : dict.muteOff;
       btn.setAttribute('aria-pressed', String(!enabled));
     }
     if(!enabled){
@@ -2109,8 +2738,8 @@ const accessoryDeps = {
     schienale: 'Schienale',
     motore: 'Motore',
     supporto: 'Supporto motore',
-    trolling: 'Trolling motor',
-    fishfinder: 'Fishfinder',
+    trolling: 'Motore di prua',
+    fishfinder: 'Ecoscandaglio',
     impianto: 'Impianto elettrico',
     batteria: 'Batteria al Litio'
   };
@@ -2141,7 +2770,134 @@ const accessoryDeps = {
     }
 
 
-      function updateNavLabels(step){      const nextBtn = document.querySelector('#viewer-ui .next-btn .nav-label');      if(nextBtn){        nextBtn.textContent = step === 'accessori' ? 'END' : 'GO';      }    }      function syncAccessoryUI(){
+      function updateNavLabels(step){
+    const nextBtn = document.querySelector('#viewer-ui .next-btn .nav-label');
+    if(nextBtn){
+      const dict = I18N[currentLang] || I18N.it;
+      nextBtn.textContent = step === 'accessori' ? dict.end : dict.go;
+    }
+  }
+
+  function applyAccessoryLabelTexts(){
+    const dict = (I18N[currentLang] || I18N.it).acc;
+    document.querySelectorAll('#step-accessori input[data-accessory]').forEach((input) => {
+      const key = input.getAttribute('data-accessory') || '';
+      const label = input.closest('label');
+      if(!label || !dict[key]) return;
+      if(input.nextSibling && input.nextSibling.nodeType === 3){
+        input.nextSibling.nodeValue = ` ${dict[key]}`;
+      }else{
+        label.appendChild(document.createTextNode(` ${dict[key]}`));
+      }
+    });
+  }
+
+  function getStepTitleText(step){
+    const dict = I18N[currentLang] || I18N.it;
+    return dict.stepTitle[step] || dict.stepTitle.finitura;
+  }
+
+  function applyLanguageUI(){
+    const dict = I18N[currentLang] || I18N.it;
+    const backLabel = document.querySelector('#viewer-ui .back-btn .nav-label');
+    if(backLabel) backLabel.textContent = dict.back;
+    const resetLabel = document.querySelector('#viewer-ui .reset-btn .reset-label');
+    if(resetLabel) resetLabel.textContent = dict.reset;
+    const orderBtn = document.getElementById('order-btn');
+    if(orderBtn) orderBtn.textContent = dict.order;
+    const screenshotBtn = document.getElementById('screenshot-btn');
+    if(screenshotBtn){ screenshotBtn.title = dict.photoTitle; screenshotBtn.textContent = dict.photoBtn || 'PHOTO'; }
+    const rxBtn = document.getElementById('rx-btn');
+    if(rxBtn) rxBtn.title = dict.rxTitle;
+    const loading = document.getElementById('loading-text');
+    if(loading && /Caricamento|Loading/.test(loading.textContent || '')){
+      if((loading.textContent || '').includes('0%')) loading.textContent = dict.loadingStart;
+    }
+    const infoCloseBtn = document.getElementById('info-close');
+    if(infoCloseBtn) infoCloseBtn.textContent = currentLang === 'en' ? 'Close' : 'Chiudi';
+    const title = document.getElementById('step-title');
+    if(title) title.textContent = getStepTitleText(currentStep);
+    const colorLabelEls = document.querySelectorAll('[data-color-label]');
+    colorLabelEls.forEach((el) => {
+      const key = el.getAttribute('data-color-label');
+      if(!key) return;
+      const v = dict.colorLabels && dict.colorLabels[key];
+      if(v) el.textContent = v;
+    });
+    document.querySelectorAll('.info-pill[data-info-key]').forEach((infoPill) => {
+      const stepKey = String(currentStep || 'finitura').toLowerCase();
+      const dynamicStep = infoPill.getAttribute('data-info-dynamic') === 'step';
+      if(dynamicStep){
+        infoPill.setAttribute('aria-label', dict.infoAria[stepKey] || dict.infoAria.finitura);
+        return;
+      }
+      const key = infoPill.getAttribute('data-info-key') || '';
+      const title = getInfoContentForLang(key)?.title || 'Informazioni';
+      infoPill.setAttribute('aria-label', `Info ${title}`);
+    });
+    const itBtn = document.getElementById('lang-it');
+    const enBtn = document.getElementById('lang-en');
+    if(itBtn) itBtn.classList.toggle('is-active', currentLang === 'it');
+    if(enBtn) enBtn.classList.toggle('is-active', currentLang === 'en');
+    applyCurrencyUI();
+    const orderT = dict.orderModal || I18N.it.orderModal;
+    const setText = (id, value) => {
+      const el = document.getElementById(id);
+      if(el) el.textContent = value;
+    };
+    setText('order-title', orderT.title);
+    const orderCloseBtn = document.querySelector('#order-modal .order-close');
+    if(orderCloseBtn) orderCloseBtn.textContent = orderT.close;
+    setText('order-label-id', orderT.labels.id);
+    setText('order-label-finish', orderT.labels.finish);
+    setText('order-label-colors', orderT.labels.colors);
+    setText('order-label-antiskid', orderT.labels.antiskid);
+    setText('order-label-accessories', orderT.labels.accessories);
+    setText('order-label-price', orderT.labels.price);
+    setText('order-field-nome', orderT.fields.nome);
+    setText('order-field-cognome', orderT.fields.cognome);
+    setText('order-field-email', orderT.fields.email);
+    setText('order-field-telefono', orderT.fields.telefono);
+    setText('order-field-indirizzo', orderT.fields.indirizzo);
+    setText('order-field-citta', orderT.fields.citta);
+    setText('order-field-cap', orderT.fields.cap);
+    setText('order-field-note', orderT.fields.note);
+    setText('order-confirm', orderT.confirm);
+    setText('order-download', orderT.download);
+    applyAccessoryLabelTexts();
+    updateNavLabels(currentStep);
+    setAudioEnabled(audioEnabled, false);
+    renderLiveSummary();
+  }
+
+  function setLanguage(lang){
+    currentLang = (lang === 'en') ? 'en' : 'it';
+    refreshColorMenusForLanguage();
+    applyLanguageUI();
+  }
+  function applyCurrencyUI(){
+    const eurBtn = document.getElementById('currency-eur');
+    const usdBtn = document.getElementById('currency-usd');
+    if(eurBtn) eurBtn.classList.toggle('is-active', currentCurrency === 'EUR');
+    if(usdBtn) usdBtn.classList.toggle('is-active', currentCurrency === 'USD');
+  }
+  function formatMoney(valueEuro){
+    const eur = Number(valueEuro) || 0;
+    if(currentCurrency === 'USD'){
+      const usd = eur * EUR_TO_USD;
+      return `$ ${usd.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+    }
+    return `${"\u20AC"} ${eur.toLocaleString('it-IT')}`;
+  }
+  function setCurrency(currency){
+    currentCurrency = currency === 'USD' ? 'USD' : 'EUR';
+    applyCurrencyUI();
+    updatePrice();
+    const orderPrice = document.getElementById('order-price');
+    if(orderPrice) orderPrice.textContent = getPriceSummary();
+  }
+
+  function syncAccessoryUI(){
     accessoryInputs.forEach((cb) => {
       const key = cb.dataset.accessory;
       if(key) toggleAccessory(key, cb.checked, true);
@@ -2368,6 +3124,15 @@ const accessoryDeps = {
       });
     }
 
+    // Reflection camera for water looks from below; keep shell materials double-sided
+    // to avoid seeing deck interior through culled backfaces.
+    [hullMat, deckMat, hatchesMat].forEach((mat) => {
+      if(!mat) return;
+      mat.side = THREE.DoubleSide;
+      if('shadowSide' in mat) mat.shadowSide = THREE.DoubleSide;
+      mat.needsUpdate = true;
+    });
+
     if(hullMat) hullMat.color.set('#ffffff');
     if(deckMat) deckMat.color.set('#ffffff');
     if(hatchesMat) hatchesMat.color.set('#ffffff');
@@ -2409,16 +3174,16 @@ const accessoryDeps = {
     cameraZ *= 1;
     framedMaxDim = maxDim;
     framedCameraZ = cameraZ;
-    const distMul = mobileUiQuery.matches ? 1.05 : 0.9;
+    const distMul = mobileUiQuery.matches ? MOBILE_FRAMING_DIST_MUL : DESKTOP_FRAMING_DIST_MUL;
     camera.position.set(0.2, maxDim * 0.2, cameraZ * distMul);
     camera.lookAt(0, 0, 0);
     controls.target.set(0, 0, 0);
     controls.update();
 
-    controls.minDistance = cameraZ * (mobileUiQuery.matches ? 0.5 : 0.4);
-      controls.maxDistance = cameraZ * (mobileUiQuery.matches ? 1.7 : 1.4);
+    controls.minDistance = cameraZ * (mobileUiQuery.matches ? MOBILE_MIN_DIST_MUL : DESKTOP_MIN_DIST_MUL);
+      controls.maxDistance = cameraZ * (mobileUiQuery.matches ? MOBILE_MAX_DIST_MUL : DESKTOP_MAX_DIST_MUL);
 
-      waterTargetY = -maxDim * 0.12 + 0.110;
+      waterTargetY = -maxDim * 0.12 + 0.110 + WATER_LEVEL_OFFSET;
       if(water){
         water.position.y = waterTargetY;
       }
@@ -2476,6 +3241,81 @@ const accessoryDeps = {
   let deckSelected = false;
   let hatchesSelected = false;
   let currentStep = 'finitura';
+  let currentLang = 'it';
+  let currentCurrency = 'EUR';
+  const EUR_TO_USD = 1.1;
+  const I18N = {
+    it: {
+      stepTitle: { finitura: 'Finitura', colori: 'Colori', accessori: 'Accessori' },
+      back: 'Indietro',
+      go: 'Avanti',
+      end: 'Fine',
+      reset: 'RESETTA',
+      order: 'Ordina',
+      photoTitle: 'Salva screenshot',
+      photoBtn: 'FOTO',
+      muteOn: 'MUTO',
+      muteOff: 'AUDIO',
+      rxTitle: 'Vista semitrasparente',
+      loadingStart: 'Caricamento modello 0%',
+      acc: {
+        tientibene: 'Tientibene',
+        panca: 'Panca',
+        schienale: 'Schienale',
+        supporto: 'Supporto motore',
+        motore: 'Motore',
+        impianto: 'Impianto elettrico',
+        batteria: 'Batteria al Litio',
+        fishfinder: 'Ecoscandaglio',
+        trolling: 'Motore di prua'
+      },
+      infoAria: { finitura: 'Info Finitura', colori: 'Info Colori', accessori: 'Info Accessori' },
+      colorLabels: { hull: 'CHIGLIA', deck: 'PONTE', hatches: 'PORTELLI', antiskid: 'ANTISCIVOLO' },
+      orderModal: {
+        title: 'Configurazione',
+        close: 'Chiudi',
+        labels: { id: 'ID', finish: 'Finitura', colors: 'Colori', antiskid: 'Antiscivolo', accessories: 'Accessori', price: 'Prezzo' },
+        fields: { nome: 'Nome', cognome: 'Cognome', email: 'Email', telefono: 'Telefono', indirizzo: 'Indirizzo', citta: 'Citta', cap: 'CAP', note: 'Note' },
+        confirm: 'Conferma Configurazione',
+        download: 'Scarica Configurazione'
+      }
+    },
+    en: {
+      stepTitle: { finitura: 'Finish', colori: 'Colors', accessori: 'Accessories' },
+      back: 'Back',
+      go: 'Go',
+      end: 'End',
+      reset: 'RESET',
+      order: 'Order',
+      photoTitle: 'Save screenshot',
+      photoBtn: 'PHOTO',
+      muteOn: 'MUTE',
+      muteOff: 'UNMUTE',
+      rxTitle: 'Semi-transparent view',
+      loadingStart: 'Loading model 0%',
+      acc: {
+        tientibene: 'Grab Rail',
+        panca: 'Bench',
+        schienale: 'Backrest',
+        supporto: 'Engine Bracket',
+        motore: 'Engine',
+        impianto: 'Electrical System',
+        batteria: 'Lithium Battery',
+        fishfinder: 'Fishfinder',
+        trolling: 'Trolling Motor'
+      },
+      infoAria: { finitura: 'Finish Info', colori: 'Colors Info', accessori: 'Accessories Info' },
+      colorLabels: { hull: 'HULL', deck: 'DECK', hatches: 'DOORS', antiskid: 'ANTISKID' },
+      orderModal: {
+        title: 'Configuration',
+        close: 'Close',
+        labels: { id: 'ID', finish: 'Finish', colors: 'Colors', antiskid: 'Antiskid', accessories: 'Accessories', price: 'Price' },
+        fields: { nome: 'Name', cognome: 'Surname', email: 'Email', telefono: 'Phone', indirizzo: 'Address', citta: 'City', cap: 'ZIP', note: 'Notes' },
+        confirm: 'Confirm Configuration',
+        download: 'Download Configuration'
+      }
+    }
+  };
   let accessoriUnlocked = false;
   let selectedFinish = null;
   let selectedHull = null;
@@ -2520,7 +3360,16 @@ const accessoryDeps = {
         if(name === 'ossatura') ossaturaMat = m;
       });
     });
-    if(yamahaMat && yamahaMat.color) yamahaMat.color.set('#696969');
+    if(yamahaMat){
+      if(yamahaMat.color) yamahaMat.color.set('#696969');
+      yamahaMat.transparent = false;
+      yamahaMat.opacity = 1;
+      yamahaMat.alphaTest = 0;
+      yamahaMat.depthWrite = true;
+      yamahaMat.depthTest = true;
+      if('alphaMap' in yamahaMat) yamahaMat.alphaMap = null;
+      yamahaMat.needsUpdate = true;
+    }
     if(ossaturaMat && ossaturaMat.color) ossaturaMat.color.set('#808080');
 
     const toBlackPlastic = (mat) => {
@@ -2543,6 +3392,21 @@ const accessoryDeps = {
       if(!mat) return mat;
       const m = mat.clone?.() || mat;
       if(m.color) m.color.set(color);
+      m.needsUpdate = true;
+      return m;
+    };
+    const toOpaqueYamaha = (mat) => {
+      if(!mat) return mat;
+      const m = mat.clone?.() || mat;
+      if(m.color) m.color.set('#696969');
+      m.transparent = false;
+      m.opacity = 1;
+      m.alphaTest = 0;
+      m.depthWrite = true;
+      m.depthTest = true;
+      m.side = THREE.FrontSide;
+      if('alphaMap' in m) m.alphaMap = null;
+      if('map' in m && m.map && m.map.format === THREE.AlphaFormat) m.map = null;
       m.needsUpdate = true;
       return m;
     };
@@ -2622,7 +3486,11 @@ const accessoryDeps = {
         return;
       }
       if(yamahaMat && candidateKeys.some((k) => yamahaTargets.has(k))){
-        obj.material = yamahaMat;
+        if(Array.isArray(obj.material)){
+          obj.material = obj.material.map((m) => toOpaqueYamaha(m || yamahaMat));
+        }else{
+          obj.material = toOpaqueYamaha(obj.material || yamahaMat);
+        }
       }
     });
   }
@@ -2690,7 +3558,8 @@ function updatePrice(){
       total += modePrice('deck', selectedDeckMode);
       total += modePrice('hatches', selectedHatchesMode);
     const el = document.getElementById('price-tag');
-    if(el) el.textContent = `${"\u20AC"} ${total.toLocaleString('it-IT')}`;
+    if(el) el.textContent = formatMoney(total);
+    renderLiveSummary();
   }
 
   function showStep(step){      updateNavLabels(step);
@@ -2765,9 +3634,7 @@ function updatePrice(){
 
     const title = document.getElementById('step-title');
     if(title){
-      if(step === 'finitura') title.textContent = 'Finitura';
-      else if(step === 'colori') title.textContent = 'Colori';
-      else if(step === 'accessori') title.textContent = 'Accessori';
+      title.textContent = getStepTitleText(step);
     }
     const viewerEl = document.getElementById('viewer');
     if(viewerEl){
@@ -2779,6 +3646,13 @@ function updatePrice(){
     document.body.classList.toggle('step-colori', step === 'colori');
     document.body.classList.toggle('step-accessori', step === 'accessori');
     currentStep = step;
+    if(step !== 'colori'){
+      document.body.classList.remove('color-menu-open');
+      const viewerEl = document.getElementById('viewer');
+      if(viewerEl) viewerEl.classList.remove('color-menu-open');
+    }else{
+      syncColorMenuOpenState();
+    }
     if(step !== 'accessori' && deckTransparent){
       setDeckTransparency(false);
     }
@@ -2788,87 +3662,159 @@ function updatePrice(){
   const colorPalettes = {
     gelcoat: {
       hull: [
-        { label: 'White', color: '#ffffff' },
-        { label: 'Grey', color: '#a9a9a9' },
-        { label: 'Aquamarina', color: '#7fffd4' },
-        { label: 'Blue', color: '#000080' },
-        { label: 'Orange', color: '#FF8C00' },
-        { label: 'Pink', color: '#FF69B4' }
+        { label: 'Bianco', color: '#ffffff' },
+        { label: 'Verde acqua', color: '#7FFFD4' },
+        { label: 'Ciano', color: '#00FFFF' },
+        { label: 'Lime', color: '#7FFF00' },
+        { label: 'Blu notte', color: '#00008B' },
+        { label: 'Blu elettrico', color: '#0000FF' },
+        { label: 'Nero', color: '#000000' },
+        { label: 'Grigio', color: '#808080' },
+        { label: 'Grigio fumo', color: '#A9A9A9' },
+        { label: 'Bronzo', color: '#B8860B' },
+        { label: 'Giallo sole', color: '#FFFF00' },
+        { label: 'Arancione', color: '#FFA500' },
+        { label: 'Rosso', color: '#FF0000' },
+        { label: 'Oliva', color: '#808000' },
+        { label: 'Magenta', color: '#FF00FF' },
+        { label: 'Salmone', color: '#FFA07A' },
+        { label: 'Indaco', color: '#4B0082' }
       ],
       deck: [
-        { label: 'White', color: '#ffffff' },
-        { label: 'Grey', color: '#a9a9a9' },
-        { label: 'Acquamarina', color: '#7fffd4' },
-        { label: 'Blue', color: '#000080' },
-        { label: 'Orange', color: '#FF8C00' },
-        { label: 'Pink', color: '#FF69B4' }
+        { label: 'Bianco', color: '#ffffff' },
+        { label: 'Verde acqua', color: '#7FFFD4' },
+        { label: 'Ciano', color: '#00FFFF' },
+        { label: 'Lime', color: '#7FFF00' },
+        { label: 'Blu notte', color: '#00008B' },
+        { label: 'Blu elettrico', color: '#0000FF' },
+        { label: 'Nero', color: '#000000' },
+        { label: 'Grigio', color: '#808080' },
+        { label: 'Grigio fumo', color: '#A9A9A9' },
+        { label: 'Bronzo', color: '#B8860B' },
+        { label: 'Giallo sole', color: '#FFFF00' },
+        { label: 'Arancione', color: '#FFA500' },
+        { label: 'Rosso', color: '#FF0000' },
+        { label: 'Oliva', color: '#808000' },
+        { label: 'Magenta', color: '#FF00FF' },
+        { label: 'Salmone', color: '#FFA07A' },
+        { label: 'Indaco', color: '#4B0082' }
       ],
       hatches: [
-        { label: 'White', color: '#ffffff' },
-        { label: 'Grey', color: '#a9a9a9' },
-        { label: 'Acquamarina', color: '#7fffd4' },
-        { label: 'Blue', color: '#000080' },
-        { label: 'Orange', color: '#FF8C00' },
-        { label: 'Pink', color: '#FF69B4' }
+        { label: 'Bianco', color: '#ffffff' },
+        { label: 'Verde acqua', color: '#7FFFD4' },
+        { label: 'Ciano', color: '#00FFFF' },
+        { label: 'Lime', color: '#7FFF00' },
+        { label: 'Blu notte', color: '#00008B' },
+        { label: 'Blu elettrico', color: '#0000FF' },
+        { label: 'Nero', color: '#000000' },
+        { label: 'Grigio', color: '#808080' },
+        { label: 'Grigio fumo', color: '#A9A9A9' },
+        { label: 'Bronzo', color: '#B8860B' },
+        { label: 'Giallo sole', color: '#FFFF00' },
+        { label: 'Arancione', color: '#FFA500' },
+        { label: 'Rosso', color: '#FF0000' },
+        { label: 'Oliva', color: '#808000' },
+        { label: 'Magenta', color: '#FF00FF' },
+        { label: 'Salmone', color: '#FFA07A' },
+        { label: 'Indaco', color: '#4B0082' }
       ]
     },
     wrapping: {
       hull: [
-        { label: 'Honey', color: '#ffffff', texture: 'images/wrapping/Honey.jpg', scale: 0.5 },
-        { label: 'Wave', color: '#234a63', texture: 'images/wrapping/Wave.jpg', scale: 0.7 },
-        { label: 'Carbon', color: '#333333', texture: 'images/wrapping/Carbon.jpg', scale: 1 },
-        { label: 'Camu', color: '#3b4a3a', texture: 'images/wrapping/Camu.jpg', scale: 0.2 },
-        { label: 'Green wave', color: '#ffffff', texture: 'images/wrapping/Greenwave.jpg', scale: 0.7 },
-        { label: 'Abstract', color: '#ffffff', texture: 'images/wrapping/Abstract.jpg', scale: 0.5 }
+        { label: 'Miele', color: '#ffffff', texture: 'images/wrapping/honey21.jpg', scale: 0.5, scaleU: 0.4, scaleV: 0.6 },
+        { label: 'Onda', color: '#234a63', texture: 'images/wrapping/Wave.jpg', scale: 0.7 },
+        { label: 'Carbonio', color: '#333333', texture: 'images/wrapping/Carbon.jpg', scale: 1 },
+        { label: 'Mimetico', color: '#3b4a3a', texture: 'images/wrapping/Camu.jpg', scale: 0.2 },
+        { label: 'Mimetico 2', color: '#3b4a3a', texture: 'images/wrapping/Camu2.jpg', scale: 0.2 },
+        { label: 'Laser', color: '#ffffff', texture: 'images/wrapping/Laser.jpg', scale: 0.7 },
+        { label: 'Onda verde', color: '#ffffff', texture: 'images/wrapping/Greenwave.jpg', scale: 0.7 },
+        { label: 'Astratto', color: '#ffffff', texture: 'images/wrapping/Abstract.jpg', scale: 0.5 }
       ],
       deck: [
-        { label: 'Honey', color: '#ffffff', texture: 'images/wrapping/Honey.jpg', scale: 0.5 },
-        { label: 'Wave', color: '#234a63', texture: 'images/wrapping/Wave.jpg', scale: 0.7 },
-        { label: 'Carbon', color: '#333333', texture: 'images/wrapping/Carbon.jpg', scale: 1 },
-        { label: 'Camu', color: '#3b4a3a', texture: 'images/wrapping/Camu.jpg', scale: 0.2 },
-        { label: 'Green wave', color: '#ffffff', texture: 'images/wrapping/Greenwave.jpg', scale: 0.7 },
-        { label: 'Abstract', color: '#ffffff', texture: 'images/wrapping/Abstract.jpg', scale: 0.5 }
+        { label: 'Miele', color: '#ffffff', texture: 'images/wrapping/honey21.jpg', scale: 0.5, scaleU: 0.4, scaleV: 0.6 },
+        { label: 'Onda', color: '#234a63', texture: 'images/wrapping/Wave.jpg', scale: 0.7 },
+        { label: 'Carbonio', color: '#333333', texture: 'images/wrapping/Carbon.jpg', scale: 1 },
+        { label: 'Mimetico', color: '#3b4a3a', texture: 'images/wrapping/Camu.jpg', scale: 0.2 },
+        { label: 'Mimetico 2', color: '#3b4a3a', texture: 'images/wrapping/Camu2.jpg', scale: 0.2 },
+        { label: 'Laser', color: '#ffffff', texture: 'images/wrapping/Laser.jpg', scale: 0.7 },
+        { label: 'Onda verde', color: '#ffffff', texture: 'images/wrapping/Greenwave.jpg', scale: 0.7 },
+        { label: 'Astratto', color: '#ffffff', texture: 'images/wrapping/Abstract.jpg', scale: 0.5 }
       ],
       hatches: [
-        { label: 'Honey', color: '#ffffff', texture: 'images/wrapping/Honey.jpg', scale: 0.5 },
-        { label: 'Wave', color: '#234a63', texture: 'images/wrapping/Wave.jpg', scale: 0.7 },
-        { label: 'Carbon', color: '#333333', texture: 'images/wrapping/Carbon.jpg', scale: 1 },
-        { label: 'Camu', color: '#3b4a3a', texture: 'images/wrapping/Camu.jpg', scale: 0.2 },
-        { label: 'Green wave', color: '#ffffff', texture: 'images/wrapping/Greenwave.jpg', scale: 0.7 },
-        { label: 'Abstract', color: '#ffffff', texture: 'images/wrapping/Abstract.jpg', scale: 0.5 }
+        { label: 'Miele', color: '#ffffff', texture: 'images/wrapping/honey21.jpg', scale: 0.5, scaleU: 0.4, scaleV: 0.6 },
+        { label: 'Onda', color: '#234a63', texture: 'images/wrapping/Wave.jpg', scale: 0.7 },
+        { label: 'Carbonio', color: '#333333', texture: 'images/wrapping/Carbon.jpg', scale: 1 },
+        { label: 'Mimetico', color: '#3b4a3a', texture: 'images/wrapping/Camu.jpg', scale: 0.2 },
+        { label: 'Mimetico 2', color: '#3b4a3a', texture: 'images/wrapping/Camu2.jpg', scale: 0.2 },
+        { label: 'Laser', color: '#ffffff', texture: 'images/wrapping/Laser.jpg', scale: 0.7 },
+        { label: 'Onda verde', color: '#ffffff', texture: 'images/wrapping/Greenwave.jpg', scale: 0.7 },
+        { label: 'Astratto', color: '#ffffff', texture: 'images/wrapping/Abstract.jpg', scale: 0.5 }
       ]
     },
     paint: {
       hull: [
-        { label: 'White', color: '#FFFFFF' },
-        { label: 'Dark', color: '#808080' },
-        { label: 'Green', color: '#ADFF2F' },
-        { label: 'Blue', color: '#0000CD' },
-        { label: 'Yellow', color: '#FFFF00' },
-        { label: 'Black', color: '#000000' }
+        { label: 'Bianco', color: '#ffffff' },
+        { label: 'Verde acqua', color: '#7FFFD4' },
+        { label: 'Ciano', color: '#00FFFF' },
+        { label: 'Lime', color: '#7FFF00' },
+        { label: 'Blu notte', color: '#00008B' },
+        { label: 'Blu elettrico', color: '#0000FF' },
+        { label: 'Nero', color: '#000000' },
+        { label: 'Grigio', color: '#808080' },
+        { label: 'Grigio fumo', color: '#A9A9A9' },
+        { label: 'Bronzo', color: '#B8860B' },
+        { label: 'Giallo sole', color: '#FFFF00' },
+        { label: 'Arancione', color: '#FFA500' },
+        { label: 'Rosso', color: '#FF0000' },
+        { label: 'Oliva', color: '#808000' },
+        { label: 'Magenta', color: '#FF00FF' },
+        { label: 'Salmone', color: '#FFA07A' },
+        { label: 'Indaco', color: '#4B0082' }
       ],
       deck: [
-        { label: 'White', color: '#FFFFFF' },
-        { label: 'Dark', color: '#808080' },
-        { label: 'Green', color: '#ADFF2F' },
-        { label: 'Blue', color: '#0000CD' },
-        { label: 'Yellow', color: '#FFFF00' },
-        { label: 'Black', color: '#000000' }
+        { label: 'Bianco', color: '#ffffff' },
+        { label: 'Verde acqua', color: '#7FFFD4' },
+        { label: 'Ciano', color: '#00FFFF' },
+        { label: 'Lime', color: '#7FFF00' },
+        { label: 'Blu notte', color: '#00008B' },
+        { label: 'Blu elettrico', color: '#0000FF' },
+        { label: 'Nero', color: '#000000' },
+        { label: 'Grigio', color: '#808080' },
+        { label: 'Grigio fumo', color: '#A9A9A9' },
+        { label: 'Bronzo', color: '#B8860B' },
+        { label: 'Giallo sole', color: '#FFFF00' },
+        { label: 'Arancione', color: '#FFA500' },
+        { label: 'Rosso', color: '#FF0000' },
+        { label: 'Oliva', color: '#808000' },
+        { label: 'Magenta', color: '#FF00FF' },
+        { label: 'Salmone', color: '#FFA07A' },
+        { label: 'Indaco', color: '#4B0082' }
       ],
       hatches: [
-        { label: 'White', color: '#FFFFFF' },
-        { label: 'Dark', color: '#808080' },
-        { label: 'Green', color: '#ADFF2F' },
-        { label: 'Blue', color: '#0000CD' },
-        { label: 'Yellow', color: '#FFFF00' },
-        { label: 'Black', color: '#000000' }
+        { label: 'Bianco', color: '#ffffff' },
+        { label: 'Verde acqua', color: '#7FFFD4' },
+        { label: 'Ciano', color: '#00FFFF' },
+        { label: 'Lime', color: '#7FFF00' },
+        { label: 'Blu notte', color: '#00008B' },
+        { label: 'Blu elettrico', color: '#0000FF' },
+        { label: 'Nero', color: '#000000' },
+        { label: 'Grigio', color: '#808080' },
+        { label: 'Grigio fumo', color: '#A9A9A9' },
+        { label: 'Bronzo', color: '#B8860B' },
+        { label: 'Giallo sole', color: '#FFFF00' },
+        { label: 'Arancione', color: '#FFA500' },
+        { label: 'Rosso', color: '#FF0000' },
+        { label: 'Oliva', color: '#808000' },
+        { label: 'Magenta', color: '#FF00FF' },
+        { label: 'Salmone', color: '#FFA07A' },
+        { label: 'Indaco', color: '#4B0082' }
       ]
     },
     rugged: {
       all: [
-        { label: 'Lagoon', color: '#556B2F' },
-        { label: 'Seals', color: '#2F4F4F' },
-        { label: 'Acid', color: '#7FFF00' }
+        { label: 'Laguna', color: '#556B2F' },
+        { label: 'Foche', color: '#2F4F4F' },
+        { label: 'Acido', color: '#7FFF00' }
       ]
     }
   };
@@ -2887,12 +3833,15 @@ function updatePrice(){
     select.dataset.group = group;
     colorSelects[group] = select;
     let isInit = true;
-    colors.forEach(({ label, color, texture, scale }) => {
+    colors.forEach(({ label, color, texture, scale, scaleU, scaleV }) => {
+      const displayLabel = translateColorMenuLabel(label);
       const opt = document.createElement('option');
-      opt.textContent = label;
+      opt.textContent = displayLabel;
       opt.value = color || '';
       if(texture) opt.dataset.texture = texture;
       if(scale) opt.dataset.scale = scale;
+      if(Number.isFinite(scaleU)) opt.dataset.scaleU = String(scaleU);
+      if(Number.isFinite(scaleV)) opt.dataset.scaleV = String(scaleV);
       select.appendChild(opt);
     });
     select.addEventListener('change', () => {
@@ -2902,7 +3851,9 @@ function updatePrice(){
           textContent: opt.textContent,
           dataset: {
           texture: opt.dataset.texture,
-          scale: opt.dataset.scale
+          scale: opt.dataset.scale,
+          scaleU: opt.dataset.scaleU,
+          scaleV: opt.dataset.scaleV
         }
       };
       setColorLabel(group, opt.textContent);
@@ -2913,12 +3864,125 @@ function updatePrice(){
     });
     container.appendChild(select);
   }
-    function renderGelcoatMenu(group, containerId, colors, wrappingOptions, ruggedOptions){
+  function createChoiceOption(label, onPick){
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'choice-option';
+    btn.textContent = label;
+    btn.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      onPick();
+    });
+    return btn;
+  }
+
+  function createChoiceSubmenu(title){
+    const wrap = document.createElement('div');
+    wrap.className = 'choice-sub';
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'choice-option';
+    trigger.textContent = title;
+    const submenu = document.createElement('div');
+    submenu.className = 'choice-submenu';
+    trigger.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const willOpen = !wrap.classList.contains('is-open');
+      const host = wrap.parentElement;
+      if(host){
+        host.querySelectorAll('.choice-sub.is-open').forEach((el) => {
+          if(el !== wrap) el.classList.remove('is-open');
+        });
+      }
+      wrap.classList.toggle('is-open', willOpen);
+    });
+    wrap.appendChild(trigger);
+    wrap.appendChild(submenu);
+    return { wrap, submenu };
+  }
+
+  function syncColorMenuOpenState(){
+    const hasOpen = Boolean(document.querySelector('#step-colori .color-choice-dropdown.is-open'));
+    document.body.classList.toggle('color-menu-open', hasOpen);
+    const viewerEl = document.getElementById('viewer');
+    if(viewerEl){
+      viewerEl.classList.toggle('color-menu-open', hasOpen);
+    }
+  }
+  function translateColorMenuLabel(label){
+    const txt = String(label || '').trim();
+    if(currentLang !== 'en') return txt;
+    const map = {
+      'Bianco': 'White',
+      'Colori': 'Colors',
+      'Verde acqua': 'Aquamarine',
+      'Ciano': 'Cyan',
+      'Lime': 'Lime',
+      'Blu notte': 'Navy blue',
+      'Blu elettrico': 'Electric blue',
+      'Nero': 'Black',
+      'Grigio': 'Gray',
+      'Grigio fumo': 'Smoke gray',
+      'Bronzo': 'Bronze',
+      'Giallo sole': 'Sun yellow',
+      'Arancione': 'Orange',
+      'Rosso': 'Red',
+      'Oliva': 'Olive',
+      'Magenta': 'Magenta',
+      'Salmone': 'Salmon',
+      'Indaco': 'Indigo',
+      'Miele': 'Honey',
+      'Onda': 'Wave',
+      'Carbonio': 'Carbon',
+      'Mimetico': 'Camo',
+      'Mimetico 2': 'Camo 2',
+      'Onda verde': 'Greenwave',
+      'Astratto': 'Abstract',
+      'Laguna': 'Lagoon',
+      'Foche': 'Seals',
+      'Acido': 'Acid'
+    };
+    return map[txt] || txt;
+  }
+
+  function updateChoiceDropdownDirection(dropdown){
+    if(!dropdown) return;
+    if(window.matchMedia && window.matchMedia('(max-width: 900px)').matches){
+      dropdown.classList.remove('open-up');
+      return;
+    }
+    const menu = dropdown.querySelector('.choice-menu');
+    if(!menu) return;
+    dropdown.classList.remove('open-up');
+    const prevDisplay = menu.style.display;
+    const prevVisibility = menu.style.visibility;
+    menu.style.visibility = 'hidden';
+    menu.style.display = 'flex';
+    const menuHeight = Math.min(menu.scrollHeight || 0, 360);
+    menu.style.display = prevDisplay;
+    menu.style.visibility = prevVisibility;
+    const hostRect = dropdown.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - hostRect.bottom;
+    const spaceAbove = hostRect.top;
+    if(spaceBelow < (menuHeight + 12) && spaceAbove > spaceBelow){
+      dropdown.classList.add('open-up');
+    }
+  }
+
+  function renderGelcoatMenu(group, containerId, colors, wrappingOptions, ruggedOptions){
     const container = document.getElementById(containerId);
     if(!container) return;
+    if(typeof container._choiceCleanup === 'function'){
+      container._choiceCleanup();
+      container._choiceCleanup = null;
+    }
     container.innerHTML = '';
 
     const select = document.createElement('select');
+    select.style.display = 'none';
+    select.dataset.group = group;
     const placeholder = document.createElement('option');
     placeholder.textContent = 'Select';
     placeholder.value = '';
@@ -2926,102 +3990,316 @@ function updatePrice(){
     placeholder.selected = true;
     select.appendChild(placeholder);
 
-    const whiteEntry = colors.find(c => c.label.toLowerCase() === 'white') || colors[0];
+    const whiteEntry = colors.find(c => ['white','bianco'].includes((c.label || '').toLowerCase()));
     if(whiteEntry){
       const opt = document.createElement('option');
-      opt.textContent = 'White';
+      opt.textContent = translateColorMenuLabel(whiteEntry.label || 'Bianco');
       opt.value = whiteEntry.color || '#ffffff';
       select.appendChild(opt);
     }
 
-    const colorEntries = colors.filter(c => c.label.toLowerCase() !== 'white');
+    const colorEntries = colors.filter(c => !['white','bianco'].includes((c.label || '').toLowerCase()));
+    colorEntries.forEach((entry) => {
+      const opt = document.createElement('option');
+      opt.textContent = translateColorMenuLabel(entry.label);
+      opt.value = entry.color || '';
+      select.appendChild(opt);
+    });
+
+    (wrappingOptions || []).forEach((entry) => {
+      const opt = document.createElement('option');
+      opt.textContent = translateColorMenuLabel(entry.label);
+      opt.value = entry.color || '#ffffff';
+      if(entry.texture) opt.dataset.texture = entry.texture;
+      if(entry.scale) opt.dataset.scale = entry.scale;
+      if(Number.isFinite(entry.scaleU)) opt.dataset.scaleU = String(entry.scaleU);
+      if(Number.isFinite(entry.scaleV)) opt.dataset.scaleV = String(entry.scaleV);
+      select.appendChild(opt);
+    });
+
+    (ruggedOptions || []).forEach((entry) => {
+      const opt = document.createElement('option');
+      opt.textContent = translateColorMenuLabel(entry.label);
+      opt.value = entry.color || '';
+      opt.dataset.rugged = '1';
+      select.appendChild(opt);
+    });
+
+    const dropdown = document.createElement('div');
+    dropdown.className = 'choice-dropdown color-choice-dropdown';
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'choice-btn trigger';
+    trigger.textContent = 'Select';
+    const menu = document.createElement('div');
+    menu.className = 'choice-menu';
+    dropdown.appendChild(trigger);
+    dropdown.appendChild(menu);
+
+    const optionButtons = new Map();
+    const makeKey = (entry) => `${entry.label}|${entry.color || ''}|${entry.texture || ''}|${entry.scale || ''}|${entry.scaleU || ''}|${entry.scaleV || ''}|${entry.rugged ? '1' : '0'}`;
+    const setSelected = (entry) => {
+      optionButtons.forEach((btn) => btn.classList.remove('is-selected'));
+      const key = makeKey(entry);
+      const btn = optionButtons.get(key);
+      if(btn) btn.classList.add('is-selected');
+      trigger.textContent = entry.label || 'Select';
+    };
+    const pickEntry = (entry) => {
+      const opts = Array.from(select.options || []);
+      const target = opts.find((o) => {
+        if((o.textContent || '').trim() !== (entry.label || '').trim()) return false;
+        if((o.value || '') !== (entry.color || '')) return false;
+        if((o.dataset.texture || '') !== (entry.texture || '')) return false;
+        if((o.dataset.scale || '') !== String(entry.scale || '')) return false;
+        if((o.dataset.scaleU || '') !== String(entry.scaleU || '')) return false;
+        if((o.dataset.scaleV || '') !== String(entry.scaleV || '')) return false;
+        const r = o.dataset.rugged ? '1' : '0';
+        return r === (entry.rugged ? '1' : '0');
+      });
+      if(!target) return;
+      const targetIndex = opts.indexOf(target);
+      if(targetIndex >= 0){
+        select.selectedIndex = targetIndex;
+      }else{
+        select.value = target.value;
+      }
+      setSelected(entry);
+      select.dispatchEvent(new Event('change'));
+      dropdown.classList.remove('is-open');
+      dropdown.querySelectorAll('.choice-sub.is-open').forEach((el) => el.classList.remove('is-open'));
+      syncColorMenuOpenState();
+    };
+
+    if(whiteEntry){
+      const entry = { label: translateColorMenuLabel(whiteEntry.label || 'Bianco'), color: whiteEntry.color || '#ffffff' };
+      const btn = createChoiceOption(entry.label, () => pickEntry(entry));
+      optionButtons.set(makeKey(entry), btn);
+      menu.appendChild(btn);
+    }
+
     if(colorEntries.length){
-      const groupEl = document.createElement('optgroup');
-      groupEl.label = 'Color';
+      const sub = createChoiceSubmenu(translateColorMenuLabel('Colori'));
+      const grid = document.createElement('div');
+      grid.className = 'color-swatch-grid';
       colorEntries.forEach((entry) => {
-        const opt = document.createElement('option');
-        opt.textContent = entry.label;
-        opt.value = entry.color || '';
-        groupEl.appendChild(opt);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'color-swatch-option';
+        btn.title = translateColorMenuLabel(entry.label);
+        btn.setAttribute('aria-label', translateColorMenuLabel(entry.label));
+        btn.style.background = entry.color || '#ffffff';
+        const sw = document.createElement('span');
+        sw.className = 'swatch';
+        btn.appendChild(sw);
+        btn.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          pickEntry({ label: translateColorMenuLabel(entry.label), color: entry.color || '' });
+        });
+        optionButtons.set(makeKey({ label: translateColorMenuLabel(entry.label), color: entry.color || '' }), btn);
+        grid.appendChild(btn);
       });
-      select.appendChild(groupEl);
+      sub.submenu.appendChild(grid);
+      menu.appendChild(sub.wrap);
     }
 
-    if(wrappingOptions && wrappingOptions.length){
-      const groupEl = document.createElement('optgroup');
-      groupEl.label = 'Wrapping';
+    if((wrappingOptions || []).length){
+      const sub = createChoiceSubmenu('Wrapping');
+      const grid = document.createElement('div');
+      grid.className = 'texture-swatch-grid';
       wrappingOptions.forEach((entry) => {
-        const opt = document.createElement('option');
-        opt.textContent = entry.label;
-        opt.value = entry.color || '#ffffff';
-        if(entry.texture) opt.dataset.texture = entry.texture;
-        if(entry.scale) opt.dataset.scale = entry.scale;
-        groupEl.appendChild(opt);
+        const optEntry = {
+          label: translateColorMenuLabel(entry.label),
+          color: entry.color || '#ffffff',
+          texture: entry.texture || '',
+          scale: entry.scale || '',
+          scaleU: Number.isFinite(entry.scaleU) ? String(entry.scaleU) : '',
+          scaleV: Number.isFinite(entry.scaleV) ? String(entry.scaleV) : ''
+        };
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'texture-swatch-option';
+        btn.title = translateColorMenuLabel(entry.label);
+        btn.setAttribute('aria-label', translateColorMenuLabel(entry.label));
+        if(entry.texture){
+          btn.style.backgroundImage = `url('${entry.texture}')`;
+        }
+        btn.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          pickEntry(optEntry);
+        });
+        optionButtons.set(makeKey({ ...optEntry, rugged: false }), btn);
+        grid.appendChild(btn);
       });
-      select.appendChild(groupEl);
+      sub.submenu.appendChild(grid);
+      menu.appendChild(sub.wrap);
     }
 
-    if(ruggedOptions && ruggedOptions.length){
-      const groupEl = document.createElement('optgroup');
-      groupEl.label = 'Rugged';
+    if((ruggedOptions || []).length){
+      const sub = createChoiceSubmenu('Rugged');
+      const grid = document.createElement('div');
+      grid.className = 'color-swatch-grid rugged-swatch-grid';
       ruggedOptions.forEach((entry) => {
-        const opt = document.createElement('option');
-        opt.textContent = entry.label;
-        opt.value = entry.color || '';
-        opt.dataset.rugged = '1';
-        groupEl.appendChild(opt);
+        const optEntry = { label: translateColorMenuLabel(entry.label), color: entry.color || '', rugged: true };
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'color-swatch-option rugged-swatch-option';
+        btn.title = translateColorMenuLabel(entry.label);
+        btn.setAttribute('aria-label', translateColorMenuLabel(entry.label));
+        btn.style.backgroundColor = entry.color || '#556B2F';
+        btn.style.backgroundImage = "url('images/rugged.jpg')";
+        btn.style.backgroundSize = 'cover';
+        btn.style.backgroundPosition = 'center';
+        btn.style.backgroundBlendMode = 'multiply';
+        btn.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          pickEntry(optEntry);
+        });
+        optionButtons.set(makeKey(optEntry), btn);
+        grid.appendChild(btn);
       });
-      select.appendChild(groupEl);
+      sub.submenu.appendChild(grid);
+      menu.appendChild(sub.wrap);
     }
 
-          let isInit = true;
-
-      select.addEventListener('change', () => {
+    let isInit = true;
+    select.addEventListener('change', () => {
       const opt = select.selectedOptions[0];
       if(!opt || !opt.value) return;
-      const isRugged = opt.dataset.rugged || (opt.parentElement && opt.parentElement.label === 'Rugged') ? '1' : '';
+      const entry = {
+        label: (opt.textContent || '').trim(),
+        color: opt.value || '',
+        texture: opt.dataset.texture || '',
+        scale: opt.dataset.scale || '',
+        scaleU: opt.dataset.scaleU || '',
+        scaleV: opt.dataset.scaleV || '',
+        rugged: Boolean(opt.dataset.rugged)
+      };
+      setSelected(entry);
       const proxyBtn = {
-        textContent: opt.textContent,
+        textContent: entry.label,
         dataset: {
-          texture: opt.dataset.texture,
-          scale: opt.dataset.scale,
-          rugged: isRugged
+          texture: entry.texture,
+          scale: entry.scale,
+          scaleU: entry.scaleU,
+          scaleV: entry.scaleV,
+          rugged: entry.rugged ? '1' : ''
         }
       };
-      setColorLabel(group, opt.textContent);
-      if(group === 'hull') setHull(opt.value, proxyBtn);
-      else if(group === 'deck') setDeck(opt.value, proxyBtn);
-      else setHatches(opt.value, proxyBtn, group === 'hatches' && !isInit);
+      setColorLabel(group, entry.label);
+      if(group === 'hull') setHull(entry.color, proxyBtn);
+      else if(group === 'deck') setDeck(entry.color, proxyBtn);
+      else setHatches(entry.color, proxyBtn, group === 'hatches' && !isInit);
       isInit = false;
+    });
+
+    const onDocPointer = (ev) => {
+      if(!dropdown.contains(ev.target)){
+        dropdown.classList.remove('is-open');
+        dropdown.querySelectorAll('.choice-sub.is-open').forEach((el) => el.classList.remove('is-open'));
+        syncColorMenuOpenState();
+      }
+    };
+    document.addEventListener('pointerdown', onDocPointer);
+    container._choiceCleanup = () => {
+      document.removeEventListener('pointerdown', onDocPointer);
+    };
+    trigger.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      updateChoiceDropdownDirection(dropdown);
+      dropdown.classList.toggle('is-open');
+      dropdown.style.zIndex = dropdown.classList.contains('is-open') ? '5000' : '';
+      if(!dropdown.classList.contains('is-open')){
+        dropdown.querySelectorAll('.choice-sub.is-open').forEach((el) => el.classList.remove('is-open'));
+      }
+      syncColorMenuOpenState();
     });
 
     colorSelects[group] = select;
     container.appendChild(select);
-
-    if(whiteEntry){
-      select.value = whiteEntry.color || '#ffffff';
-      select.dispatchEvent(new Event('change'));
-    }
+    container.appendChild(dropdown);
   }
 
   function renderAntiskidSelect(){
     const container = document.getElementById('antiskid-select');
     if(!container) return;
+    if(typeof container._choiceCleanup === 'function'){
+      container._choiceCleanup();
+      container._choiceCleanup = null;
+    }
     container.innerHTML = '';
     const select = document.createElement('select');
+    select.style.display = 'none';
     const placeholder = document.createElement('option');
     placeholder.textContent = 'Select';
     placeholder.value = '';
     placeholder.disabled = true;
     placeholder.selected = true;
     select.appendChild(placeholder);
+    const dropdown = document.createElement('div');
+    dropdown.className = 'choice-dropdown color-choice-dropdown antiskid-choice-dropdown';
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'choice-btn trigger';
+    trigger.textContent = 'Select';
+    const menu = document.createElement('div');
+    menu.className = 'choice-menu';
+    dropdown.appendChild(trigger);
+    dropdown.appendChild(menu);
+    const rebuildChoiceMenu = () => {
+      menu.innerHTML = '';
+      Array.from(select.options || []).forEach((opt) => {
+        if(!opt.value) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'choice-option';
+        btn.textContent = opt.textContent || '';
+        btn.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          select.value = opt.value;
+          select.dispatchEvent(new Event('change'));
+          dropdown.classList.remove('is-open');
+          syncColorMenuOpenState();
+        });
+        menu.appendChild(btn);
+      });
+      const selectedOpt = select.selectedOptions && select.selectedOptions[0];
+      trigger.textContent = (selectedOpt && selectedOpt.value) ? (selectedOpt.textContent || 'Select') : 'Select';
+    };
     select.addEventListener('change', () => {
       if(!select.value) return;
       selectedAntiskid = select.value;
         updateAntiskidFinish();
         updatePrice();
+      const selectedOpt = select.selectedOptions && select.selectedOptions[0];
+      trigger.textContent = (selectedOpt && selectedOpt.value) ? (selectedOpt.textContent || 'Select') : 'Select';
     });
+    trigger.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      updateChoiceDropdownDirection(dropdown);
+      dropdown.classList.toggle('is-open');
+      dropdown.style.zIndex = dropdown.classList.contains('is-open') ? '5000' : '';
+      syncColorMenuOpenState();
+    });
+    const onDocPointer = (ev) => {
+      if(!dropdown.contains(ev.target)){
+        dropdown.classList.remove('is-open');
+        syncColorMenuOpenState();
+      }
+    };
+    document.addEventListener('pointerdown', onDocPointer);
+    container._choiceCleanup = () => {
+      document.removeEventListener('pointerdown', onDocPointer);
+    };
+    container._rebuildChoiceMenu = rebuildChoiceMenu;
     container.appendChild(select);
+    container.appendChild(dropdown);
     updateAntiskidOptions(selectedFinish);
   }
 
@@ -3029,18 +4307,19 @@ function updatePrice(){
       if(btn?.dataset?.rugged) return 'rugged';
       if(btn?.dataset?.texture) return 'wrapping';
       const label = (btn?.textContent || '').trim().toLowerCase();
-      if(label === 'white') return 'white';
+      if(label === 'white' || label === 'bianco') return 'white';
       return 'color';
     }
 
 function updateAntiskidOptions(finish){
       const select = document.querySelector('#antiskid-select select');
       if(!select) return;
+      const isEn = currentLang === 'en';
       const baseOptions = [
-        { label: 'None', value: 'none' },
+        { label: isEn ? 'None' : 'Nessuno', value: 'none' },
         { label: 'Eva', value: 'eva' },
-        { label: 'Paint', value: 'paint' },
-        { label: 'Print', value: 'print' }
+        { label: isEn ? 'Painted' : 'Verniciato', value: 'paint' },
+        { label: isEn ? 'Printed' : 'Stampato', value: 'print' }
       ];
       let allowed = baseOptions;
       if(finish === 'gelcoat' || finish === 'paint'){
@@ -3071,9 +4350,13 @@ function updateAntiskidOptions(finish){
       }
       select.value = selectedAntiskid || '';
       updateAntiskidFinish();
+      const container = document.getElementById('antiskid-select');
+      if(container && typeof container._rebuildChoiceMenu === 'function'){
+        container._rebuildChoiceMenu();
+      }
     }
 
-    function updateColorOptions(finish){
+  function updateColorOptions(finish){
     const palette = colorPalettes[finish] || colorPalettes.gelcoat;
     hullSelected = false;
     deckSelected = false;
@@ -3094,9 +4377,10 @@ function updateAntiskidOptions(finish){
       if(groupHatches) groupHatches.classList.remove('hidden');
       if(groupHull) groupHull.classList.remove('hidden');
       const wrapPalette = colorPalettes.wrapping || {};
-      renderGelcoatMenu('hull', 'hull-colors', palette.hull, wrapPalette.hull || [], colorPalettes.rugged?.all || []);
-      renderGelcoatMenu('deck', 'deck-colors', palette.deck, wrapPalette.deck || [], colorPalettes.rugged?.all || []);
-      renderGelcoatMenu('hatches', 'hatches-colors', palette.hatches, wrapPalette.hatches || [], colorPalettes.rugged?.all || []);
+      const ruggedPalette = finish === 'gelcoat' ? [] : (colorPalettes.rugged?.all || []);
+      renderGelcoatMenu('hull', 'hull-colors', palette.hull, wrapPalette.hull || [], ruggedPalette);
+      renderGelcoatMenu('deck', 'deck-colors', palette.deck, wrapPalette.deck || [], ruggedPalette);
+      renderGelcoatMenu('hatches', 'hatches-colors', palette.hatches, wrapPalette.hatches || [], ruggedPalette);
     }else{
       if(groupDeck) groupDeck.classList.remove('hidden');
       if(groupHatches) groupHatches.classList.remove('hidden');
@@ -3106,6 +4390,58 @@ function updateAntiskidOptions(finish){
       renderColorSelect('hatches', 'hatches-colors', palette.hatches);
     }
     updateAntiskidOptions(finish);
+  }
+
+  function findColorOptionByState(select, state){
+    if(!select || !state) return null;
+    const opts = Array.from(select.options || []);
+    return opts.find((o) => {
+      if((o.value || '') !== (state.value || '')) return false;
+      if((o.dataset.texture || '') !== (state.texture || '')) return false;
+      if((o.dataset.scale || '') !== (state.scale || '')) return false;
+      if((o.dataset.scaleU || '') !== (state.scaleU || '')) return false;
+      if((o.dataset.scaleV || '') !== (state.scaleV || '')) return false;
+      const r = o.dataset.rugged ? '1' : '0';
+      return r === (state.rugged || '0');
+    }) || null;
+  }
+
+  function refreshColorMenusForLanguage(){
+    if(!selectedFinish) return;
+    const groups = ['hull', 'deck', 'hatches'];
+    const snapshot = {};
+    groups.forEach((group) => {
+      const sel = colorSelects[group];
+      const opt = sel?.selectedOptions?.[0];
+      if(!opt || !opt.value) return;
+      snapshot[group] = {
+        value: opt.value || '',
+        texture: opt.dataset.texture || '',
+        scale: opt.dataset.scale || '',
+        scaleU: opt.dataset.scaleU || '',
+        scaleV: opt.dataset.scaleV || '',
+        rugged: opt.dataset.rugged ? '1' : '0'
+      };
+    });
+    const antiskidSnapshot = selectedAntiskid || 'none';
+
+    updateColorOptions(selectedFinish);
+
+    groups.forEach((group) => {
+      const state = snapshot[group];
+      if(!state) return;
+      const sel = colorSelects[group];
+      const match = findColorOptionByState(sel, state);
+      if(!sel || !match) return;
+      sel.selectedIndex = Array.from(sel.options).indexOf(match);
+      sel.dispatchEvent(new Event('change'));
+    });
+
+    const antiskidSel = document.querySelector('#antiskid-select select');
+    if(antiskidSel && Array.from(antiskidSel.options || []).some((o) => o.value === antiskidSnapshot)){
+      antiskidSel.value = antiskidSnapshot;
+      antiskidSel.dispatchEvent(new Event('change'));
+    }
   }
 
   function applyAntiskid(mat, color){
@@ -3133,7 +4469,7 @@ function updateAntiskidOptions(finish){
     if(!ruggedTexture){
       ruggedTexture = textureLoader.load('images/rugged.jpg', (t) => {
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
-        t.repeat.set(tileU(0.5), tileV(0.5));
+        t.repeat.set(tileU(2), tileV(2));
         t.colorSpace = THREE.SRGBColorSpace;
         t.flipY = false;
         t.needsUpdate = true;
@@ -3384,14 +4720,16 @@ function applyChirpTextureToMeshes(){
       syncSchienaleMaterial();
     }
 
-    function applyWrappingTextureFor(mat, texturePath, scale){
+    function applyWrappingTextureFor(mat, texturePath, scale, scaleU, scaleV){
     if(!mat) return;
     if(texturePath){
       mat.color.set('#ffffff');
       textureLoader.load(texturePath, (t) => {
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
-        const s = Number.isFinite(scale) ? scale : 2;
-        t.repeat.set(tileU(s), tileV(s));
+        const s = Number.isFinite(scale) && scale > 0 ? scale : 2;
+        const su = Number.isFinite(scaleU) && scaleU > 0 ? scaleU : s;
+        const sv = Number.isFinite(scaleV) && scaleV > 0 ? scaleV : s;
+        t.repeat.set(tileU(su), tileV(sv));
         mat.map = t;
         mat.needsUpdate = true;
       });
@@ -3447,10 +4785,40 @@ function applyChirpTextureToMeshes(){
     selectedFinish = f;
     resetColorsToBase();
     updateColorOptions(f);
+    applyStandardColorDefaults();
     updateAntiskidFinish();
     updatePrice();
     if(autoNext && currentStep === 'finitura') showStep('colori');
   };
+
+  function applyStandardColorDefaults(){
+    const pickDefault = (group) => {
+      const select = colorSelects[group];
+      if(!select) return;
+      const options = Array.from(select.options || []).filter((opt) => Boolean(opt.value));
+      if(!options.length) return;
+      const target = options.find((opt) => {
+        const value = String(opt.value || '').toLowerCase();
+        const label = String(opt.textContent || '').trim().toLowerCase();
+        return value === '#ffffff' || label === 'bianco' || label === 'white';
+      }) || options[0];
+      select.value = target.value;
+      select.dispatchEvent(new Event('change'));
+    };
+
+    pickDefault('hull');
+    pickDefault('deck');
+    pickDefault('hatches');
+
+    selectedAntiskid = 'none';
+    const antiskidSel = document.querySelector('#antiskid-select select');
+    if(antiskidSel){
+      antiskidSel.value = 'none';
+      antiskidSel.dispatchEvent(new Event('change'));
+    }else{
+      updateAntiskidFinish();
+    }
+  }
 
   function resetColorsToBase(){
     hullSelected = false;
@@ -3532,6 +4900,25 @@ function applyChirpTextureToMeshes(){
         select.dispatchEvent(new Event('change'));
       }
     }
+    function selectColorByState(group, cfg = {}){
+      const sel = colorSelects[group];
+      if(!sel) return false;
+      const desiredValue = String(cfg.value || '');
+      const desiredTexture = String(cfg.texture || '');
+      const desiredRugged = cfg.rugged ? '1' : '0';
+      const opts = Array.from(sel.options || []);
+      const target = opts.find((opt) => {
+        if(!opt.value) return false;
+        if(desiredValue && String(opt.value || '').toLowerCase() !== desiredValue.toLowerCase()) return false;
+        if(String(opt.dataset.texture || '') !== desiredTexture) return false;
+        const r = opt.dataset.rugged ? '1' : '0';
+        return r === desiredRugged;
+      });
+      if(!target) return false;
+      sel.selectedIndex = opts.indexOf(target);
+      sel.dispatchEvent(new Event('change'));
+      return true;
+    }
 
     function lockConfigurator(){
       presetLocked = true;
@@ -3565,31 +4952,37 @@ function applyChirpTextureToMeshes(){
 
       const applyChoices = () => {
         if(name === 'nico'){
-          // Hull/Deck/Doors -> Rugged Acid
-          selectOptionByLabel(colorSelects.hull, 'Acid');
-          selectOptionByLabel(colorSelects.deck, 'Acid');
-          selectOptionByLabel(colorSelects.hatches, 'Acid');
-          selectedAntiskid = 'eva';
+          // Nico: Acrilico, Hull nero, Deck/Doors rugged acido, antiskid verniciato.
+          selectColorByState('hull', { value: '#000000' });
+          selectColorByState('deck', { value: '#7FFF00', rugged: true });
+          selectColorByState('hatches', { value: '#7FFF00', rugged: true });
+          selectedAntiskid = 'paint';
         }else if(name === 'gabry'){
-          // Hull -> Color Acquamarina, Deck/Doors -> White
-          selectOptionByLabel(colorSelects.hull, 'Acquamarina');
-          selectOptionByLabel(colorSelects.hull, 'Aquamarina');
-          selectOptionByLabel(colorSelects.deck, 'White');
-          selectOptionByLabel(colorSelects.hatches, 'White');
-          selectedAntiskid = 'print';
+          // Gabry: Gelcoat, Hull aquamarine, Deck/Doors white, antiskid eva.
+          selectColorByState('hull', { value: '#7FFFD4' });
+          selectColorByState('deck', { value: '#ffffff' });
+          selectColorByState('hatches', { value: '#ffffff' });
+          selectedAntiskid = 'eva';
         }
         const antiskidSel = document.querySelector('#antiskid-select select');
         if(antiskidSel){
           antiskidSel.value = selectedAntiskid || '';
+          antiskidSel.dispatchEvent(new Event('change'));
         }
         updateAntiskidFinish();
         updatePrice();
 
-        const presetAccessories = {
-          nico: ['tientibene', 'panca', 'schienale', 'supporto'],
-          gabry: ['tientibene', 'panca', 'schienale', 'supporto', 'impianto', 'batteria', 'trolling']
-        };
-        (presetAccessories[name] || []).forEach(key => setAccessoryChecked(key, true, true));
+        if(name === 'nico'){
+          ['tientibene', 'panca', 'schienale', 'supporto'].forEach((key) => {
+            setAccessoryChecked(key, true, true);
+          });
+        }else if(name === 'gabry'){
+          document.querySelectorAll('#step-accessori input[data-accessory]').forEach((input) => {
+            const key = input.getAttribute('data-accessory');
+            if(!key) return;
+            setAccessoryChecked(key, key !== 'motore', true);
+          });
+        }
         updateAccessoryRules();
         updatePrice();
         lockConfigurator();
@@ -3612,10 +5005,10 @@ function renderFinishSelect(){
     placeholder.selected = true;
     select.appendChild(placeholder);
     const options = [
-        { label: 'Gelcoat', value: 'gelcoat' },
-        { label: 'Acrylic', value: 'paint' },
-        { label: 'Nico', value: 'nico' },
-        { label: 'Gabry', value: 'gabry' }
+        { label: 'GELCOAT', value: 'gelcoat' },
+        { label: 'ACRILICO', value: 'paint' },
+        { label: 'NICO (Acrilico)', value: 'nico' },
+        { label: 'GABRY (Gelcoat)', value: 'gabry' }
       ];
     options.forEach(({ label, value }) => {
         const opt = document.createElement('option');
@@ -3642,7 +5035,13 @@ function renderFinishSelect(){
   window.setHull = function(color, btn){
       selectedHullMode = resolveFinishMode(btn);
     if(btn?.dataset?.texture){
-      applyWrappingTextureFor(hullMat, btn.dataset.texture, Number(btn.dataset.scale));
+      applyWrappingTextureFor(
+        hullMat,
+        btn.dataset.texture,
+        Number.parseFloat(btn.dataset.scale),
+        Number.parseFloat(btn.dataset.scaleU),
+        Number.parseFloat(btn.dataset.scaleV)
+      );
       wrappingWhite = isWrappingWhiteTrigger(btn.dataset.texture);
       hullDark = false;
     }else if(btn?.dataset?.rugged){
@@ -3676,7 +5075,13 @@ function renderFinishSelect(){
   window.setDeck = function(color, btn){
       selectedDeckMode = resolveFinishMode(btn);
     if(btn?.dataset?.texture){
-      applyWrappingTextureFor(deckMat, btn.dataset.texture, Number(btn.dataset.scale));
+      applyWrappingTextureFor(
+        deckMat,
+        btn.dataset.texture,
+        Number.parseFloat(btn.dataset.scale),
+        Number.parseFloat(btn.dataset.scaleU),
+        Number.parseFloat(btn.dataset.scaleV)
+      );
       wrappingWhite = isWrappingWhiteTrigger(btn.dataset.texture);
       deckDark = false;
     }else if(btn?.dataset?.rugged){
@@ -3725,7 +5130,13 @@ function renderFinishSelect(){
       selectedHatchesMode = resolveFinishMode(btn);
     if(btn?.textContent) setColorLabel('hatches', btn.textContent);
     if(btn?.dataset?.texture){
-      applyWrappingTextureFor(hatchesMat, btn.dataset.texture, Number(btn.dataset.scale));
+      applyWrappingTextureFor(
+        hatchesMat,
+        btn.dataset.texture,
+        Number.parseFloat(btn.dataset.scale),
+        Number.parseFloat(btn.dataset.scaleU),
+        Number.parseFloat(btn.dataset.scaleV)
+      );
     }else if(btn?.dataset?.rugged){
       applyRuggedTexture(hatchesMat, color);
     }else if(hatchesMat){
@@ -3797,7 +5208,13 @@ function renderFinishSelect(){
       return;
     }
     if(currentStep === 'colori'){
-        if(!(hullSelected && deckSelected && hatchesSelected)) return;
+        const hasSelectValues = Boolean(colorSelects.hull?.value) && Boolean(colorSelects.deck?.value) && Boolean(colorSelects.hatches?.value);
+        if(!(hullSelected && deckSelected && hatchesSelected) && !hasSelectValues) return;
+        if(hasSelectValues){
+          hullSelected = true;
+          deckSelected = true;
+          hatchesSelected = true;
+        }
         accessoriUnlocked = true;
         showStep('accessori');
         return;
@@ -3940,16 +5357,22 @@ function renderFinishSelect(){
   }
 
     function getAccessoriesSummary(){
+    const dict = I18N[currentLang] || I18N.it;
+    const accMap = dict.acc || {};
     const items = [];
     document.querySelectorAll('#step-accessori input[type="checkbox"]')?.forEach((cb) => {
       if(cb.checked){
-        const label = cb.closest('label')?.textContent?.trim() || cb.dataset.accessory;
+        const key = cb.dataset.accessory;
+        const label = (key && accMap[key]) || cb.closest('label')?.textContent?.trim() || key;
         if(label) items.push(label);
       }
     });
-    return items.length ? items.join(', ') : 'Nessuno';
+    return items.length ? items.join(', ') : (currentLang === 'en' ? 'None' : 'Nessuno');
   }
     function getSelectedAccessoriesDetailed(){
+    const dict = I18N[currentLang] || I18N.it;
+    const accMap = dict.acc || {};
+    const antiskidTitle = currentLang === 'en' ? 'Antiskid' : 'Antiscivolo';
     const isChecked = (name) =>
       document.querySelector(`#step-accessori input[data-accessory="${name}"]`)?.checked;
     const isVisible = (name) =>
@@ -3957,23 +5380,23 @@ function renderFinishSelect(){
       (accessoryGroups[name] && accessoryGroups[name].some(obj => obj.visible));
     const isSelected = (name) => Boolean(isChecked(name) || isVisible(name));
     const order = [
-      { key: 'antiskid', label: 'Antiskid' },
-      { key: 'tientibene', label: 'Tientibene' },
-      { key: 'panca', label: 'Panca' },
-      { key: 'schienale', label: 'Schienale' },
-      { key: 'supporto', label: 'Supporto motore' },
-      { key: 'motore', label: 'Motore' },
-      { key: 'trolling', label: 'Trolling motor' },
-      { key: 'fishfinder', label: 'Fishfinder' },
-      { key: 'impianto', label: 'Impianto elettrico' },
-      { key: 'batteria', label: 'Batteria al Litio' }
+      { key: 'antiskid', label: antiskidTitle },
+      { key: 'tientibene', label: accMap.tientibene || 'Tientibene' },
+      { key: 'panca', label: accMap.panca || 'Panca' },
+      { key: 'schienale', label: accMap.schienale || 'Schienale' },
+      { key: 'supporto', label: accMap.supporto || 'Supporto motore' },
+      { key: 'motore', label: accMap.motore || 'Motore' },
+      { key: 'trolling', label: accMap.trolling || 'Motore di prua' },
+      { key: 'fishfinder', label: accMap.fishfinder || 'Ecoscandaglio' },
+      { key: 'impianto', label: accMap.impianto || 'Impianto elettrico' },
+      { key: 'batteria', label: accMap.batteria || 'Batteria al Litio' }
     ];
     const items = [];
     order.forEach((item) => {
       if(item.key === 'antiskid'){
         if((selectedAntiskid || 'none') !== 'none'){
           const price = getAntiskidPrice();
-          const label = `Antiskid (${getAntiskidLabel()})`;
+          const label = `${antiskidTitle} (${getAntiskidLabel()})`;
           items.push({ label, price });
         }
         return;
@@ -3986,12 +5409,12 @@ function renderFinishSelect(){
     return items;
   }
       function formatEuro(value){
-    const num = Number(value) || 0;
-    const euro = "\u20AC";
-    return `${euro} ${num.toLocaleString('it-IT')}`;
+    return formatMoney(value);
   }
       function getFinishLabel(){
-    const map = { gelcoat: 'Gelcoat', paint: 'Acrylic', rugged: 'Rugged', wrapping: 'Wrapping' };
+    const map = currentLang === 'en'
+      ? { gelcoat: 'Gelcoat', paint: 'Acrylic', rugged: 'Rugged', wrapping: 'Wrapping' }
+      : { gelcoat: 'Gelcoat', paint: 'Verniciato', rugged: 'Rugged', wrapping: 'Wrapping' };
     return map[selectedFinish] || selectedFinish || '-';
   }
   function getSelectLabel(sel, fallback){
@@ -4013,7 +5436,10 @@ function getColorsSummary(){
     const hull = getColorLabel('hull', selectedHull || '-');
     const deck = getColorLabel('deck', selectedDeck || '-');
     const doors = getColorLabel('hatches', selectedHatches || '-');
-    return `Hull (${hull}), Deck (${deck}), Doors (${doors})`;
+    const l = currentLang === 'en'
+      ? { hull: 'Hull', deck: 'Deck', doors: 'Doors' }
+      : { hull: 'Chiglia', deck: 'Ponte', doors: 'Portelli' };
+    return `${l.hull} (${hull}), ${l.deck} (${deck}), ${l.doors} (${doors})`;
   }
 
     function getAntiskidPrice(){
@@ -4027,13 +5453,102 @@ function getColorsSummary(){
     const el = document.getElementById('price-tag');
     return el ? el.textContent.trim() : '';
   }
+  function renderLiveSummary(){
+    if(!liveSummaryEl) return;
+    const isEn = currentLang === 'en';
+    const t = isEn
+      ? { title: 'Live summary', finish: 'Finish', colors: 'Colors', antiskid: 'Antiskid', accessories: 'Accessories' }
+      : { title: 'Riepilogo live', finish: 'Finitura', colors: 'Colori', antiskid: 'Antiscivolo', accessories: 'Accessori' };
+    const rows = [];
+    if(selectedFinish){
+      rows.push(`<li><b>${t.finish}:</b> ${getFinishLabel()}</li>`);
+    }
+    if(selectedHull || selectedDeck || selectedHatches){
+      rows.push(`<li><b>${t.colors}:</b> ${getColorsSummary()}</li>`);
+    }
+    if(selectedAntiskid && selectedAntiskid !== 'none'){
+      rows.push(`<li><b>${t.antiskid}:</b> ${getAntiskidLabel()}</li>`);
+    }
+    const hasAccessories = Boolean(document.querySelector('#step-accessori input[type="checkbox"]:checked'));
+    if(hasAccessories){
+      rows.push(`<li><b>${t.accessories}:</b> ${getAccessoriesSummary()}</li>`);
+    }
+    liveSummaryEl.innerHTML = `<div class="live-summary-title">${t.title}</div><ul>${rows.join('')}</ul>`;
+  }
+  function getExportI18n(){
+    if(currentLang === 'en'){
+      return {
+        saved: 'Saved',
+        customConfig: 'Custom configuration',
+        config: 'Configuration',
+        finish: 'Finish',
+        colors: 'Colors',
+        hull: 'Hull',
+        deck: 'Deck',
+        doors: 'Doors',
+        antiskid: 'Antiskid',
+        selectedAccessories: 'Selected accessories',
+        none: 'None',
+        total: 'Configuration total',
+        footer: 'Images and specifications are indicative. Prices may vary.',
+        filePrefix: 'order',
+        emailSubject: 'Configuration order',
+        customer: 'Customer',
+        name: 'Name',
+        surname: 'Surname',
+        phone: 'Phone',
+        address: 'Address',
+        city: 'City',
+        zip: 'ZIP',
+        notes: 'Notes',
+        emailRequired: 'Please enter a valid email address.',
+        sending: 'Sending...',
+        sentOk: 'Order sent successfully. We will contact you shortly.',
+        sentErr: 'Order sending failed. You can download the PDF and try again.'
+      };
+    }
+    return {
+      saved: 'Salvato',
+      customConfig: 'Configurazione personalizzata',
+      config: 'Configurazione',
+      finish: 'Finitura',
+      colors: 'Colori',
+      hull: 'Chiglia',
+      deck: 'Ponte',
+      doors: 'Portelli',
+      antiskid: 'Antiscivolo',
+      selectedAccessories: 'Accessori selezionati',
+      none: 'Nessuno',
+      total: 'Totale configurazione',
+      footer: 'Immagini e specifiche sono indicative. Prezzi soggetti a variazione.',
+      filePrefix: 'ordine',
+      emailSubject: 'Ordine configurazione',
+      customer: 'Cliente',
+      name: 'Nome',
+      surname: 'Cognome',
+      phone: 'Telefono',
+      address: 'Indirizzo',
+      city: 'Citta',
+      zip: 'CAP',
+      notes: 'Note',
+      emailRequired: 'Inserisci un indirizzo email valido.',
+      sending: 'Invio...',
+      sentOk: 'Ordine inviato correttamente. Ti contatteremo a breve.',
+      sentErr: 'Errore invio ordine. Puoi scaricare il PDF e riprovare.'
+    };
+  }
 
-        function getEmailPayloadForTemplate(payload, assets = {}){
+        function getEmailPayloadForTemplate(payload, assets = {}, includeImages = true){
+    const t = getExportI18n();
     const colori = getColorsSummary();
     const finitura = typeof getFinishLabel === 'function' ? getFinishLabel() : payload.finish;
     const antiskid = typeof getAntiskidLabel === 'function' ? getAntiskidLabel() : payload.antiskid;
     const now = new Date();
-    const date = now.toLocaleDateString('it-IT') + ' ' + now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    const locale = currentLang === 'en' ? 'en-US' : 'it-IT';
+    const date = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+    const imgMain = includeImages ? (assets.img_main || '') : '';
+    const imgTop = includeImages ? (assets.img_top_right || '') : '';
+    const imgBottom = includeImages ? (assets.img_bottom_right || '') : '';
     return {
       id: payload.id,
       finitura,
@@ -4050,15 +5565,35 @@ function getColorsSummary(){
       cap: payload.customer.cap,
       note: payload.customer.note,
       date,
-      img_main: assets.img_main || '',
-      img_top_right: assets.img_top_right || '',
-      img_bottom_right: assets.img_bottom_right || '',
+      img_main: imgMain,
+      img_top_right: imgTop,
+      img_bottom_right: imgBottom,
       qr: assets.qr || '',
+      lbl_custom_config: t.customConfig,
+      lbl_configuration: t.config,
+      lbl_finish: t.finish,
+      lbl_colors: t.colors,
+      lbl_antiskid: t.antiskid,
+      lbl_accessories_selected: t.selectedAccessories,
+      lbl_total: t.total,
+      lbl_footer_note: t.footer,
+      img_block_style: includeImages ? '' : 'display:none;',
+      img_main_style: imgMain ? 'display:block;' : 'display:none;',
+      img_top_right_style: imgTop ? 'display:block;' : 'display:none;',
+      img_bottom_right_style: imgBottom ? 'display:block;' : 'display:none;',
       configurazione_json: JSON.stringify(payload)
     };
   }
   function canSendEmail(){
     return Boolean(window.emailjs && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID_CLIENT && EMAILJS_TEMPLATE_ID_ADMIN && EMAILJS_PUBLIC_KEY);
+  }
+  function getEmailTemplateIdsByLang(){
+    return {
+      admin: EMAILJS_TEMPLATE_ID_ADMIN,
+      client: currentLang === 'en'
+        ? (EMAILJS_TEMPLATE_ID_CLIENT_EN || EMAILJS_TEMPLATE_ID_CLIENT)
+        : EMAILJS_TEMPLATE_ID_CLIENT
+    };
   }
 
   function initEmailJs(){
@@ -4074,12 +5609,14 @@ function getColorsSummary(){
       return Promise.reject(new Error('EmailJS non configurato'));
     }
     initEmailJs();
-    const data = getEmailPayloadForTemplate(payload, assets);
-    console.log('EmailJS admin template:', EMAILJS_TEMPLATE_ID_ADMIN);
-    console.log('EmailJS client template:', EMAILJS_TEMPLATE_ID_CLIENT, 'to', payload.customer.email);
-    const sendAdmin = window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID_ADMIN, data);
-    const sendClient = window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID_CLIENT, {
-      ...data,
+    const tpl = getEmailTemplateIdsByLang();
+    const dataAdmin = getEmailPayloadForTemplate(payload, assets, false);
+    const dataClient = getEmailPayloadForTemplate(payload, assets, true);
+    console.log('EmailJS admin template:', tpl.admin);
+    console.log('EmailJS client template:', tpl.client, 'to', payload.customer.email);
+    const sendAdmin = window.emailjs.send(EMAILJS_SERVICE_ID, tpl.admin, dataAdmin);
+    const sendClient = window.emailjs.send(EMAILJS_SERVICE_ID, tpl.client, {
+      ...dataClient,
       to_email: payload.customer.email
     });
     return Promise.all([sendAdmin, sendClient]).then((results) => {
@@ -4125,9 +5662,9 @@ function openOrderModal(){
       if(el) el.textContent = value || '';
     };
     setText('order-id', currentOrderId);
-    setText('order-finish', selectedFinish || '-');
+    setText('order-finish', getFinishLabel());
     setText('order-colors', getColorsSummary());
-    setText('order-antiskid', selectedAntiskid || 'none');
+    setText('order-antiskid', getAntiskidLabel());
     setText('order-accessories', getAccessoriesSummary());
     setText('order-price', getPriceSummary());
     const qrEl = document.getElementById('order-qr');
@@ -4370,6 +5907,7 @@ function downloadScreenshot(){
     if(!currentOrderId){
       currentOrderId = generateOrderId();
     }
+    const t = getExportI18n();
 
     let logoData = null;
     try{
@@ -4379,7 +5917,8 @@ function downloadScreenshot(){
     }
 
     const now = new Date();
-    const dateStr = now.toLocaleDateString('it-IT') + ' ' + now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    const locale = currentLang === 'en' ? 'en-US' : 'it-IT';
+    const dateStr = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
 
     // Header
     if(logoData && logoData.dataUrl){
@@ -4397,7 +5936,7 @@ function downloadScreenshot(){
     doc.setFontSize(9);
     doc.setTextColor(60);
     doc.text(`Ninga ID: ${currentOrderId}`, pageW - margin, 12, { align: 'right' });
-    doc.text(`Salvato: ${dateStr}`, pageW - margin, 17, { align: 'right' });
+    doc.text(`${t.saved}: ${dateStr}`, pageW - margin, 17, { align: 'right' });
 
     const qrData = await makeQrDataUrl(currentOrderId);
     if(qrData){
@@ -4413,7 +5952,7 @@ function downloadScreenshot(){
     doc.setFontSize(24);
     doc.text('FISHER 40', margin, 34);
     doc.setFontSize(12);
-    doc.text('Configurazione personalizzata', margin, 41);
+    doc.text(t.customConfig, margin, 41);
 
     // Images layout
     let shots = Array.isArray(lastPresetScreenshots) ? lastPresetScreenshots : [];
@@ -4456,12 +5995,12 @@ function downloadScreenshot(){
     doc.setFontSize(10);
     doc.setTextColor(20);
     doc.setFont('helvetica', 'bold');
-    doc.text('Configurazione', margin, listTop + 6);
+    doc.text(t.config, margin, listTop + 6);
     doc.setFont('helvetica', 'normal');
 
     doc.setFontSize(9);
     const cfgStartY = listTop + 12;
-        doc.text(`- Finitura: ${getFinishLabel()}`, margin + 2, cfgStartY);
+        doc.text(`- ${t.finish}: ${getFinishLabel()}`, margin + 2, cfgStartY);
     const finishPct = priceTable?.finishPct?.[selectedFinish] || 0;
     const finishPrice = priceTable.base + (priceTable.base * finishPct);
     doc.text(formatEuro(finishPrice), pageW - margin, cfgStartY, { align: 'right' });
@@ -4469,10 +6008,10 @@ function downloadScreenshot(){
     const deckLabel = getColorLabel('deck', selectedDeck || '-');
     const doorsLabel = getColorLabel('hatches', selectedHatches || '-');
     const colorsY = cfgStartY + 5;
-    const colorsLine = `- Colori: Hull (${hullLabel}), Deck (${deckLabel}), Doors (${doorsLabel})`;
+    const colorsLine = `- ${t.colors}: ${t.hull} (${hullLabel}), ${t.deck} (${deckLabel}), ${t.doors} (${doorsLabel})`;
     doc.setFont('helvetica', 'normal');
     doc.text(colorsLine, margin + 2, colorsY);
-    doc.text(`- Antiskid: ${getAntiskidLabel()}`, margin + 2, cfgStartY + 10);
+    doc.text(`- ${t.antiskid}: ${getAntiskidLabel()}`, margin + 2, cfgStartY + 10);
 
     const items = getSelectedAccessoriesDetailed();
     const rowH = 5;
@@ -4480,7 +6019,7 @@ function downloadScreenshot(){
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text('Accessori selezionati', margin, listStartY);
+    doc.text(t.selectedAccessories, margin, listStartY);
     doc.setFont('helvetica', 'normal');
 
     const accessoriesY = listStartY + 6;
@@ -4492,7 +6031,7 @@ function downloadScreenshot(){
       });
     }else{
       doc.setTextColor(90);
-      doc.text('Nessuno', margin + 2, accessoriesY);
+      doc.text(t.none, margin + 2, accessoriesY);
       doc.setTextColor(20);
     }
 
@@ -4502,7 +6041,7 @@ function downloadScreenshot(){
     const totalTextY = totalLineY + 7;
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('Totale configurazione', margin, totalTextY);
+    doc.text(t.total, margin, totalTextY);
     doc.text(getPriceSummary() || '-', pageW - margin, totalTextY, { align: 'right' });
     doc.setFont('helvetica', 'normal');
 
@@ -4510,9 +6049,9 @@ function downloadScreenshot(){
     doc.setFontSize(8);
     doc.setTextColor(120);
     const noteY = totalTextY + 8;
-    doc.text('Immagini e specifiche sono indicative. Prezzi soggetti a variazione.', margin, noteY);
+    doc.text(t.footer, margin, noteY);
 
-    doc.save(`ordine-${currentOrderId || 'config'}.pdf`);
+    doc.save(`${t.filePrefix}-${currentOrderId || 'config'}.pdf`);
   }
 window.addEventListener('DOMContentLoaded', () => {
     const orderBtn = document.getElementById('order-btn');
@@ -4546,45 +6085,49 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     if(orderConfirm){
       orderConfirm.addEventListener('click', async () => {
+        const t = getExportI18n();
         const payload = prepareOrderPayload();
         if(!payload.customer.email || !payload.customer.email.includes('@')){
-          alert('Inserisci un indirizzo email valido.');
+          alert(t.emailRequired);
           return;
         }
         if(canSendEmail()){
           const originalLabel = orderConfirm.textContent;
           orderConfirm.disabled = true;
-          orderConfirm.textContent = 'Invio...';
+          orderConfirm.textContent = t.sending;
           try{
             const assets = await prepareEmailAssets();
             await sendOrderEmails(payload, assets);
-            alert('Ordine inviato correttamente. Ti contatteremo a breve.');
+            alert(t.sentOk);
           }catch(err){
             console.error(err);
-            alert('Errore invio ordine. Puoi scaricare il PDF e riprovare.');
+            alert(t.sentErr);
           }finally{
             orderConfirm.disabled = false;
             orderConfirm.textContent = originalLabel;
           }
           return;
         }
-        const subject = `Ordine configurazione ${payload.id}`;
+        const subject = `${t.emailSubject} ${payload.id}`;
+        const finishLabel = getFinishLabel();
+        const antiskidLabel = getAntiskidLabel();
+        const accessoriesLabel = getAccessoriesSummary();
         const body = `ID: ${payload.id}
-Finitura: ${payload.finish}
-Colori: Hull (${payload.colors.hull}), Deck (${payload.colors.deck}), Doors (${payload.colors.hatches})
-Antiskid: ${payload.antiskid}
-Accessori: ${payload.accessories}
-Prezzo: ${payload.price}
+${t.finish}: ${finishLabel}
+${t.colors}: ${t.hull} (${payload.colors.hull}), ${t.deck} (${payload.colors.deck}), ${t.doors} (${payload.colors.hatches})
+${t.antiskid}: ${antiskidLabel}
+${I18N[currentLang]?.orderModal?.labels?.accessories || 'Accessori'}: ${accessoriesLabel}
+${I18N[currentLang]?.orderModal?.labels?.price || 'Prezzo'}: ${payload.price}
 
-Cliente:
-Nome: ${payload.customer.nome}
-Cognome: ${payload.customer.cognome}
+${t.customer}:
+${t.name}: ${payload.customer.nome}
+${t.surname}: ${payload.customer.cognome}
 Email: ${payload.customer.email}
-Telefono: ${payload.customer.telefono}
-Indirizzo: ${payload.customer.indirizzo}
-Citta: ${payload.customer.citta}
-CAP: ${payload.customer.cap}
-Note: ${payload.customer.note}`;
+${t.phone}: ${payload.customer.telefono}
+${t.address}: ${payload.customer.indirizzo}
+${t.city}: ${payload.customer.citta}
+${t.zip}: ${payload.customer.cap}
+${t.notes}: ${payload.customer.note}`;
         const mailto = `mailto:ningaskiffs@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.location.href = mailto;
       });
@@ -4605,6 +6148,23 @@ Note: ${payload.customer.note}`;
       });
       setAudioEnabled(audioEnabled, false);
     }
+    const langItBtn = document.getElementById('lang-it');
+    const langEnBtn = document.getElementById('lang-en');
+    const currencyEurBtn = document.getElementById('currency-eur');
+    const currencyUsdBtn = document.getElementById('currency-usd');
+    if(langItBtn){
+      langItBtn.addEventListener('click', () => setLanguage('it'));
+    }
+    if(langEnBtn){
+      langEnBtn.addEventListener('click', () => setLanguage('en'));
+    }
+    if(currencyEurBtn){
+      currencyEurBtn.addEventListener('click', () => setCurrency('EUR'));
+    }
+    if(currencyUsdBtn){
+      currencyUsdBtn.addEventListener('click', () => setCurrency('USD'));
+    }
+    applyLanguageUI();
     const rxBtn = document.getElementById('rx-btn');
     if(rxBtn){
       rxBtn.addEventListener('click', () => {
@@ -4619,9 +6179,22 @@ Note: ${payload.customer.note}`;
     const infoBody = document.getElementById('info-body');
     const infoClose = document.getElementById('info-close');
     let currentInfoKey = '';
+    let lastInfoTrigger = null;
     const closeInfoPanel = () => {
       if(!infoPanel) return;
+      const focusedInsidePanel = document.activeElement && infoPanel.contains(document.activeElement)
+        ? document.activeElement
+        : null;
+      if(focusedInsidePanel && typeof focusedInsidePanel.blur === 'function'){
+        focusedInsidePanel.blur();
+      }
+      if(lastInfoTrigger && typeof lastInfoTrigger.focus === 'function' && document.contains(lastInfoTrigger)){
+        lastInfoTrigger.focus({ preventScroll: true });
+      }
       infoPanel.classList.remove('is-open');
+      if('inert' in infoPanel){
+        infoPanel.inert = true;
+      }
       infoPanel.setAttribute('aria-hidden', 'true');
       currentInfoKey = '';
     };
@@ -4630,18 +6203,25 @@ Note: ${payload.customer.note}`;
     }
     document.querySelectorAll('.info-pill[data-info-key]').forEach((el) => {
       el.addEventListener('click', () => {
-        const key = el.getAttribute('data-info-key') || '';
-        const content = INFO_CONTENT[key];
+        const fallbackKey = el.getAttribute('data-info-key') || '';
+        const stepKey = String(currentStep || '').toLowerCase();
+        const dynamicStep = el.getAttribute('data-info-dynamic') === 'step';
+        const resolvedKey = dynamicStep ? (INFO_CONTENT[stepKey] ? stepKey : fallbackKey) : fallbackKey;
+        const content = getInfoContentForLang(resolvedKey) || getInfoContentForLang(fallbackKey);
         if(!content || !infoPanel || !infoTitle || !infoBody) return;
+        lastInfoTrigger = el;
         const isOpen = infoPanel.classList.contains('is-open') && infoPanel.getAttribute('aria-hidden') !== 'true';
-        if(isOpen && currentInfoKey === key){
+        if(isOpen && currentInfoKey === resolvedKey){
           closeInfoPanel();
           return;
         }
-        currentInfoKey = key;
-        infoTitle.textContent = content.title || 'Informazioni';
-        infoBody.textContent = content.body || '';
+        currentInfoKey = resolvedKey;
+        infoTitle.textContent = (content.title || 'Informazioni');
+        infoBody.textContent = (content.body || '');
         infoPanel.classList.add('is-open');
+        if('inert' in infoPanel){
+          infoPanel.inert = false;
+        }
         infoPanel.setAttribute('aria-hidden', 'false');
       });
     });
@@ -4730,6 +6310,23 @@ Note: ${payload.customer.note}`;
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
