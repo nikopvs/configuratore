@@ -896,35 +896,6 @@ cursor: pointer;
     .controls-overlay.is-hidden {
       opacity: 0;
     }
-    .mobile-nav {
-      position: absolute;
-      right: 12px;
-      top: 78px;
-      left: auto;
-      transform: none;
-      display: none;
-      align-items: center;
-      gap: 6px;
-      z-index: 7;
-      pointer-events: auto;
-    }
-    .mobile-nav button {
-      background: rgba(0,0,0,0.62);
-      border: 1px solid rgba(255,255,255,0.35);
-      color: #7CFF00;
-      border-radius: 6px;
-      padding: 6px 8px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.4px;
-      text-transform: uppercase;
-      min-width: 34px;
-      line-height: 1.1;
-    }
-    #mobile-mode-btn.is-pan {
-      color: #00d4ff;
-      border-color: rgba(0,212,255,0.65);
-    }
 #screenshot-btn {
       position: absolute;
       top: 12px;
@@ -1127,15 +1098,6 @@ cursor: pointer;
 #order-btn { top: 8px; right: 8px; padding: 6px 8px; font-size: 11px; }
       #screenshot-btn { top: 8px; left: 8px; padding: 6px 8px; font-size: 11px; }
       #rx-btn { top: 88px; right: 8px; left: auto; padding: 6px 8px; font-size: 11px; }
-      .mobile-nav {
-        left: auto;
-        right: 8px;
-        top: 120px;
-        transform: none;
-        flex-direction: column;
-        align-items: flex-end;
-      }
-      .mobile-nav { display: inline-flex; }
     }
   
     .home-link {
@@ -1593,12 +1555,7 @@ cursor: pointer;
     </div>
     <div id="controls-overlay" class="controls-overlay">
       Mouse: trascina per ruotare, tasto destro per pan, rotella per zoom.<br>
-      Touch: 1 dito ruota, 2 dita pan, pinch per zoom.
-    </div>
-    <div id="mobile-nav" class="mobile-nav">
-      <button id="mobile-mode-btn" type="button" aria-pressed="false">PAN ?</button>
-      <button id="mobile-zoom-in" type="button" aria-label="Zoom in">+</button>
-      <button id="mobile-zoom-out" type="button" aria-label="Zoom out">-</button>
+      Touch mobile: usa 2 dita per pan e zoom.
     </div>
 <div class="bottom">
       <div class="step-header">
@@ -1906,19 +1863,11 @@ Each choice is updated in real time and made interactive in the 3D view so you c
   const MOBILE_MAX_DIST_MUL = 2.8;
   const DESKTOP_MIN_DIST_MUL = 0.4;
   const DESKTOP_MAX_DIST_MUL = 1.4;
-  let mobilePanMode = false;
   let framedMaxDim = 0;
   let framedCameraZ = 0;
   let lastMobileViewport = null;
   let controlsHintHidden = false;
   const controlsOverlay = document.getElementById('controls-overlay');
-  function updateMobileModeButton(){
-    const modeBtn = document.getElementById('mobile-mode-btn');
-    if(!modeBtn) return;
-    modeBtn.textContent = mobilePanMode ? 'ROTATE ?' : 'PAN ?';
-    modeBtn.classList.toggle('is-pan', mobilePanMode);
-    modeBtn.setAttribute('aria-pressed', String(mobilePanMode));
-  }
   function updateControlsOverlayText(){
     if(!controlsOverlay) return;
     controlsOverlay.style.display = 'none';
@@ -1926,16 +1875,14 @@ Each choice is updated in real time and made interactive in the 3D view so you c
   function applyInteractionScheme(){
     const isMobile = mobileUiQuery.matches;
     if(isMobile){
-      controls.enableZoom = false;
-      controls.touches.ONE = mobilePanMode ? THREE.TOUCH.PAN : THREE.TOUCH.ROTATE;
-      controls.touches.TWO = THREE.TOUCH.NONE;
+      controls.enableZoom = true;
+      controls.touches.ONE = THREE.TOUCH.NONE;
+      controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
     }else{
-      mobilePanMode = false;
       controls.enableZoom = true;
       controls.touches.ONE = THREE.TOUCH.ROTATE;
       controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
     }
-    updateMobileModeButton();
     updateControlsOverlayText();
   }
   function applyFramingForViewport(force = false){
@@ -1950,17 +1897,6 @@ Each choice is updated in real time and made interactive in the 3D view so you c
     controls.minDistance = framedCameraZ * (isMobile ? MOBILE_MIN_DIST_MUL : DESKTOP_MIN_DIST_MUL);
     controls.maxDistance = framedCameraZ * (isMobile ? MOBILE_MAX_DIST_MUL : DESKTOP_MAX_DIST_MUL);
     controls.target.set(0, 0, 0);
-    controls.update();
-  }
-  function mobileZoomBy(scale){
-    const offset = camera.position.clone().sub(controls.target);
-    const currentDist = offset.length();
-    if(currentDist <= 0.0001) return;
-    const minD = controls.minDistance || 0.1;
-    const maxD = controls.maxDistance || 1e9;
-    const nextDist = THREE.MathUtils.clamp(currentDist * scale, minD, maxD);
-    offset.setLength(nextDist);
-    camera.position.copy(controls.target).add(offset);
     controls.update();
   }
   function hideControlsOverlay(){
@@ -6225,29 +6161,6 @@ ${t.notes}: ${payload.customer.note}`;
         infoPanel.setAttribute('aria-hidden', 'false');
       });
     });
-    const mobileModeBtn = document.getElementById('mobile-mode-btn');
-    const mobileZoomInBtn = document.getElementById('mobile-zoom-in');
-    const mobileZoomOutBtn = document.getElementById('mobile-zoom-out');
-    if(mobileModeBtn){
-      mobileModeBtn.addEventListener('click', () => {
-        if(!mobileUiQuery.matches) return;
-        mobilePanMode = !mobilePanMode;
-        applyInteractionScheme();
-      });
-    }
-    const zoomStep = 0.88;
-    if(mobileZoomInBtn){
-      mobileZoomInBtn.addEventListener('click', () => {
-        if(!mobileUiQuery.matches) return;
-        mobileZoomBy(zoomStep);
-      });
-    }
-    if(mobileZoomOutBtn){
-      mobileZoomOutBtn.addEventListener('click', () => {
-        if(!mobileUiQuery.matches) return;
-        mobileZoomBy(1 / zoomStep);
-      });
-    }
     applyInteractionScheme();
     applyFramingForViewport(true);
     const viewer = document.getElementById('viewer');
