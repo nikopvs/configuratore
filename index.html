@@ -139,18 +139,19 @@
       #step-accessori {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px 10px;
+        gap: 3px 6px;
         text-align: left;
         padding-top: 0;
       }
       #step-accessori label {
         margin-left: 0 !important;
-        padding: 6px 6px;
+        padding: 2px 3px;
         font-size: 11px;
+        line-height: 1.1;
       }
 
       #step-accessori input {
-        transform: scale(1.15);
+        transform: scale(1.08);
       }
     }
 
@@ -1157,7 +1158,7 @@ cursor: pointer;
       text-align: left;
     }
     @media (max-width: 900px) {
-      #step-accessori:not(.hidden) { flex-wrap: wrap; gap: 8px 12px; }
+      #step-accessori:not(.hidden) { flex-wrap: wrap; gap: 3px 6px; }
     }
 
     /* Step header alignment */
@@ -1427,7 +1428,26 @@ cursor: pointer;
         display: flex !important;
       }
 
-      #step-accessori { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      #step-accessori {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 1px 4px !important;
+        align-content: start !important;
+      }
+      #step-accessori:not(.hidden) {
+        gap: 1px 4px !important;
+      }
+      #step-accessori label {
+        margin: 0 !important;
+        padding: 0 !important;
+        gap: 4px !important;
+        font-size: 10px !important;
+        line-height: 1 !important;
+        min-height: 18px !important;
+      }
+      #step-accessori input {
+        transform: scale(0.95) !important;
+        margin: 0 !important;
+      }
 
       #step-finitura,
       #step-colori,
@@ -3595,6 +3615,27 @@ function updatePrice(){
     updateRxButtonState();
   }
 
+  const WRAPPING_TEXTURE_OPTIONS = [
+    { label: 'Miele', color: '#ffffff', texture: 'images/wrapping/honey21.jpg', scale: 0.5, scaleU: 0.4, scaleV: 0.6 },
+    { label: 'Onda', color: '#234a63', texture: 'images/wrapping/Wave.jpg', scale: 0.7 },
+    { label: 'Carbonio', color: '#333333', texture: 'images/wrapping/Carbon.jpg', scale: 1 },
+    { label: 'Mimetico', color: '#3b4a3a', texture: 'images/wrapping/Camu.jpg', scale: 0.2 },
+    { label: 'Mimetico 2', color: '#3b4a3a', texture: 'images/wrapping/Camu2.jpg', scale: 0.2 },
+    { label: 'Laser', color: '#ffffff', texture: 'images/wrapping/Laser.jpg', scale: 0.7 },
+    { label: 'Onda verde', color: '#ffffff', texture: 'images/wrapping/Greenwave.jpg', scale: 0.7 },
+    { label: 'Astratto', color: '#ffffff', texture: 'images/wrapping/Abstract.jpg', scale: 0.5 }
+  ];
+  const WRAPPING_SOLID_OPTIONS = [
+    { label: 'Avorio', color: '#fffff0', wrapFinish: 'glossy' },
+    { label: 'Argento', color: '#bebebe', wrapFinish: 'glossy' },
+    { label: 'Carbone', color: '#1c1c1c', wrapFinish: 'glossy' },
+    { label: 'Menta', color: '#66ffc1', wrapFinish: 'glossy' },
+    { label: 'Grafite', color: '#1c1c1c', wrapFinish: 'matte' },
+    { label: 'Abisso', color: '#040065', wrapFinish: 'matte' },
+    { label: 'Foglia', color: '#344f34', wrapFinish: 'matte' },
+    { label: 'Fragola', color: '#d53032', wrapFinish: 'matte' }
+  ];
+
   const colorPalettes = {
     gelcoat: {
       hull: [
@@ -3656,36 +3697,9 @@ function updatePrice(){
       ]
     },
     wrapping: {
-      hull: [
-        { label: 'Miele', color: '#ffffff', texture: 'images/wrapping/honey21.jpg', scale: 0.5, scaleU: 0.4, scaleV: 0.6 },
-        { label: 'Onda', color: '#234a63', texture: 'images/wrapping/Wave.jpg', scale: 0.7 },
-        { label: 'Carbonio', color: '#333333', texture: 'images/wrapping/Carbon.jpg', scale: 1 },
-        { label: 'Mimetico', color: '#3b4a3a', texture: 'images/wrapping/Camu.jpg', scale: 0.2 },
-        { label: 'Mimetico 2', color: '#3b4a3a', texture: 'images/wrapping/Camu2.jpg', scale: 0.2 },
-        { label: 'Laser', color: '#ffffff', texture: 'images/wrapping/Laser.jpg', scale: 0.7 },
-        { label: 'Onda verde', color: '#ffffff', texture: 'images/wrapping/Greenwave.jpg', scale: 0.7 },
-        { label: 'Astratto', color: '#ffffff', texture: 'images/wrapping/Abstract.jpg', scale: 0.5 }
-      ],
-      deck: [
-        { label: 'Miele', color: '#ffffff', texture: 'images/wrapping/honey21.jpg', scale: 0.5, scaleU: 0.4, scaleV: 0.6 },
-        { label: 'Onda', color: '#234a63', texture: 'images/wrapping/Wave.jpg', scale: 0.7 },
-        { label: 'Carbonio', color: '#333333', texture: 'images/wrapping/Carbon.jpg', scale: 1 },
-        { label: 'Mimetico', color: '#3b4a3a', texture: 'images/wrapping/Camu.jpg', scale: 0.2 },
-        { label: 'Mimetico 2', color: '#3b4a3a', texture: 'images/wrapping/Camu2.jpg', scale: 0.2 },
-        { label: 'Laser', color: '#ffffff', texture: 'images/wrapping/Laser.jpg', scale: 0.7 },
-        { label: 'Onda verde', color: '#ffffff', texture: 'images/wrapping/Greenwave.jpg', scale: 0.7 },
-        { label: 'Astratto', color: '#ffffff', texture: 'images/wrapping/Abstract.jpg', scale: 0.5 }
-      ],
-      hatches: [
-        { label: 'Miele', color: '#ffffff', texture: 'images/wrapping/honey21.jpg', scale: 0.5, scaleU: 0.4, scaleV: 0.6 },
-        { label: 'Onda', color: '#234a63', texture: 'images/wrapping/Wave.jpg', scale: 0.7 },
-        { label: 'Carbonio', color: '#333333', texture: 'images/wrapping/Carbon.jpg', scale: 1 },
-        { label: 'Mimetico', color: '#3b4a3a', texture: 'images/wrapping/Camu.jpg', scale: 0.2 },
-        { label: 'Mimetico 2', color: '#3b4a3a', texture: 'images/wrapping/Camu2.jpg', scale: 0.2 },
-        { label: 'Laser', color: '#ffffff', texture: 'images/wrapping/Laser.jpg', scale: 0.7 },
-        { label: 'Onda verde', color: '#ffffff', texture: 'images/wrapping/Greenwave.jpg', scale: 0.7 },
-        { label: 'Astratto', color: '#ffffff', texture: 'images/wrapping/Abstract.jpg', scale: 0.5 }
-      ]
+      hull: [...WRAPPING_TEXTURE_OPTIONS, ...WRAPPING_SOLID_OPTIONS],
+      deck: [...WRAPPING_TEXTURE_OPTIONS, ...WRAPPING_SOLID_OPTIONS],
+      hatches: [...WRAPPING_TEXTURE_OPTIONS, ...WRAPPING_SOLID_OPTIONS]
     },
     paint: {
       hull: [
@@ -3876,6 +3890,14 @@ function updatePrice(){
       'Mimetico 2': 'Camo 2',
       'Onda verde': 'Greenwave',
       'Astratto': 'Abstract',
+      'Avorio': 'Ivory',
+      'Argento': 'Silver',
+      'Carbone': 'Coal',
+      'Menta': 'Mint',
+      'Grafite': 'Graphite',
+      'Abisso': 'Abyss',
+      'Foglia': 'Leaf',
+      'Fragola': 'Strawberry',
       'Laguna': 'Lagoon',
       'Foche': 'Seals',
       'Acido': 'Acid'
@@ -3950,6 +3972,7 @@ function updatePrice(){
       if(entry.scale) opt.dataset.scale = entry.scale;
       if(Number.isFinite(entry.scaleU)) opt.dataset.scaleU = String(entry.scaleU);
       if(Number.isFinite(entry.scaleV)) opt.dataset.scaleV = String(entry.scaleV);
+      if(entry.wrapFinish) opt.dataset.wrapFinish = String(entry.wrapFinish);
       select.appendChild(opt);
     });
 
@@ -3973,7 +3996,7 @@ function updatePrice(){
     dropdown.appendChild(menu);
 
     const optionButtons = new Map();
-    const makeKey = (entry) => `${entry.label}|${entry.color || ''}|${entry.texture || ''}|${entry.scale || ''}|${entry.scaleU || ''}|${entry.scaleV || ''}|${entry.rugged ? '1' : '0'}`;
+    const makeKey = (entry) => `${entry.label}|${entry.color || ''}|${entry.texture || ''}|${entry.scale || ''}|${entry.scaleU || ''}|${entry.scaleV || ''}|${entry.wrapFinish || ''}|${entry.rugged ? '1' : '0'}`;
     const setSelected = (entry) => {
       optionButtons.forEach((btn) => btn.classList.remove('is-selected'));
       const key = makeKey(entry);
@@ -3990,6 +4013,7 @@ function updatePrice(){
         if((o.dataset.scale || '') !== String(entry.scale || '')) return false;
         if((o.dataset.scaleU || '') !== String(entry.scaleU || '')) return false;
         if((o.dataset.scaleV || '') !== String(entry.scaleV || '')) return false;
+        if((o.dataset.wrapFinish || '') !== String(entry.wrapFinish || '')) return false;
         const r = o.dataset.rugged ? '1' : '0';
         return r === (entry.rugged ? '1' : '0');
       });
@@ -4051,7 +4075,8 @@ function updatePrice(){
           texture: entry.texture || '',
           scale: entry.scale || '',
           scaleU: Number.isFinite(entry.scaleU) ? String(entry.scaleU) : '',
-          scaleV: Number.isFinite(entry.scaleV) ? String(entry.scaleV) : ''
+          scaleV: Number.isFinite(entry.scaleV) ? String(entry.scaleV) : '',
+          wrapFinish: entry.wrapFinish || ''
         };
         const btn = document.createElement('button');
         btn.type = 'button';
@@ -4060,6 +4085,8 @@ function updatePrice(){
         btn.setAttribute('aria-label', translateColorMenuLabel(entry.label));
         if(entry.texture){
           btn.style.backgroundImage = `url('${entry.texture}')`;
+        }else{
+          btn.style.backgroundColor = entry.color || '#ffffff';
         }
         btn.addEventListener('click', (ev) => {
           ev.preventDefault();
@@ -4112,6 +4139,7 @@ function updatePrice(){
         scale: opt.dataset.scale || '',
         scaleU: opt.dataset.scaleU || '',
         scaleV: opt.dataset.scaleV || '',
+        wrapFinish: opt.dataset.wrapFinish || '',
         rugged: Boolean(opt.dataset.rugged)
       };
       setSelected(entry);
@@ -4122,6 +4150,7 @@ function updatePrice(){
           scale: entry.scale,
           scaleU: entry.scaleU,
           scaleV: entry.scaleV,
+          wrapFinish: entry.wrapFinish,
           rugged: entry.rugged ? '1' : ''
         }
       };
@@ -4241,7 +4270,7 @@ function updatePrice(){
 
       function resolveFinishMode(btn){
       if(btn?.dataset?.rugged) return 'rugged';
-      if(btn?.dataset?.texture) return 'wrapping';
+      if(btn?.dataset?.texture || btn?.dataset?.wrapFinish) return 'wrapping';
       const label = (btn?.textContent || '').trim().toLowerCase();
       if(label === 'white' || label === 'bianco') return 'white';
       return 'color';
@@ -4656,8 +4685,16 @@ function applyChirpTextureToMeshes(){
       syncSchienaleMaterial();
     }
 
-    function applyWrappingTextureFor(mat, texturePath, scale, scaleU, scaleV){
+    function applyWrappingTextureFor(mat, texturePath, scale, scaleU, scaleV, wrapFinish, baseColor){
     if(!mat) return;
+    const finishMode = String(wrapFinish || '').toLowerCase();
+    if(finishMode === 'glossy'){
+      if('roughness' in mat) mat.roughness = 0.18;
+      if('metalness' in mat) mat.metalness = 0.12;
+    }else if(finishMode === 'matte'){
+      if('roughness' in mat) mat.roughness = 0.72;
+      if('metalness' in mat) mat.metalness = 0.02;
+    }
     if(texturePath){
       mat.color.set('#ffffff');
       textureLoader.load(texturePath, (t) => {
@@ -4671,6 +4708,7 @@ function applyChirpTextureToMeshes(){
       });
     }else{
       mat.map = null;
+      mat.color.set(baseColor || '#ffffff');
       mat.needsUpdate = true;
     }
   }
@@ -4841,12 +4879,14 @@ function applyChirpTextureToMeshes(){
       if(!sel) return false;
       const desiredValue = String(cfg.value || '');
       const desiredTexture = String(cfg.texture || '');
+      const desiredWrapFinish = String(cfg.wrapFinish || '');
       const desiredRugged = cfg.rugged ? '1' : '0';
       const opts = Array.from(sel.options || []);
       const target = opts.find((opt) => {
         if(!opt.value) return false;
         if(desiredValue && String(opt.value || '').toLowerCase() !== desiredValue.toLowerCase()) return false;
         if(String(opt.dataset.texture || '') !== desiredTexture) return false;
+        if(String(opt.dataset.wrapFinish || '') !== desiredWrapFinish) return false;
         const r = opt.dataset.rugged ? '1' : '0';
         return r === desiredRugged;
       });
@@ -4970,16 +5010,18 @@ function renderFinishSelect(){
 
   window.setHull = function(color, btn){
       selectedHullMode = resolveFinishMode(btn);
-    if(btn?.dataset?.texture){
+    if(btn?.dataset?.texture || btn?.dataset?.wrapFinish){
       applyWrappingTextureFor(
         hullMat,
         btn.dataset.texture,
         Number.parseFloat(btn.dataset.scale),
         Number.parseFloat(btn.dataset.scaleU),
-        Number.parseFloat(btn.dataset.scaleV)
+        Number.parseFloat(btn.dataset.scaleV),
+        btn.dataset.wrapFinish,
+        color
       );
       wrappingWhite = isWrappingWhiteTrigger(btn.dataset.texture);
-      hullDark = false;
+      hullDark = isDarkColor(color);
     }else if(btn?.dataset?.rugged){
       applyRuggedTexture(hullMat, color);
       hullDark = isDarkColor(color);
@@ -5010,16 +5052,18 @@ function renderFinishSelect(){
   }
   window.setDeck = function(color, btn){
       selectedDeckMode = resolveFinishMode(btn);
-    if(btn?.dataset?.texture){
+    if(btn?.dataset?.texture || btn?.dataset?.wrapFinish){
       applyWrappingTextureFor(
         deckMat,
         btn.dataset.texture,
         Number.parseFloat(btn.dataset.scale),
         Number.parseFloat(btn.dataset.scaleU),
-        Number.parseFloat(btn.dataset.scaleV)
+        Number.parseFloat(btn.dataset.scaleV),
+        btn.dataset.wrapFinish,
+        color
       );
       wrappingWhite = isWrappingWhiteTrigger(btn.dataset.texture);
-      deckDark = false;
+      deckDark = isDarkColor(color);
     }else if(btn?.dataset?.rugged){
       applyRuggedTexture(deckMat, color);
       deckDark = isDarkColor(color);
@@ -5050,10 +5094,20 @@ function renderFinishSelect(){
       }
       const hSelect = colorSelects.hatches;
       if(hSelect){
-        if(btn?.dataset.texture){
-          const match = Array.from(hSelect.options).find(opt => opt.dataset.texture === btn.dataset.texture);
+        if(btn?.dataset.texture || btn?.dataset.wrapFinish){
+          const deckTexture = btn?.dataset.texture || '';
+          const deckWrapFinish = btn?.dataset.wrapFinish || '';
+          const match = Array.from(hSelect.options).find((opt) => {
+            const optTexture = opt.dataset.texture || '';
+            const optWrapFinish = opt.dataset.wrapFinish || '';
+            if(optTexture !== deckTexture) return false;
+            if(optWrapFinish !== deckWrapFinish) return false;
+            if(String(opt.value || '').toLowerCase() !== String(color || '').toLowerCase()) return false;
+            return true;
+          });
           if(match){
             hSelect.value = match.value;
+            hSelect.selectedIndex = Array.from(hSelect.options).indexOf(match);
           }
         }else{
           hSelect.value = color;
@@ -5065,13 +5119,15 @@ function renderFinishSelect(){
   window.setHatches = function(color, btn, manual = true){
       selectedHatchesMode = resolveFinishMode(btn);
     if(btn?.textContent) setColorLabel('hatches', btn.textContent);
-    if(btn?.dataset?.texture){
+    if(btn?.dataset?.texture || btn?.dataset?.wrapFinish){
       applyWrappingTextureFor(
         hatchesMat,
         btn.dataset.texture,
         Number.parseFloat(btn.dataset.scale),
         Number.parseFloat(btn.dataset.scaleU),
-        Number.parseFloat(btn.dataset.scaleV)
+        Number.parseFloat(btn.dataset.scaleV),
+        btn.dataset.wrapFinish,
+        color
       );
     }else if(btn?.dataset?.rugged){
       applyRuggedTexture(hatchesMat, color);
