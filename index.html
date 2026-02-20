@@ -1876,7 +1876,7 @@ Each choice is updated in real time and made interactive in the 3D view so you c
     const isMobile = mobileUiQuery.matches;
     if(isMobile){
       controls.enableZoom = true;
-      controls.touches.ONE = THREE.TOUCH.NONE;
+      controls.touches.ONE = THREE.TOUCH.ROTATE;
       controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
     }else{
       controls.enableZoom = true;
