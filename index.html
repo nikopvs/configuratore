@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
@@ -828,6 +828,70 @@ transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease
   color: #7CFF00;
 }
 
+#step-finitura .finish-choice-dropdown {
+  position: relative;
+  display: inline-flex;
+  min-width: 140px;
+  max-width: none;
+}
+#step-finitura .finish-choice-dropdown .choice-btn.trigger {
+  min-width: 140px;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  font-size: 12px;
+  line-height: 1.1;
+}
+#step-finitura .finish-choice-dropdown .choice-btn.trigger::after {
+  content: '\25BE';
+  margin-left: 8px;
+  font-size: 10px;
+  color: #7CFF00;
+}
+#step-finitura .finish-choice-dropdown .choice-menu {
+  display: none;
+  min-width: 160px;
+  width: max-content;
+  max-width: min(92vw, 360px);
+  top: auto;
+  bottom: calc(100% + 6px);
+  max-height: none;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  z-index: 30;
+  background: rgba(6, 12, 18, 0.98);
+  border: 1px solid rgba(255,255,255,0.28);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.55);
+  backdrop-filter: none;
+}
+#step-finitura .finish-choice-dropdown:hover .choice-menu,
+#step-finitura .finish-choice-dropdown:focus-within .choice-menu {
+  display: none;
+}
+#step-finitura .finish-choice-dropdown.is-open .choice-menu {
+  display: flex;
+  position: fixed;
+  left: 50%;
+  top: auto;
+  bottom: clamp(90px, 18vh, 220px);
+  right: auto;
+  transform: translateX(-50%);
+  width: min(320px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  max-height: min(70vh, 520px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 9505;
+  border: 1px solid rgba(255,255,255,0.28);
+  box-shadow: 0 14px 34px rgba(0,0,0,0.65);
+}
+#step-finitura .finish-choice-dropdown.is-open {
+  z-index: 9504;
+}
+#step-finitura .finish-choice-dropdown.is-disabled {
+  opacity: 0.65;
+}
 #step-colori .color-choice-dropdown {
   position: relative;
   display: inline-flex;
@@ -1229,15 +1293,15 @@ cursor: pointer;
 
     @media (max-width: 900px) {
       .controls-overlay { font-size: 17px; }
-      #audio-toggle { top: 8px; right: 8px; padding: 6px 8px; font-size: 11px; }
+      #audio-toggle { top: 8px; right: 8px; left: auto; padding: 6px 8px; font-size: 11px; }
       .lang-switch { top: 8px; left: 10px; right: auto; gap: 4px; flex-direction: column; align-items: flex-start; }
       .currency-switch { top: 8px; left: 44px; right: auto; gap: 4px; flex-direction: column; align-items: flex-start; }
       .lang-btn { font-size: 10px; }
       .currency-btn { font-size: 10px; }
 #order-btn { top: 8px; right: 8px; padding: 6px 8px; font-size: 11px; }
-      #screenshot-btn { top: 40px; right: 8px; left: auto; padding: 6px 8px; font-size: 11px; }
-      #rx-btn { top: 72px; right: 8px; left: auto; padding: 6px 8px; font-size: 11px; }
-      #live-summary { top: 96px; left: 6px; }
+      #screenshot-btn { top: 8px; right: 68px; left: auto; padding: 6px 8px; font-size: 11px; }
+      #rx-btn { top: 8px; right: 124px; left: auto; padding: 6px 8px; font-size: 11px; }
+      #live-summary { top: 136px; left: 8px; }
     }
   
     .home-link {
@@ -1476,6 +1540,49 @@ cursor: pointer;
         width: 100%;
         min-width: 0;
       }
+      #step-finitura select {
+        display: none !important;
+      }
+      #step-finitura .finish-choice-dropdown {
+        display: inline-flex !important;
+        width: 100%;
+      }
+      #step-finitura .finish-choice-dropdown .choice-btn.trigger {
+        min-width: 0;
+      }
+      #step-finitura .finish-choice-dropdown .choice-menu {
+        top: auto !important;
+        bottom: calc(100% + 6px) !important;
+        left: auto !important;
+        right: 0 !important;
+        max-height: min(40vh, 260px);
+        z-index: 9000 !important;
+        min-width: 0 !important;
+        width: min(240px, calc(96vw - 26px)) !important;
+        max-width: calc(96vw - 26px) !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+        background: #060c12 !important;
+      }
+      #step-finitura .finish-choice-dropdown.is-open .choice-menu {
+        position: fixed !important;
+        left: 50% !important;
+        top: 20% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: translate(-50%, -50%) !important;
+        width: min(320px, calc(100vw - 24px)) !important;
+        max-width: calc(100vw - 24px) !important;
+        max-height: min(70vh, 520px) !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        z-index: 9505 !important;
+        border: 1px solid rgba(255,255,255,0.28) !important;
+        box-shadow: 0 14px 34px rgba(0,0,0,0.65) !important;
+      }
+      #step-finitura .finish-choice-dropdown.is-open {
+        z-index: 9504 !important;
+      }
       #step-colori select {
         display: none !important;
       }
@@ -1592,20 +1699,20 @@ cursor: pointer;
         gap: 1px 4px !important;
       }
       #step-accessori .accessory-card {
-        min-height: 52px !important;
-        padding: 7px 8px !important;
-        gap: 6px !important;
+        min-height: 44px !important;
+        padding: 5px 7px !important;
+        gap: 4px !important;
         border-radius: 8px !important;
       }
       #step-accessori .accessory-name {
-        font-size: 10px !important;
+        font-size: 9px !important;
         line-height: 1.1 !important;
-        padding-right: 16px !important;
+        padding-right: 14px !important;
       }
       #step-accessori .accessory-state {
-        width: 15px !important;
-        height: 15px !important;
-        font-size: 11px !important;
+        width: 13px !important;
+        height: 13px !important;
+        font-size: 10px !important;
       }
 
       #step-finitura,
@@ -1614,8 +1721,17 @@ cursor: pointer;
         transform: translateY(-5px) !important;
       }
 
-      #viewer-ui h1 { transform: translateY(10%); }
-      #price-tag { transform: translateY(10%); }
+      #viewer-ui .top {
+        padding-top: 52px !important;
+      }
+      #viewer-ui h1 {
+        margin-top: 14px !important;
+        transform: none !important;
+      }
+      #step-subtitle-row {
+        margin-top: 10px !important;
+      }
+      #price-tag { transform: none !important; }
 
       .step-header {
         position: sticky !important;
@@ -1696,8 +1812,8 @@ cursor: pointer;
       #viewer { height: 85vh; }
       #step-accessori { grid-template-columns: 1fr; }
       #live-summary {
-        top: 96px;
-        left: 6px;
+        top: 136px;
+        left: 8px;
         width: min(320px, calc(100vw - 20px));
         font-size: 10px;
       }
@@ -5014,6 +5130,12 @@ function applyChirpTextureToMeshes(){
     setActiveColor('finish', btn);
     finishSelected = true;
     selectedFinish = f;
+    const finishSelect = document.querySelector('#finish-select select');
+    if(finishSelect && finishSelect.value !== f){
+      finishSelect.value = f;
+    }
+    const finishContainer = document.getElementById('finish-select');
+    if(finishContainer && typeof finishContainer._syncFinishChoice === 'function') finishContainer._syncFinishChoice();
     resetColorsToBase();
     updateColorOptions(f);
     applyStandardColorDefaults();
@@ -5101,7 +5223,11 @@ function applyChirpTextureToMeshes(){
         resetAccessoryUI();
         updateAccessoryRules();
         const finishSelect = document.querySelector('#finish-select select');
-        if(finishSelect) finishSelect.value = '';
+        if(finishSelect){
+          finishSelect.value = '';
+          const finishContainer = document.getElementById('finish-select');
+          if(finishContainer && typeof finishContainer._syncFinishChoice === 'function') finishContainer._syncFinishChoice();
+        }
         const antiskidSelect = document.querySelector('#antiskid-select select');
         if(antiskidSelect) antiskidSelect.value = '';
         updatePrice();
@@ -5157,6 +5283,8 @@ function applyChirpTextureToMeshes(){
       presetLocked = true;
       const finishSelect = document.querySelector('#finish-select select');
       if(finishSelect) finishSelect.disabled = true;
+      const finishContainer = document.getElementById('finish-select');
+      if(finishContainer && typeof finishContainer._syncFinishChoice === 'function') finishContainer._syncFinishChoice();
       document.querySelectorAll('#step-colori select').forEach(sel => sel.disabled = true);
       const antiskidSel = document.querySelector('#antiskid-select select');
       if(antiskidSel) antiskidSel.disabled = true;
@@ -5167,6 +5295,8 @@ function applyChirpTextureToMeshes(){
       presetName = '';
       const finishSelect = document.querySelector('#finish-select select');
       if(finishSelect) finishSelect.disabled = false;
+      const finishContainer = document.getElementById('finish-select');
+      if(finishContainer && typeof finishContainer._syncFinishChoice === 'function') finishContainer._syncFinishChoice();
       document.querySelectorAll('#step-colori select').forEach(sel => sel.disabled = false);
       const antiskidSel = document.querySelector('#antiskid-select select');
       if(antiskidSel) antiskidSel.disabled = false;
@@ -5229,29 +5359,108 @@ function applyChirpTextureToMeshes(){
 function renderFinishSelect(){
     const container = document.getElementById('finish-select');
     if(!container) return;
+    if(typeof container._choiceCleanup === 'function'){
+      container._choiceCleanup();
+      container._choiceCleanup = null;
+    }
     container.innerHTML = '';
+
     const select = document.createElement('select');
+    select.style.display = 'none';
     const placeholder = document.createElement('option');
     placeholder.textContent = 'Select';
     placeholder.value = '';
     placeholder.disabled = true;
     placeholder.selected = true;
     select.appendChild(placeholder);
+
     const options = [
-        { label: 'GELCOAT', value: 'gelcoat' },
-        { label: 'ACRILICO', value: 'paint' }
-      ];
+      { label: 'GELCOAT', value: 'gelcoat' },
+      { label: 'ACRILICO', value: 'paint' }
+    ];
     options.forEach(({ label, value }) => {
-        const opt = document.createElement('option');
-        opt.textContent = label;
-        opt.value = value;
-        select.appendChild(opt);
+      const opt = document.createElement('option');
+      opt.textContent = label;
+      opt.value = value;
+      select.appendChild(opt);
+    });
+
+    const dropdown = document.createElement('div');
+    dropdown.className = 'choice-dropdown finish-choice-dropdown';
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'choice-btn trigger';
+    trigger.textContent = 'Select';
+    const menu = document.createElement('div');
+    menu.className = 'choice-menu';
+    dropdown.appendChild(trigger);
+    dropdown.appendChild(menu);
+
+    const optionButtons = new Map();
+    const syncFromSelect = () => {
+      const selectedOpt = select.selectedOptions && select.selectedOptions[0];
+      const selectedValue = selectedOpt?.value || '';
+      optionButtons.forEach((btn, value) => {
+        btn.classList.toggle('is-selected', value === selectedValue && Boolean(selectedValue));
       });
+      trigger.textContent = (selectedOpt && selectedOpt.value) ? (selectedOpt.textContent || 'Select') : 'Select';
+    };
+    const syncDisabledState = () => {
+      const disabled = Boolean(select.disabled);
+      trigger.disabled = disabled;
+      dropdown.classList.toggle('is-disabled', disabled);
+      if(disabled){
+        dropdown.classList.remove('is-open');
+      }
+    };
+
+    options.forEach(({ label, value }) => {
+      const btn = createChoiceOption(label, () => {
+        if(select.disabled) return;
+        select.value = value;
+        select.dispatchEvent(new Event('change'));
+        dropdown.classList.remove('is-open');
+      });
+      optionButtons.set(value, btn);
+      menu.appendChild(btn);
+    });
+
     select.addEventListener('change', () => {
-        if(!select.value) return;
-        selectFinitura(select.value, null, true);
-      });
+      syncFromSelect();
+      if(!select.value) return;
+      selectFinitura(select.value, null, true);
+    });
+
+    trigger.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if(select.disabled) return;
+      updateChoiceDropdownDirection(dropdown);
+      dropdown.classList.toggle('is-open');
+    });
+
+    const onDocPointer = (ev) => {
+      if(!dropdown.contains(ev.target)){
+        dropdown.classList.remove('is-open');
+      }
+    };
+    document.addEventListener('pointerdown', onDocPointer);
+    container._choiceCleanup = () => {
+      document.removeEventListener('pointerdown', onDocPointer);
+    };
+    container._syncFinishChoice = () => {
+      syncFromSelect();
+      syncDisabledState();
+    };
+
+    if(selectedFinish && options.some((o) => o.value === selectedFinish)){
+      select.value = selectedFinish;
+    }
+
+    syncFromSelect();
+    syncDisabledState();
     container.appendChild(select);
+    container.appendChild(dropdown);
   }
 
   window.setHull = function(color, btn){
@@ -5715,10 +5924,10 @@ function getColorsSummary(){
     if(!liveSummaryEl) return;
     const isEn = currentLang === 'en';
     const t = isEn
-      ? { title: 'Live summary', finish: 'Finish', colors: 'Colors', antiskid: 'Antiskid', accessories: 'Accessories' }
-      : { title: 'Riepilogo live', finish: 'Finitura', colors: 'Colori', antiskid: 'Antiscivolo', accessories: 'Accessori' };
+      ? { finish: 'Finish', colors: 'Colors', antiskid: 'Antiskid', accessories: 'Accessories' }
+      : { finish: 'Finitura', colors: 'Colori', antiskid: 'Antiscivolo', accessories: 'Accessori' };
     const livePrice = getPriceSummary();
-    const liveTitle = livePrice ? `${t.title} - ${livePrice}` : t.title;
+    const liveTitle = livePrice || '';
     const rows = [];
     if(selectedFinish){
       rows.push(`<li><b>${t.finish}:</b> ${getFinishLabel()}</li>`);
