@@ -1323,6 +1323,8 @@ cursor: pointer;
       background-size: cover !important;
       background-position: center !important;
       background-repeat: no-repeat !important;
+      position: relative;
+      overflow: hidden;
     }
     #lang-toggle.is-it {
       background-image: linear-gradient(90deg, #009246 0 33.333%, #ffffff 33.333% 66.666%, #ce2b37 66.666% 100%) !important;
@@ -1338,6 +1340,21 @@ cursor: pointer;
         linear-gradient(90deg, transparent 38%, #ffffff 38% 62%, transparent 62%),
         linear-gradient(0deg, transparent 38%, #ffffff 38% 62%, transparent 62%),
         linear-gradient(#012169, #012169) !important;
+    }
+    #lang-toggle.is-es {
+      background-image: linear-gradient(180deg, #c60b1e 0 25%, #ffc400 25% 75%, #c60b1e 75% 100%) !important;
+    }
+    #lang-toggle.is-zh {
+      background: #de2910 !important;
+    }
+    #lang-toggle.is-zh::before {
+      content: '\2605';
+      position: absolute;
+      left: 6px;
+      top: 4px;
+      color: #ffde00;
+      font-size: 12px;
+      line-height: 1;
     }
     #lang-toggle:hover,
     #lang-toggle.is-active {
@@ -2410,9 +2427,72 @@ A durable, long-lasting solution without additional applications, designed to en
 Each choice is updated in real time and made interactive in the 3D view so you can immediately see the final configuration result. By clicking RX, you make the deck transparent so you can observe the boat's internal structure. Purple highlights the foamed volume used to make the boat unsinkable.`
     }
   };
+  const INFO_CONTENT_ES = {
+    finitura: {
+      title: 'Acabado',
+      body: `Elige el tipo de acabado para el casco y las superficies principales.
+Cada opcion influye en la estetica, la resistencia en el tiempo y el mantenimiento.
+
+GELCOAT -> Revestimiento protector tipico de nautica, aplicado durante la fabricacion del casco.
+
+ACRILICO -> Acabado pintado con productos acrilicos de alta resistencia, ideal para un estilo moderno.`
+    },
+    colori: {
+      title: 'Colores',
+      body: `Personaliza los colores para crear una configuracion unica.
+
+WRAPPING -> Pelicula tecnica adhesiva aplicada sobre la superficie original.
+
+RUGGED -> Acabado acrilico resistente con efecto texturizado.`
+    },
+    antiskid: {
+      title: 'Antideslizante',
+      body: `Tratamiento de superficie para mejorar el agarre en zonas transitables.
+
+EVA -> Revestimiento tecnico comodo y con alta adherencia.
+PINTADO -> Pintura antideslizante con microgranulos.
+ESTAMPADO -> Textura antideslizante integrada en el molde.`
+    },
+    accessori: {
+      title: 'Accesorios',
+      body: `Anade opciones tecnicas y esteticas para mejorar comodidad y funcionalidad.
+Con RX puedes hacer semitransparente la cubierta para ver la estructura interna.`
+    }
+  };
+  const INFO_CONTENT_ZH = {
+    finitura: {
+      title: '\u8868\u9762\u5de5\u827a',
+      body: `\u8bf7\u9009\u62e9\u8239\u4f53\u548c\u4e3b\u8981\u8868\u9762\u7684\u5de5\u827a\u7c7b\u578b\uff0c\u4e0d\u540c\u5de5\u827a\u4f1a\u5f71\u54cd\u5916\u89c2\u3001\u8010\u4e45\u6027\u548c\u7ef4\u62a4\u3002
+
+GELCOAT -> \u9020\u8239\u5e38\u7528\u4fdd\u62a4\u5c42\uff0c\u5728\u8239\u4f53\u6210\u578b\u65f6\u76f4\u63a5\u65bd\u5de5\u3002
+ACRYLIC -> \u9ad8\u8010\u5019\u4e19\u70ef\u6d82\u5c42\uff0c\u8272\u5f69\u66f4\u6df1\uff0c\u5149\u6cfd\u66f4\u9ad8\u3002`
+    },
+    colori: {
+      title: '\u989c\u8272',
+      body: `\u81ea\u5b9a\u4e49\u989c\u8272\uff0c\u5b9e\u65f6\u67e5\u770b3D\u6548\u679c\u3002
+
+WRAPPING -> \u8986\u819c\u65b9\u6848\uff0c\u53ef\u540e\u7eed\u66f4\u6362\u3002
+RUGGED -> \u8010\u522e\u7eb9\u7406\u6d82\u5c42\u3002`
+    },
+    antiskid: {
+      title: '\u9632\u6ed1',
+      body: `\u63d0\u5347\u53ef\u8e29\u8e0f\u533a\u57df\u6293\u5730\u529b\uff0c\u6e7f\u6c34\u73af\u5883\u66f4\u5b89\u5168\u3002
+
+EVA -> \u8212\u9002\u4e14\u6293\u5730\u529b\u9ad8\u3002
+PAINTED -> \u9632\u6ed1\u6d82\u5c42\u3002
+PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
+    },
+    accessori: {
+      title: '\u914d\u4ef6',
+      body: `\u53ef\u6dfb\u52a0\u6280\u672f\u4e0e\u5916\u89c2\u914d\u4ef6\uff0c\u914d\u7f6e\u4f1a\u5b9e\u65f6\u66f4\u65b0\u52303D\u6a21\u578b\u3002
+\u70b9\u51fb RX \u53ef\u534a\u900f\u660e\u663e\u793a\u7532\u677f\uff0c\u67e5\u770b\u5185\u90e8\u7ed3\u6784\u3002`
+    }
+  };
   function getInfoContentForLang(key){
     const k = String(key || '').toLowerCase();
     if(currentLang === 'en' && INFO_CONTENT_EN[k]) return INFO_CONTENT_EN[k];
+    if(currentLang === 'es' && INFO_CONTENT_ES[k]) return INFO_CONTENT_ES[k];
+    if(currentLang === 'zh' && INFO_CONTENT_ZH[k]) return INFO_CONTENT_ZH[k];
     return INFO_CONTENT[k] || null;
   }
   let deckTransparent = false;
@@ -3127,14 +3207,37 @@ Each choice is updated in real time and made interactive in the 3D view so you c
   const sounds = {
     bg: new Audio('audio/gabbiani.mp3'),
     on: new Audio('audio/click.mp3'),
-    off: new Audio('audio/blip.mp3')
+    off: new Audio('audio/blip.mp3'),
+    fine: new Audio('audio/lambo.mp3'),
+    trollingDown: new Audio('audio/trolling.mp3'),
+    confirm: new Audio('audio/registratore_cassa.mp3')
   };
   sounds.bg.loop = true;
   sounds.bg.volume = 0.10;
   sounds.on.volume = 0.8;
   sounds.off.volume = 0.8;
+  sounds.fine.volume = 0.85;
+  sounds.trollingDown.volume = 0.85;
+  sounds.confirm.volume = 0.9;
+  sounds.trollingDown.loop = true;
+  Object.values(sounds).forEach((s) => { s.preload = 'auto'; });
   let audioUnlocked = false;
   let audioEnabled = true;
+
+  function playUiSound(sound){
+    if(!sound || !audioEnabled) return;
+    if(!audioUnlocked){
+      unlockAudio();
+      if(!audioUnlocked) return;
+    }
+    sound.currentTime = 0;
+    sound.play().catch(() => {});
+  }
+  function stopUiSound(sound){
+    if(!sound) return;
+    sound.pause();
+    sound.currentTime = 0;
+  }
 
   function unlockAudio(){
     if(!audioEnabled) return;
@@ -3148,6 +3251,9 @@ Each choice is updated in real time and made interactive in the 3D view so you c
     sounds.bg.muted = !enabled;
     sounds.on.muted = !enabled;
     sounds.off.muted = !enabled;
+    sounds.fine.muted = !enabled;
+    sounds.trollingDown.muted = !enabled;
+    sounds.confirm.muted = !enabled;
     const btn = document.getElementById('audio-toggle');
     if(btn){
       btn.classList.toggle('is-muted', !enabled);
@@ -3157,6 +3263,7 @@ Each choice is updated in real time and made interactive in the 3D view so you c
     }
     if(!enabled){
       sounds.bg.pause();
+      sounds.trollingDown.pause();
       return;
     }
     if(fromUser){
@@ -3298,11 +3405,11 @@ const accessoryDeps = {
     }
 
 
-      function updateNavLabels(step){
+  function updateNavLabels(step){
     const nextBtn = document.querySelector('#viewer-ui .next-btn .nav-label');
     if(nextBtn){
       const dict = I18N[currentLang] || I18N.it;
-      nextBtn.textContent = step === 'accessori' ? 'Fine' : dict.go;
+      nextBtn.textContent = step === 'accessori' ? dict.end : dict.go;
     }
   }
 
@@ -3346,12 +3453,23 @@ const accessoryDeps = {
     if(screenshotBtn){ screenshotBtn.title = dict.photoTitle; screenshotBtn.textContent = dict.photoBtn || 'PHOTO'; }
     const rxBtn = document.getElementById('rx-btn');
     if(rxBtn) rxBtn.title = dict.rxTitle;
+    const rotateBtn = document.getElementById('rotate-btn');
+    const soloSkiffBtn = document.getElementById('solo-skiff-btn');
+    const fullBtn = document.getElementById('full-btn');
+    const uiTop = currentLang === 'zh'
+      ? { rotate: '\u65cb\u8f6c', solo: '\u4ec5\u8239\u6a21\u578b', full: '\u5168\u9875', fullTitle: '\u5168\u9875\u663e\u793a' }
+      : (currentLang === 'es'
+        ? { rotate: 'GIRA', solo: 'SOLO SKIFF', full: 'FULL', fullTitle: 'Pantalla completa de pagina' }
+        : (currentLang === 'en'
+          ? { rotate: 'ROTATE', solo: 'SKIFF ONLY', full: 'FULL', fullTitle: 'Full page view' }
+          : { rotate: 'RUOTA', solo: 'SOLO SKIFF', full: 'FULL', fullTitle: 'Schermo intero pagina' }));
+    if(rotateBtn) rotateBtn.textContent = uiTop.rotate;
+    if(soloSkiffBtn) soloSkiffBtn.textContent = uiTop.solo;
+    if(fullBtn){ fullBtn.textContent = uiTop.full; fullBtn.title = uiTop.fullTitle; }
     const loading = document.getElementById('loading-text');
-    if(loading && /Caricamento|Loading/.test(loading.textContent || '')){
-      if((loading.textContent || '').includes('0%')) loading.textContent = dict.loadingStart;
-    }
+    if(loading && (loading.textContent || '').includes('0%')) loading.textContent = dict.loadingStart;
     const infoCloseBtn = document.getElementById('info-close');
-    if(infoCloseBtn) infoCloseBtn.textContent = currentLang === 'en' ? 'Close' : 'Chiudi';
+    if(infoCloseBtn) infoCloseBtn.textContent = dict.close || I18N.it.close;
     const title = document.getElementById('step-title');
     if(title) title.textContent = getStepTitleText(currentStep);
     updateStepSubtitle(currentStep);
@@ -3375,13 +3493,16 @@ const accessoryDeps = {
     });
     const langToggleBtn = document.getElementById('lang-toggle');
     if(langToggleBtn){
-      const isIt = currentLang === 'it';
       langToggleBtn.textContent = '';
-      langToggleBtn.classList.toggle('is-it', isIt);
-      langToggleBtn.classList.toggle('is-en', !isIt);
+      langToggleBtn.classList.toggle('is-it', currentLang === 'it');
+      langToggleBtn.classList.toggle('is-en', currentLang === 'en');
+      langToggleBtn.classList.toggle('is-es', currentLang === 'es');
+      langToggleBtn.classList.toggle('is-zh', currentLang === 'zh');
       langToggleBtn.classList.toggle('is-active', true);
-      langToggleBtn.setAttribute('title', isIt ? 'Lingua: Italiano (click per English)' : 'Language: English (click for Italiano)');
-      langToggleBtn.setAttribute('aria-label', isIt ? 'Lingua Italiano' : 'Language English');
+      const nextLang = LANG_SEQUENCE[(LANG_SEQUENCE.indexOf(currentLang) + 1) % LANG_SEQUENCE.length];
+      const names = { it: 'Italiano', en: 'English', es: 'Espanol', zh: '\u4e2d\u6587' };
+      langToggleBtn.setAttribute('title', `${names[currentLang] || currentLang} -> ${names[nextLang] || nextLang}`);
+      langToggleBtn.setAttribute('aria-label', `Lingua ${names[currentLang] || currentLang}`);
     }
     applyCurrencyUI();
     const orderT = dict.orderModal || I18N.it.orderModal;
@@ -3415,7 +3536,7 @@ const accessoryDeps = {
   }
 
   function setLanguage(lang){
-    currentLang = (lang === 'en') ? 'en' : 'it';
+    currentLang = I18N[lang] ? lang : 'it';
     refreshColorMenusForLanguage();
     applyLanguageUI();
   }
@@ -3423,10 +3544,13 @@ const accessoryDeps = {
     const currencyToggleBtn = document.getElementById('currency-toggle');
     if(!currencyToggleBtn) return;
     const isEur = currentCurrency === 'EUR';
-    currencyToggleBtn.textContent = isEur ? '€' : '$';
+    currencyToggleBtn.textContent = isEur ? '\u20AC' : '$';
     currencyToggleBtn.classList.toggle('is-active', true);
-    currencyToggleBtn.setAttribute('title', isEur ? 'Valuta: EUR (click per USD)' : 'Currency: USD (click for EUR)');
-    currencyToggleBtn.setAttribute('aria-label', isEur ? 'Valuta EUR' : 'Currency USD');
+    const currencyLabel = currentLang === 'zh'
+      ? '\u8d27\u5e01'
+      : (currentLang === 'es' ? 'Moneda' : (currentLang === 'en' ? 'Currency' : 'Valuta'));
+    currencyToggleBtn.setAttribute('title', isEur ? `${currencyLabel}: EUR` : `${currencyLabel}: USD`);
+    currencyToggleBtn.setAttribute('aria-label', isEur ? `${currencyLabel} EUR` : `${currencyLabel} USD`);
   }
   function formatMoney(valueEuro){
     const eur = Number(valueEuro) || 0;
@@ -3826,6 +3950,16 @@ const accessoryDeps = {
       muteOff: 'AUDIO',
       rxTitle: 'Vista semitrasparente',
       loadingStart: 'Caricamento modello 0%',
+      close: 'Chiudi',
+      summary: 'Riepilogo',
+      none: 'Nessuno',
+      antiskidWord: 'Antiscivolo',
+      colorWord: 'Colore',
+      selectLabel: 'Seleziona',
+      colorsSummary: { hull: 'Chiglia', deck: 'Ponte', doors: 'Portelli' },
+      finishMap: { gelcoat: 'Gelcoat', paint: 'Acrilico', rugged: 'Rugged', wrapping: 'Wrapping' },
+      antiskidModes: { none: 'Nessuno', paint: 'Verniciato', print: 'Stampato' },
+      evaLabels: { eva_teak: 'EVA Teak', eva_sand: 'EVA Sabbia', eva_grey: 'EVA Grigio', eva_black: 'EVA Nero', eva_blue: 'EVA Blu', eva_green: 'EVA Verde' },
       acc: {
         tientibene: 'Tientibene',
         panca: 'Panca',
@@ -3861,6 +3995,16 @@ const accessoryDeps = {
       muteOff: 'UNMUTE',
       rxTitle: 'Semi-transparent view',
       loadingStart: 'Loading model 0%',
+      close: 'Close',
+      summary: 'Summary',
+      none: 'None',
+      antiskidWord: 'Antiskid',
+      colorWord: 'Color',
+      selectLabel: 'Select',
+      colorsSummary: { hull: 'Hull', deck: 'Deck', doors: 'Doors' },
+      finishMap: { gelcoat: 'Gelcoat', paint: 'Acrylic', rugged: 'Rugged', wrapping: 'Wrapping' },
+      antiskidModes: { none: 'None', paint: 'Painted', print: 'Printed' },
+      evaLabels: { eva_teak: 'EVA Teak', eva_sand: 'EVA Sand', eva_grey: 'EVA Gray', eva_black: 'EVA Black', eva_blue: 'EVA Blue', eva_green: 'EVA Green' },
       acc: {
         tientibene: 'Grab Rail',
         panca: 'Bench',
@@ -3882,8 +4026,100 @@ const accessoryDeps = {
         confirm: 'Confirm Configuration',
         download: 'Download Configuration'
       }
+    },
+    es: {
+      stepTitle: { finitura: 'Acabado', colori: 'Colores', accessori: 'Accesorios' },
+      back: 'Atras',
+      go: 'Siguiente',
+      end: 'Fin',
+      reset: 'REINICIAR',
+      order: 'Pedir',
+      photoTitle: 'Guardar captura',
+      photoBtn: 'FOTO',
+      muteOn: 'MUDO',
+      muteOff: 'AUDIO',
+      rxTitle: 'Vista semitransparente',
+      loadingStart: 'Cargando modelo 0%',
+      close: 'Cerrar',
+      summary: 'Resumen',
+      none: 'Ninguno',
+      antiskidWord: 'Antideslizante',
+      colorWord: 'Color',
+      selectLabel: 'Seleccionar',
+      colorsSummary: { hull: 'Quilla', deck: 'Cubierta', doors: 'Tapas' },
+      finishMap: { gelcoat: 'Gelcoat', paint: 'Acrilico', rugged: 'Rugged', wrapping: 'Wrapping' },
+      antiskidModes: { none: 'Ninguno', paint: 'Pintado', print: 'Estampado' },
+      evaLabels: { eva_teak: 'EVA Teca', eva_sand: 'EVA Arena', eva_grey: 'EVA Gris', eva_black: 'EVA Negro', eva_blue: 'EVA Azul', eva_green: 'EVA Verde' },
+      acc: {
+        tientibene: 'Pasamanos',
+        panca: 'Banco',
+        schienale: 'Respaldo',
+        supporto: 'Soporte motor',
+        motore: 'Motor',
+        impianto: 'Sistema electrico',
+        batteria: 'Bateria de litio',
+        fishfinder: 'Sonda',
+        trolling: 'Motor de proa'
+      },
+      infoAria: { finitura: 'Info Acabado', colori: 'Info Colores', accessori: 'Info Accesorios' },
+      colorLabels: { hull: 'QUILLA', deck: 'CUBIERTA', hatches: 'TAPAS', antiskid: 'ANTIDESLIZANTE' },
+      orderModal: {
+        title: 'Configuracion',
+        close: 'Cerrar',
+        labels: { id: 'ID', finish: 'Acabado', colors: 'Colores', antiskid: 'Antideslizante', accessories: 'Accesorios', price: 'Precio' },
+        fields: { nome: 'Nombre', cognome: 'Apellido', email: 'Email', telefono: 'Telefono', indirizzo: 'Direccion', citta: 'Ciudad', cap: 'CP', note: 'Notas' },
+        confirm: 'Confirmar Configuracion',
+        download: 'Descargar Configuracion'
+      }
+    },
+    zh: {
+      stepTitle: { finitura: '\u5de5\u827a', colori: '\u989c\u8272', accessori: '\u914d\u4ef6' },
+      back: '\u8fd4\u56de',
+      go: '\u4e0b\u4e00\u6b65',
+      end: '\u5b8c\u6210',
+      reset: '\u91cd\u7f6e',
+      order: '\u4e0b\u5355',
+      photoTitle: '\u4fdd\u5b58\u622a\u56fe',
+      photoBtn: '\u622a\u56fe',
+      muteOn: '\u9759\u97f3',
+      muteOff: '\u97f3\u9891',
+      rxTitle: '\u534a\u900f\u660e\u89c6\u56fe',
+      loadingStart: '\u6a21\u578b\u52a0\u8f7d 0%',
+      close: '\u5173\u95ed',
+      summary: '\u6982\u89c8',
+      none: '\u65e0',
+      antiskidWord: '\u9632\u6ed1',
+      colorWord: '\u989c\u8272',
+      selectLabel: '\u9009\u62e9',
+      colorsSummary: { hull: '\u8239\u4f53', deck: '\u7532\u677f', doors: '\u8231\u76d6' },
+      finishMap: { gelcoat: 'Gelcoat', paint: '\u4e19\u70ef', rugged: 'Rugged', wrapping: 'Wrapping' },
+      antiskidModes: { none: '\u65e0', paint: '\u6d82\u88c5', print: '\u538b\u7eb9' },
+      evaLabels: { eva_teak: 'EVA \u67da\u6728', eva_sand: 'EVA \u6c99\u8272', eva_grey: 'EVA \u7070\u8272', eva_black: 'EVA \u9ed1\u8272', eva_blue: 'EVA \u84dd\u8272', eva_green: 'EVA \u7eff\u8272' },
+      acc: {
+        tientibene: '\u6276\u624b',
+        panca: '\u5ea7\u6905',
+        schienale: '\u9760\u80cc',
+        supporto: '\u53d1\u52a8\u673a\u652f\u67b6',
+        motore: '\u53d1\u52a8\u673a',
+        impianto: '\u7535\u6c14\u7cfb\u7edf',
+        batteria: '\u9502\u7535\u6c60',
+        fishfinder: '\u9c7c\u63a2\u4eea',
+        trolling: '\u8239\u9996\u7535\u673a'
+      },
+      infoAria: { finitura: '\u5de5\u827a\u4fe1\u606f', colori: '\u989c\u8272\u4fe1\u606f', accessori: '\u914d\u4ef6\u4fe1\u606f' },
+      colorLabels: { hull: '\u8239\u4f53', deck: '\u7532\u677f', hatches: '\u8231\u76d6', antiskid: '\u9632\u6ed1' },
+      orderModal: {
+        title: '\u914d\u7f6e',
+        close: '\u5173\u95ed',
+        labels: { id: 'ID', finish: '\u5de5\u827a', colors: '\u989c\u8272', antiskid: '\u9632\u6ed1', accessories: '\u914d\u4ef6', price: '\u4ef7\u683c' },
+        fields: { nome: '\u540d', cognome: '\u59d3', email: '\u90ae\u7bb1', telefono: '\u7535\u8bdd', indirizzo: '\u5730\u5740', citta: '\u57ce\u5e02', cap: '\u90ae\u7f16', note: '\u5907\u6ce8' },
+        confirm: '\u786e\u8ba4\u914d\u7f6e',
+        download: '\u4e0b\u8f7d\u914d\u7f6e'
+      }
     }
   };
+  const LANG_SEQUENCE = ['it', 'en', 'es', 'zh'];
+  const LOCALE_BY_LANG = { it: 'it-IT', en: 'en-US', es: 'es-ES', zh: 'zh-CN' };
   let accessoriUnlocked = false;
   let selectedFinish = null;
   let selectedHull = null;
@@ -4510,8 +4746,8 @@ function updatePrice(){
   }
   function translateColorMenuLabel(label){
     const txt = String(label || '').trim();
-    if(currentLang !== 'en') return txt;
-    const map = {
+    const maps = {
+      en: {
       'Bianco': 'White',
       'Colori': 'Colors',
       'Verde acqua': 'Aquamarine',
@@ -4548,7 +4784,86 @@ function updatePrice(){
       'Laguna': 'Lagoon',
       'Foche': 'Seals',
       'Acido': 'Acid'
+      },
+      es: {
+      'Bianco': 'Blanco',
+      'Colori': 'Colores',
+      'Verde acqua': 'Verde agua',
+      'Ciano': 'Cian',
+      'Lime': 'Lima',
+      'Blu notte': 'Azul noche',
+      'Blu elettrico': 'Azul electrico',
+      'Nero': 'Negro',
+      'Grigio': 'Gris',
+      'Grigio fumo': 'Gris humo',
+      'Bronzo': 'Bronce',
+      'Giallo sole': 'Amarillo sol',
+      'Arancione': 'Naranja',
+      'Rosso': 'Rojo',
+      'Oliva': 'Oliva',
+      'Magenta': 'Magenta',
+      'Salmone': 'Salmon',
+      'Indaco': 'Indigo',
+      'Miele': 'Miel',
+      'Onda': 'Ola',
+      'Carbonio': 'Carbono',
+      'Mimetico': 'Camuflaje',
+      'Mimetico 2': 'Camuflaje 2',
+      'Onda verde': 'Ola verde',
+      'Astratto': 'Abstracto',
+      'Avorio': 'Marfil',
+      'Argento': 'Plata',
+      'Carbone': 'Carbon',
+      'Menta': 'Menta',
+      'Grafite': 'Grafito',
+      'Abisso': 'Abismo',
+      'Foglia': 'Hoja',
+      'Fragola': 'Fresa',
+      'Laguna': 'Laguna',
+      'Foche': 'Focas',
+      'Acido': 'Acido'
+      },
+      zh: {
+      'Bianco': '\u767d\u8272',
+      'Colori': '\u989c\u8272',
+      'Verde acqua': '\u6c34\u7eff',
+      'Ciano': '\u9752\u8272',
+      'Lime': '\u67e0\u6aac\u7eff',
+      'Blu notte': '\u591c\u84dd',
+      'Blu elettrico': '\u7535\u84dd',
+      'Nero': '\u9ed1\u8272',
+      'Grigio': '\u7070\u8272',
+      'Grigio fumo': '\u70df\u7070',
+      'Bronzo': '\u9752\u94dc',
+      'Giallo sole': '\u9633\u5149\u9ec4',
+      'Arancione': '\u6a59\u8272',
+      'Rosso': '\u7ea2\u8272',
+      'Oliva': '\u6a44\u6984\u7eff',
+      'Magenta': '\u6d0b\u7ea2',
+      'Salmone': '\u9c91\u9c7c\u7c89',
+      'Indaco': '\u975b\u84dd',
+      'Miele': '\u871c\u8272',
+      'Onda': '\u6ce2\u7eb9',
+      'Carbonio': '\u78b3\u7ea4\u7ef4',
+      'Mimetico': '\u8ff7\u5f69',
+      'Mimetico 2': '\u8ff7\u5f69 2',
+      'Onda verde': '\u7eff\u6ce2',
+      'Astratto': '\u62bd\u8c61',
+      'Avorio': '\u8c61\u7259\u767d',
+      'Argento': '\u94f6\u8272',
+      'Carbone': '\u7164\u9ed1',
+      'Menta': '\u8584\u8377',
+      'Grafite': '\u77f3\u58a8',
+      'Abisso': '\u6df1\u6e0a',
+      'Foglia': '\u53f6\u7eff',
+      'Fragola': '\u8349\u8393',
+      'Laguna': '\u6cfb\u6e56',
+      'Foche': '\u6d77\u8c79',
+      'Acido': '\u9178\u6027\u7eff'
+      }
     };
+    const map = maps[currentLang];
+    if(!map) return txt;
     return map[txt] || txt;
   }
 
@@ -4968,14 +5283,16 @@ function updatePrice(){
 function updateAntiskidOptions(finish){
       const select = document.querySelector('#antiskid-select select');
       if(!select) return;
-      const isEn = currentLang === 'en';
+      const dict = I18N[currentLang] || I18N.it;
+      const antiskidModes = dict.antiskidModes || I18N.it.antiskidModes;
+      const evaLabels = dict.evaLabels || I18N.it.evaLabels;
       const baseOptions = [
-        { label: isEn ? 'None' : 'Nessuno', value: 'none', base: 'none' },
-        { label: isEn ? 'Painted' : 'Verniciato', value: 'paint', base: 'paint' },
-        { label: isEn ? 'Printed' : 'Stampato', value: 'print', base: 'print' }
+        { label: antiskidModes.none || 'Nessuno', value: 'none', base: 'none' },
+        { label: antiskidModes.paint || 'Verniciato', value: 'paint', base: 'paint' },
+        { label: antiskidModes.print || 'Stampato', value: 'print', base: 'print' }
       ];
       const evaOptions = EVA_ANTISKID_VARIANTS.map((v) => ({
-        label: `EVA ${isEn ? v.labelEn : v.labelIt}`,
+        label: evaLabels[v.value] || `EVA ${v.labelIt}`,
         value: v.value,
         base: 'eva',
         swatch: v.swatch || ''
@@ -4995,7 +5312,7 @@ function updateAntiskidOptions(finish){
       const allowed = allOptions.filter((o) => allowedBaseModes.includes(o.base));
       select.innerHTML = '';
       const placeholder = document.createElement('option');
-      placeholder.textContent = 'Select';
+      placeholder.textContent = dict.selectLabel || I18N.it.selectLabel || 'Seleziona';
       placeholder.value = '';
       placeholder.disabled = true;
       placeholder.selected = true;
@@ -6026,6 +6343,7 @@ function renderFinishSelect(){
         return;
       }
     if(currentStep === 'accessori'){
+      playUiSound(sounds.fine);
       triggerOrderFlow();
       return;
     }
@@ -6073,9 +6391,16 @@ function renderFinishSelect(){
       syncTrollingAutoOrbit();
       return;
     }
-    trollingDeployed = Boolean(deployed);
+    const nextDeployed = Boolean(deployed);
+    const wasDeployed = Boolean(trollingDeployed);
+    trollingDeployed = nextDeployed;
     trollingMeshes.forEach((m) => m.visible = !deployed);
     trollingDeployMeshes.forEach((m) => m.visible = deployed);
+    if(nextDeployed){
+      if(!wasDeployed) playUiSound(sounds.trollingDown);
+    }else{
+      stopUiSound(sounds.trollingDown);
+    }
     syncTrollingAutoOrbit();
   };
 
@@ -6319,7 +6644,7 @@ function renderFinishSelect(){
     return `NS-${Date.now()}-${rand}`;
   }
 
-    function getAccessoriesSummary(){
+  function getAccessoriesSummary(){
     const dict = I18N[currentLang] || I18N.it;
     const accMap = dict.acc || {};
     const items = [];
@@ -6330,12 +6655,12 @@ function renderFinishSelect(){
         if(label) items.push(label);
       }
     });
-    return items.length ? items.join(', ') : (currentLang === 'en' ? 'None' : 'Nessuno');
+    return items.length ? items.join(', ') : (dict.none || I18N.it.none || 'Nessuno');
   }
     function getSelectedAccessoriesDetailed(){
     const dict = I18N[currentLang] || I18N.it;
     const accMap = dict.acc || {};
-    const antiskidTitle = currentLang === 'en' ? 'Antiskid' : 'Antiscivolo';
+    const antiskidTitle = dict.antiskidWord || I18N.it.antiskidWord || 'Antiscivolo';
     const isChecked = (name) =>
       document.querySelector(`#step-accessori input[data-accessory="${name}"]`)?.checked;
     const isVisible = (name) =>
@@ -6375,9 +6700,8 @@ function renderFinishSelect(){
     return formatMoney(value);
   }
       function getFinishLabel(){
-    const map = currentLang === 'en'
-      ? { gelcoat: 'Gelcoat', paint: 'Acrylic', rugged: 'Rugged', wrapping: 'Wrapping' }
-      : { gelcoat: 'Gelcoat', paint: 'Acrilico', rugged: 'Rugged', wrapping: 'Wrapping' };
+    const dict = I18N[currentLang] || I18N.it;
+    const map = dict.finishMap || I18N.it.finishMap;
     return map[selectedFinish] || selectedFinish || '-';
   }
   function getSelectLabel(sel, fallback){
@@ -6397,14 +6721,10 @@ function renderFinishSelect(){
   }
   function getColorModeLabel(mode){
     const normalized = String(mode || 'color').toLowerCase();
-    if(currentLang === 'en'){
-      if(normalized === 'wrapping') return 'Wrapping';
-      if(normalized === 'rugged') return 'Rugged';
-      return 'Color';
-    }
+    const dict = I18N[currentLang] || I18N.it;
     if(normalized === 'wrapping') return 'Wrapping';
     if(normalized === 'rugged') return 'Rugged';
-    return 'Colore';
+    return dict.colorWord || I18N.it.colorWord || 'Colore';
   }
 function getColorsSummary(){
     const hull = getColorLabel('hull', selectedHull || '-');
@@ -6413,9 +6733,8 @@ function getColorsSummary(){
     const hullMode = getColorModeLabel(selectedHullMode);
     const deckMode = getColorModeLabel(selectedDeckMode);
     const doorsMode = getColorModeLabel(selectedHatchesMode);
-    const l = currentLang === 'en'
-      ? { hull: 'Hull', deck: 'Deck', doors: 'Doors' }
-      : { hull: 'Chiglia', deck: 'Ponte', doors: 'Portelli' };
+    const dict = I18N[currentLang] || I18N.it;
+    const l = dict.colorsSummary || I18N.it.colorsSummary;
     return `${l.hull} (${hullMode}: ${hull}), ${l.deck} (${deckMode}: ${deck}), ${l.doors} (${doorsMode}: ${doors})`;
   }
 
@@ -6477,12 +6796,16 @@ function getColorsSummary(){
       return;
     }
     liveSummaryEl.style.display = 'block';
-    const isEn = currentLang === 'en';
-    const t = isEn
-      ? { finish: 'Finish', colors: 'Colors', antiskid: 'Antiskid', accessories: 'Accessories' }
-      : { finish: 'Finitura', colors: 'Colori', antiskid: 'Antiscivolo', accessories: 'Accessori' };
+    const dict = I18N[currentLang] || I18N.it;
+    const t = {
+      finish: dict.orderModal?.labels?.finish || I18N.it.orderModal.labels.finish,
+      colors: dict.orderModal?.labels?.colors || I18N.it.orderModal.labels.colors,
+      antiskid: dict.orderModal?.labels?.antiskid || I18N.it.orderModal.labels.antiskid,
+      accessories: dict.orderModal?.labels?.accessories || I18N.it.orderModal.labels.accessories
+    };
     const livePrice = getPriceSummary();
-    const liveTitle = livePrice ? `${isEn ? 'Summary' : 'Riepilogo'} ${livePrice}` : (isEn ? 'Summary' : 'Riepilogo');
+    const summaryWord = dict.summary || I18N.it.summary || 'Riepilogo';
+    const liveTitle = livePrice ? `${summaryWord} ${livePrice}` : summaryWord;
     const rows = [];
     if(selectedFinish){
       rows.push(`<li><b>${t.finish}:</b> ${getFinishLabel()}</li>`);
@@ -6500,8 +6823,8 @@ function getColorsSummary(){
     liveSummaryEl.innerHTML = `<div class="live-summary-title">${liveTitle}</div><ul>${rows.join('')}</ul>`;
   }
   function getExportI18n(){
-    if(currentLang === 'en'){
-      return {
+    const map = {
+      en: {
         saved: 'Saved',
         customConfig: 'Custom configuration',
         config: 'Configuration',
@@ -6529,37 +6852,96 @@ function getColorsSummary(){
         sending: 'Sending...',
         sentOk: 'Order sent successfully. We will contact you shortly.',
         sentErr: 'Order sending failed. You can download the PDF and try again.'
-      };
-    }
-    return {
-      saved: 'Salvato',
-      customConfig: 'Configurazione personalizzata',
-      config: 'Configurazione',
-      finish: 'Finitura',
-      colors: 'Colori',
-      hull: 'Chiglia',
-      deck: 'Ponte',
-      doors: 'Portelli',
-      antiskid: 'Antiscivolo',
-      selectedAccessories: 'Accessori selezionati',
-      none: 'Nessuno',
-      total: 'Totale configurazione',
-      footer: 'Immagini e specifiche sono indicative. Prezzi soggetti a variazione.',
-      filePrefix: 'ordine',
-      emailSubject: 'Ordine configurazione',
-      customer: 'Cliente',
-      name: 'Nome',
-      surname: 'Cognome',
-      phone: 'Telefono',
-      address: 'Indirizzo',
-      city: 'Citta',
-      zip: 'CAP',
-      notes: 'Note',
-      emailRequired: 'Inserisci un indirizzo email valido.',
-      sending: 'Invio...',
-      sentOk: 'Ordine inviato correttamente. Ti contatteremo a breve.',
-      sentErr: 'Errore invio ordine. Puoi scaricare il PDF e riprovare.'
+      },
+      es: {
+        saved: 'Guardado',
+        customConfig: 'Configuracion personalizada',
+        config: 'Configuracion',
+        finish: 'Acabado',
+        colors: 'Colores',
+        hull: 'Quilla',
+        deck: 'Cubierta',
+        doors: 'Tapas',
+        antiskid: 'Antideslizante',
+        selectedAccessories: 'Accesorios seleccionados',
+        none: 'Ninguno',
+        total: 'Total configuracion',
+        footer: 'Imagenes y especificaciones son orientativas. Precios sujetos a cambios.',
+        filePrefix: 'pedido',
+        emailSubject: 'Pedido de configuracion',
+        customer: 'Cliente',
+        name: 'Nombre',
+        surname: 'Apellido',
+        phone: 'Telefono',
+        address: 'Direccion',
+        city: 'Ciudad',
+        zip: 'CP',
+        notes: 'Notas',
+        emailRequired: 'Introduce un correo electronico valido.',
+        sending: 'Enviando...',
+        sentOk: 'Pedido enviado correctamente. Te contactaremos pronto.',
+        sentErr: 'Error al enviar el pedido. Puedes descargar el PDF e intentarlo de nuevo.'
+      },
+      zh: {
+        saved: '\u5df2\u4fdd\u5b58',
+        customConfig: '\u4e2a\u6027\u5316\u914d\u7f6e',
+        config: '\u914d\u7f6e',
+        finish: '\u5de5\u827a',
+        colors: '\u989c\u8272',
+        hull: '\u8239\u4f53',
+        deck: '\u7532\u677f',
+        doors: '\u8231\u76d6',
+        antiskid: '\u9632\u6ed1',
+        selectedAccessories: '\u5df2\u9009\u914d\u4ef6',
+        none: '\u65e0',
+        total: '\u914d\u7f6e\u603b\u4ef7',
+        footer: '\u56fe\u7247\u4e0e\u53c2\u6570\u4ec5\u4f9b\u53c2\u8003\uff0c\u4ef7\u683c\u53ef\u80fd\u53d8\u52a8\u3002',
+        filePrefix: 'order',
+        emailSubject: '\u914d\u7f6e\u8ba2\u5355',
+        customer: '\u5ba2\u6237',
+        name: '\u540d',
+        surname: '\u59d3',
+        phone: '\u7535\u8bdd',
+        address: '\u5730\u5740',
+        city: '\u57ce\u5e02',
+        zip: '\u90ae\u7f16',
+        notes: '\u5907\u6ce8',
+        emailRequired: '\u8bf7\u8f93\u5165\u6709\u6548\u90ae\u7bb1\u5730\u5740\u3002',
+        sending: '\u53d1\u9001\u4e2d...',
+        sentOk: '\u8ba2\u5355\u53d1\u9001\u6210\u529f\uff0c\u6211\u4eec\u4f1a\u5c3d\u5feb\u8054\u7cfb\u60a8\u3002',
+        sentErr: '\u8ba2\u5355\u53d1\u9001\u5931\u8d25\uff0c\u53ef\u4e0b\u8f7dPDF\u540e\u91cd\u8bd5\u3002'
+      },
+      it: {
+        saved: 'Salvato',
+        customConfig: 'Configurazione personalizzata',
+        config: 'Configurazione',
+        finish: 'Finitura',
+        colors: 'Colori',
+        hull: 'Chiglia',
+        deck: 'Ponte',
+        doors: 'Portelli',
+        antiskid: 'Antiscivolo',
+        selectedAccessories: 'Accessori selezionati',
+        none: 'Nessuno',
+        total: 'Totale configurazione',
+        footer: 'Immagini e specifiche sono indicative. Prezzi soggetti a variazione.',
+        filePrefix: 'ordine',
+        emailSubject: 'Ordine configurazione',
+        customer: 'Cliente',
+        name: 'Nome',
+        surname: 'Cognome',
+        phone: 'Telefono',
+        address: 'Indirizzo',
+        city: 'Citta',
+        zip: 'CAP',
+        notes: 'Note',
+        emailRequired: 'Inserisci un indirizzo email valido.',
+        sending: 'Invio...',
+        sentOk: 'Ordine inviato correttamente. Ti contatteremo a breve.',
+        sentErr: 'Errore invio ordine. Puoi scaricare il PDF e riprovare.'
+      }
     };
+    return map[currentLang] || map.it;
   }
 
         function getEmailPayloadForTemplate(payload, assets = {}, includeImages = true){
@@ -6568,7 +6950,7 @@ function getColorsSummary(){
     const finitura = typeof getFinishLabel === 'function' ? getFinishLabel() : payload.finish;
     const antiskid = typeof getAntiskidLabel === 'function' ? getAntiskidLabel() : payload.antiskid;
     const now = new Date();
-    const locale = currentLang === 'en' ? 'en-US' : 'it-IT';
+    const locale = LOCALE_BY_LANG[currentLang] || 'it-IT';
     const date = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
     const imgMain = includeImages ? (assets.img_main || '') : '';
     const imgTop = includeImages ? (assets.img_top_right || '') : '';
@@ -6945,7 +7327,7 @@ function downloadScreenshot(){
     }
 
     const now = new Date();
-    const locale = currentLang === 'en' ? 'en-US' : 'it-IT';
+    const locale = LOCALE_BY_LANG[currentLang] || 'it-IT';
     const dateStr = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
 
     // Header
@@ -7113,6 +7495,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     if(orderConfirm){
       orderConfirm.addEventListener('click', async () => {
+        playUiSound(sounds.confirm);
         const t = getExportI18n();
         const payload = prepareOrderPayload();
         if(!payload.customer.email || !payload.customer.email.includes('@')){
@@ -7186,7 +7569,9 @@ ${t.notes}: ${payload.customer.note}`;
     const currencyToggleBtn = document.getElementById('currency-toggle');
     if(langToggleBtn){
       langToggleBtn.addEventListener('click', () => {
-        setLanguage(currentLang === 'it' ? 'en' : 'it');
+        const idx = LANG_SEQUENCE.indexOf(currentLang);
+        const next = LANG_SEQUENCE[(idx + 1) % LANG_SEQUENCE.length];
+        setLanguage(next);
       });
     }
     if(currencyToggleBtn){
