@@ -1396,7 +1396,7 @@ cursor: pointer;
       align-items: center;
       justify-content: center;
       background: rgba(0,0,0,0.7);
-      z-index: 20;
+      z-index: 12050;
     }
     #order-modal.is-open { display: flex; }
     .order-dialog {
@@ -3807,7 +3807,7 @@ const accessoryDeps = {
   let currentStep = 'finitura';
   let currentLang = 'it';
   let currentCurrency = 'EUR';
-  const NEXT_BTN_IDLE_MS = 5000;
+  const NEXT_BTN_IDLE_MS = 2000;
   let nextBtnIdleInterval = null;
   let lastUserActivityTs = Date.now();
   let lastPointerMoveActivityTs = 0;
