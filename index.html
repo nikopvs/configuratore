@@ -87,6 +87,22 @@
       overflow: visible;
       position: relative;
     }
+    body.full-page-mode {
+      overflow: hidden;
+    }
+    body.full-page-mode #viewer {
+      width: 100vw !important;
+      height: 100vh !important;
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 1000 !important;
+      border-radius: 0 !important;
+      margin: 0 !important;
+      max-width: none !important;
+    }
+    body.full-page-mode .home-link {
+      display: none !important;
+    }
 
     @media (max-width: 900px) {
       body {
@@ -242,6 +258,17 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+    @media (max-width: 900px) {
+      #loading-intro-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+      }
+      #loading-intro-video {
+        object-fit: contain;
+      }
     }
     #loading-text,
     #loading-bar {
@@ -1075,41 +1102,121 @@ cursor: pointer;
     .controls-overlay.is-hidden {
       opacity: 0;
     }
-#screenshot-btn {
+    #top-actions-right {
       position: absolute;
       top: 12px;
-      right: 78px;
-      left: auto;
+      right: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      z-index: 8;
+    }
+#screenshot-btn {
+      position: static;
       background: transparent;
-      border: 1px solid rgba(255,255,255,0.22);
-      padding: 6px 10px;
-      font-size: 11px;
-      letter-spacing: 0.42px;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 0.4px;
       text-transform: uppercase;
       color: #ffffff;
-      border-radius: 999px;
-      backdrop-filter: blur(2px);
+      line-height: 1;
+      min-width: 0;
     }
     #rx-btn {
-      position: absolute;
-      top: 12px;
-      right: 144px;
-      left: auto;
+      position: static;
       background: transparent;
-      border: 1px solid rgba(255,255,255,0.22);
-      padding: 6px 10px;
-      font-size: 11px;
-      letter-spacing: 0.42px;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 0.4px;
       text-transform: uppercase;
-      color: #7CFF00;
-      border-radius: 999px;
-      backdrop-filter: blur(2px);
+      color: #ffffff;
+      line-height: 1;
+      min-width: 0;
+      display: none;
+    }
+    #solo-skiff-btn {
+      position: static;
+      background: transparent;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: #ffffff;
+      line-height: 1;
+      min-width: 0;
+      display: none;
+    }
+    #rotate-btn {
+      position: static;
+      background: transparent;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: #ffffff;
+      line-height: 1;
+      min-width: 0;
       display: none;
     }
     #rx-btn.is-active {
-      color: #7CFF00;
-      border-color: rgba(124,255,0,0.72);
+      color: #00d4ff;
+      text-decoration: underline;
+      text-underline-offset: 2px;
       background: transparent;
+    }
+    #full-btn.is-active {
+      color: #00d4ff;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      background: transparent;
+    }
+    #solo-skiff-btn.is-active,
+    #rotate-btn.is-active {
+      color: #00d4ff;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      background: transparent;
+    }
+    body.solo-skiff-mode #viewer-ui .top > :not(#top-actions-right) {
+      display: none !important;
+    }
+    body.solo-skiff-mode #viewer-ui .top > #top-actions-right > #audio-toggle,
+    body.solo-skiff-mode #viewer-ui .top > #top-actions-right > #screenshot-btn,
+    body.solo-skiff-mode #viewer-ui .top > #top-actions-right > #full-btn,
+    body.solo-skiff-mode #viewer-ui .top > #top-actions-right > #rx-btn,
+    body.solo-skiff-mode #viewer-ui .top > #top-actions-right > #solo-skiff-btn,
+    body.solo-skiff-mode #viewer-ui .top > #top-actions-right > #rotate-btn {
+      display: inline-block !important;
+    }
+    body.solo-skiff-mode #viewer-ui .bottom,
+    body.solo-skiff-mode #viewer-ui .back-btn,
+    body.solo-skiff-mode #viewer-ui .next-btn,
+    body.solo-skiff-mode #controls-overlay,
+    body.solo-skiff-mode #interact-hint,
+    body.solo-skiff-mode #interact-hints,
+    body.solo-skiff-mode #info-panel,
+    body.solo-skiff-mode .home-link {
+      display: none !important;
+    }
+    body.solo-skiff-mode.step-accessori #viewer-ui .back-btn,
+    body.solo-skiff-mode.step-accessori #viewer-ui .next-btn,
+    #viewer.solo-skiff-mode.step-accessori #viewer-ui .back-btn,
+    #viewer.solo-skiff-mode.step-accessori #viewer-ui .next-btn {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+    body.finish-menu-open #step-finitura,
+    #viewer.finish-menu-open #step-finitura {
+      transform: none !important;
     }
     #live-summary {
       position: absolute;
@@ -1159,86 +1266,113 @@ cursor: pointer;
       top: 12px;
       left: 12px;
       right: auto;
-      display: inline-flex;
-      gap: 8px;
+      display: flex;
       z-index: 7;
       align-items: center;
     }
     .currency-switch {
       position: absolute;
       top: 12px;
-      left: 96px;
-      display: inline-flex;
-      gap: 8px;
+      left: 54px;
+      display: flex;
       z-index: 7;
       align-items: center;
     }
-    @media (min-width: 901px) {
-      .currency-switch::before {
-        content: "-";
-        position: absolute;
-        left: -24px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: rgba(255,255,255,0.75);
-        font-size: 11px;
-        line-height: 1;
-        pointer-events: none;
-      }
-    }
-    .lang-btn {
+    .icon-toggle-btn {
       background: transparent;
-      border: none;
+      border: 1px solid #ffffff;
       color: #ffffff;
       padding: 0;
       margin: 0;
-      font-size: 12px;
-      letter-spacing: 0.4px;
-      text-transform: uppercase;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
       line-height: 1;
-      min-width: 0;
       cursor: pointer;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+      background: rgba(0,0,0,0.25);
     }
-    .currency-btn {
-      background: transparent;
-      border: none;
-      color: #ffffff;
-      padding: 0;
-      margin: 0;
-      font-size: 12px;
-      letter-spacing: 0.4px;
-      text-transform: uppercase;
+    .icon-toggle-btn:hover {
+      border-color: #ffffff;
+      color: #7CFF00;
+      background: rgba(124,255,0,0.1);
+    }
+    .icon-toggle-btn:focus-visible {
+      outline: 2px solid #7CFF00;
+      outline-offset: 2px;
+    }
+    .icon-toggle-btn.is-active {
+      border-color: #ffffff;
+      color: #00d4ff;
+      background: rgba(0,212,255,0.12);
+    }
+    #currency-toggle {
+      color: #ffffff !important;
+      font-size: 21px !important;
+      font-weight: 400;
       line-height: 1;
-      min-width: 0;
-      cursor: pointer;
     }
-    .lang-btn.is-active {
-      color: #00d4ff;
-      text-decoration: underline;
-      text-underline-offset: 2px;
+    #lang-toggle {
+      color: transparent !important;
+      font-size: 0 !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
     }
-    .currency-btn.is-active {
-      color: #00d4ff;
-      text-decoration: underline;
-      text-underline-offset: 2px;
+    #lang-toggle.is-it {
+      background-image: linear-gradient(90deg, #009246 0 33.333%, #ffffff 33.333% 66.666%, #ce2b37 66.666% 100%) !important;
+    }
+    #lang-toggle.is-en {
+      background-image:
+        linear-gradient(26.5deg, transparent 47%, #c8102e 47% 53%, transparent 53%),
+        linear-gradient(-26.5deg, transparent 47%, #c8102e 47% 53%, transparent 53%),
+        linear-gradient(90deg, transparent 44%, #c8102e 44% 56%, transparent 56%),
+        linear-gradient(0deg, transparent 44%, #c8102e 44% 56%, transparent 56%),
+        linear-gradient(26.5deg, transparent 44%, #ffffff 44% 56%, transparent 56%),
+        linear-gradient(-26.5deg, transparent 44%, #ffffff 44% 56%, transparent 56%),
+        linear-gradient(90deg, transparent 38%, #ffffff 38% 62%, transparent 62%),
+        linear-gradient(0deg, transparent 38%, #ffffff 38% 62%, transparent 62%),
+        linear-gradient(#012169, #012169) !important;
+    }
+    #lang-toggle:hover,
+    #lang-toggle.is-active {
+      filter: brightness(1.08);
     }
     #audio-toggle {
-      position: absolute;
-      top: 12px;
-      right: 12px;
+      position: static;
       background: transparent;
-      border: 1px solid rgba(255,255,255,0.22);
-      padding: 6px 10px;
-      font-size: 11px;
-      letter-spacing: 0.42px;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 0.4px;
       text-transform: uppercase;
       color: #ffffff;
-      border-radius: 999px;
-      backdrop-filter: blur(2px);
+      line-height: 1;
+      min-width: 0;
+    }
+    #full-btn {
+      position: static;
+      background: transparent;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: #ffffff;
+      line-height: 1;
+      min-width: 0;
     }
     #audio-toggle.is-muted {
-      color: #ffb3b3;
-      border-color: rgba(255,179,179,0.62);
+      color: #00d4ff;
+      text-decoration: underline;
+      text-underline-offset: 2px;
       background: transparent;
     }
 
@@ -1293,14 +1427,17 @@ cursor: pointer;
 
     @media (max-width: 900px) {
       .controls-overlay { font-size: 17px; }
-      #audio-toggle { top: 8px; right: 8px; left: auto; padding: 6px 8px; font-size: 11px; }
-      .lang-switch { top: 8px; left: 10px; right: auto; gap: 4px; flex-direction: column; align-items: flex-start; }
-      .currency-switch { top: 8px; left: 44px; right: auto; gap: 4px; flex-direction: column; align-items: flex-start; }
-      .lang-btn { font-size: 10px; }
-      .currency-btn { font-size: 10px; }
+      #top-actions-right { top: 8px; right: 8px; gap: 10px; }
+      #audio-toggle { padding: 0; font-size: 10px; }
+      #full-btn { padding: 0; font-size: 10px; }
+      .lang-switch { top: 8px; left: 10px; right: auto; }
+      .currency-switch { top: 8px; left: 48px; right: auto; }
+      .icon-toggle-btn { width: 30px; height: 30px; font-size: 14px; }
 #order-btn { top: 8px; right: 8px; padding: 6px 8px; font-size: 11px; }
-      #screenshot-btn { top: 8px; right: 68px; left: auto; padding: 6px 8px; font-size: 11px; }
-      #rx-btn { top: 8px; right: 124px; left: auto; padding: 6px 8px; font-size: 11px; }
+      #screenshot-btn { padding: 0; font-size: 10px; }
+      #rx-btn { padding: 0; font-size: 10px; }
+      #solo-skiff-btn { padding: 0; font-size: 10px; }
+      #rotate-btn { padding: 0; font-size: 10px; }
       #live-summary { top: 136px; left: 8px; }
     }
   
@@ -1475,15 +1612,15 @@ cursor: pointer;
     #viewer-ui .next-btn::after { display: none !important; content: none !important; }
     #viewer-ui .back-btn {
       left: 0 !important;
-      color: #7fd6ff !important;
-      border: 1px solid rgba(127,214,255,0.9) !important;
+      color: #7CFF00 !important;
+      border: 1px solid rgba(255,255,255,0.9) !important;
       transform: translateY(-50%) !important;
       border-radius: 0 999px 999px 0 !important;
       border-left: none !important;
     }
     #viewer-ui .next-btn {
       right: 0 !important;
-      color: #ffffff !important;
+      color: #7CFF00 !important;
       border: 1px solid rgba(255,255,255,0.9) !important;
       transform: translateY(-50%) !important;
       border-radius: 999px 0 0 999px !important;
@@ -1565,15 +1702,17 @@ cursor: pointer;
         background: #060c12 !important;
       }
       #step-finitura .finish-choice-dropdown.is-open .choice-menu {
+        display: flex !important;
         position: fixed !important;
         left: 50% !important;
-        top: 20% !important;
+        top: auto !important;
         right: auto !important;
-        bottom: auto !important;
-        transform: translate(-50%, -50%) !important;
+        bottom: 110px !important;
+        margin-top: 0 !important;
+        transform: translateX(-50%) !important;
         width: min(320px, calc(100vw - 24px)) !important;
         max-width: calc(100vw - 24px) !important;
-        max-height: min(70vh, 520px) !important;
+        max-height: min(68vh, 520px) !important;
         overflow-y: auto !important;
         overflow-x: hidden !important;
         z-index: 9505 !important;
@@ -1808,14 +1947,162 @@ cursor: pointer;
       }
     }
 
+    /* Minimal layout refinement: live summary + nav arrows */
+    #live-summary {
+      top: 58px !important;
+      left: 10px !important;
+      width: min(260px, calc(100vw - 24px)) !important;
+      padding: 4px 6px !important;
+      font-size: 12px !important;
+      line-height: 1.25 !important;
+    }
+    #live-summary .live-summary-title {
+      margin: 0 0 2px 0 !important;
+      font-size: 12px !important;
+      letter-spacing: 0.05em !important;
+    }
+    #live-summary ul {
+      gap: 2px !important;
+    }
+
+    #viewer-ui .back-btn,
+    #viewer-ui .next-btn {
+      position: absolute !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      width: 34px !important;
+      height: 28px !important;
+      min-width: 34px !important;
+      min-height: 28px !important;
+      border: none !important;
+      background: transparent !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+    }
+    #viewer-ui .back-btn .nav-label,
+    #viewer-ui .next-btn .nav-label {
+      display: none !important;
+    }
+    body.step-accessori #viewer-ui .next-btn .nav-label,
+    #viewer.step-accessori #viewer-ui .next-btn .nav-label {
+      display: inline !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      color: #7CFF00 !important;
+      letter-spacing: 0.2px !important;
+    }
+    #viewer-ui .back-btn::before,
+    #viewer-ui .next-btn::before {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -52%);
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 300;
+      color: #7CFF00;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.35);
+    }
+    #viewer-ui .back-btn::before { content: '\2039'; }
+    #viewer-ui .next-btn::before { content: '\203A'; }
+    #viewer-ui .back-btn {
+      left: 2px !important;
+      right: auto !important;
+      border-radius: 0 !important;
+      border-left: none !important;
+    }
+    #viewer-ui .next-btn {
+      right: 2px !important;
+      left: auto !important;
+      border-radius: 0 !important;
+      border-right: none !important;
+    }
+    body.step-accessori #viewer-ui .next-btn::before,
+    #viewer.step-accessori #viewer-ui .next-btn::before {
+      display: none !important;
+      content: none !important;
+    }
+    body.step-accessori #viewer-ui .next-btn,
+    #viewer.step-accessori #viewer-ui .next-btn {
+      width: auto !important;
+      min-width: 58px !important;
+      padding: 0 8px !important;
+    }
+    #viewer-ui .next-btn.is-idle-pulse {
+      border-color: rgba(124,255,0,0.95) !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+    #viewer-ui .next-btn.is-idle-pulse::after {
+      content: '' !important;
+      display: block !important;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0.6);
+      background: transparent;
+      border: 2px solid rgba(124,255,0,0.95);
+      opacity: 0;
+      animation: nextIdleRing 1.4s ease-out infinite;
+      pointer-events: none;
+    }
+    @keyframes nextIdleRing {
+      0% {
+        transform: translate(-50%, -50%) scale(0.6);
+        opacity: 0;
+      }
+      20% {
+        opacity: 0.95;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1.6);
+        opacity: 0;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #viewer-ui .next-btn.is-idle-pulse {
+        animation: none !important;
+      }
+      #viewer-ui .next-btn.is-idle-pulse::after {
+        animation: none !important;
+      }
+    }
+
+    @media (max-width: 900px) {
+      #live-summary {
+        top: 146px !important;
+        left: 8px !important;
+        width: min(240px, calc(100vw - 18px)) !important;
+        font-size: 9px !important;
+      }
+      #live-summary .live-summary-title {
+        font-size: 9px !important;
+      }
+      #viewer-ui .back-btn,
+      #viewer-ui .next-btn {
+        width: 30px !important;
+        height: 24px !important;
+        min-width: 30px !important;
+        min-height: 24px !important;
+      }
+      #viewer-ui .back-btn::before,
+      #viewer-ui .next-btn::before {
+        font-size: 20px;
+      }
+    }
+
     @media (max-width: 640px) {
       #viewer { height: 85vh; }
       #step-accessori { grid-template-columns: 1fr; }
       #live-summary {
-        top: 136px;
-        left: 8px;
-        width: min(320px, calc(100vw - 20px));
-        font-size: 10px;
+        top: 146px !important;
+        left: 8px !important;
+        width: min(240px, calc(100vw - 18px)) !important;
+        font-size: 9px !important;
       }
     }
 </style>
@@ -1838,18 +2125,23 @@ cursor: pointer;
   <div id="interact-hints" aria-hidden="true"></div>
   <div id="viewer-ui">
     <div class="top">
-      <h1>FISHER 40</h1>
+      <h1>FISHER 4.0</h1>
       <div id="step-subtitle-row">
         <button id="step-subtitle-info" class="info-pill" type="button" data-info-key="finitura" data-info-dynamic="step" aria-label="Info Finitura">i</button>
         <div id="step-subtitle">Finitura</div>
       </div>
       <div id="price-tag">&euro; 6.000</div>
-      <div id="lang-switch" class="lang-switch" aria-label="Language selector"><button id="lang-it" class="lang-btn is-active" type="button">IT</button><button id="lang-en" class="lang-btn" type="button">EN</button></div>
-      <div id="currency-switch" class="currency-switch" aria-label="Currency selector"><button id="currency-eur" class="currency-btn is-active" type="button">EUR</button><button id="currency-usd" class="currency-btn" type="button">USD</button></div>
-      <button id="audio-toggle" type="button" aria-pressed="false">MUTO</button>
+      <div id="lang-switch" class="lang-switch" aria-label="Language selector"><button id="lang-toggle" class="icon-toggle-btn is-it" type="button" aria-label="Lingua" title="Lingua"></button></div>
+      <div id="currency-switch" class="currency-switch" aria-label="Currency selector"><button id="currency-toggle" class="icon-toggle-btn" type="button" aria-label="Valuta" title="Valuta">€</button></div>
+      <div id="top-actions-right">
+        <button id="screenshot-btn" type="button" title="Salva screenshot">FOTO</button>
+        <button id="audio-toggle" type="button" aria-pressed="false">MUTO</button>
+        <button id="rotate-btn" type="button" title="Ruota automatica">RUOTA</button>
+        <button id="rx-btn" type="button" title="Vista semitrasparente">RX</button>
+        <button id="solo-skiff-btn" type="button" title="Solo Skiff">SOLO SKIFF</button>
+        <button id="full-btn" type="button" title="Schermo intero" aria-pressed="false">FULL</button>
+      </div>
       <button id="order-btn" type="button" class="is-hidden" style="display:none;">Ordina</button>
-      <button id="screenshot-btn" type="button" title="Salva screenshot">FOTO</button>
-      <button id="rx-btn" type="button" title="Vista semitrasparente">RX</button>
       <div id="live-summary" aria-live="polite" aria-atomic="true"></div>
     </div>
     <div id="controls-overlay" class="controls-overlay">
@@ -2123,7 +2415,10 @@ Each choice is updated in real time and made interactive in the 3D view so you c
     if(currentLang === 'en' && INFO_CONTENT_EN[k]) return INFO_CONTENT_EN[k];
     return INFO_CONTENT[k] || null;
   }
-    let deckTransparent = false;
+  let deckTransparent = false;
+  let soloSkiffMode = false;
+  let manualCameraRotate = false;
+  let fullPageMode = false;
   let deckRxSavedAntiskid = 'none';
   let pancaArrowFrontEl = null;
   let pancaArrowRearEl = null;
@@ -3007,7 +3302,7 @@ const accessoryDeps = {
     const nextBtn = document.querySelector('#viewer-ui .next-btn .nav-label');
     if(nextBtn){
       const dict = I18N[currentLang] || I18N.it;
-      nextBtn.textContent = step === 'accessori' ? dict.end : dict.go;
+      nextBtn.textContent = step === 'accessori' ? 'Fine' : dict.go;
     }
   }
 
@@ -3078,10 +3373,16 @@ const accessoryDeps = {
       const title = getInfoContentForLang(key)?.title || 'Informazioni';
       infoPill.setAttribute('aria-label', `Info ${title}`);
     });
-    const itBtn = document.getElementById('lang-it');
-    const enBtn = document.getElementById('lang-en');
-    if(itBtn) itBtn.classList.toggle('is-active', currentLang === 'it');
-    if(enBtn) enBtn.classList.toggle('is-active', currentLang === 'en');
+    const langToggleBtn = document.getElementById('lang-toggle');
+    if(langToggleBtn){
+      const isIt = currentLang === 'it';
+      langToggleBtn.textContent = '';
+      langToggleBtn.classList.toggle('is-it', isIt);
+      langToggleBtn.classList.toggle('is-en', !isIt);
+      langToggleBtn.classList.toggle('is-active', true);
+      langToggleBtn.setAttribute('title', isIt ? 'Lingua: Italiano (click per English)' : 'Language: English (click for Italiano)');
+      langToggleBtn.setAttribute('aria-label', isIt ? 'Lingua Italiano' : 'Language English');
+    }
     applyCurrencyUI();
     const orderT = dict.orderModal || I18N.it.orderModal;
     const setText = (id, value) => {
@@ -3119,10 +3420,13 @@ const accessoryDeps = {
     applyLanguageUI();
   }
   function applyCurrencyUI(){
-    const eurBtn = document.getElementById('currency-eur');
-    const usdBtn = document.getElementById('currency-usd');
-    if(eurBtn) eurBtn.classList.toggle('is-active', currentCurrency === 'EUR');
-    if(usdBtn) usdBtn.classList.toggle('is-active', currentCurrency === 'USD');
+    const currencyToggleBtn = document.getElementById('currency-toggle');
+    if(!currencyToggleBtn) return;
+    const isEur = currentCurrency === 'EUR';
+    currencyToggleBtn.textContent = isEur ? '€' : '$';
+    currencyToggleBtn.classList.toggle('is-active', true);
+    currencyToggleBtn.setAttribute('title', isEur ? 'Valuta: EUR (click per USD)' : 'Currency: USD (click for EUR)');
+    currencyToggleBtn.setAttribute('aria-label', isEur ? 'Valuta EUR' : 'Currency USD');
   }
   function formatMoney(valueEuro){
     const eur = Number(valueEuro) || 0;
@@ -3503,6 +3807,10 @@ const accessoryDeps = {
   let currentStep = 'finitura';
   let currentLang = 'it';
   let currentCurrency = 'EUR';
+  const NEXT_BTN_IDLE_MS = 5000;
+  let nextBtnIdleInterval = null;
+  let lastUserActivityTs = Date.now();
+  let lastPointerMoveActivityTs = 0;
   const EUR_TO_USD = 1.1;
   const I18N = {
     it: {
@@ -3907,6 +4215,10 @@ function updatePrice(){
     document.body.classList.toggle('step-colori', step === 'colori');
     document.body.classList.toggle('step-accessori', step === 'accessori');
     currentStep = step;
+    if(step !== 'accessori'){
+      if(soloSkiffMode) setSoloSkiffMode(false);
+      if(manualCameraRotate) setManualCameraRotate(false);
+    }
     syncTrollingAutoOrbit();
     if(step !== 'colori'){
       document.body.classList.remove('color-menu-open');
@@ -3919,6 +4231,8 @@ function updatePrice(){
       setDeckTransparency(false);
     }
     updateRxButtonState();
+    renderLiveSummary();
+    resetNextNavIdlePulse();
   }
 
   const WRAPPING_TEXTURE_OPTIONS = [
@@ -5423,6 +5737,14 @@ function renderFinishSelect(){
     dropdown.appendChild(menu);
 
     const optionButtons = new Map();
+    const syncFinishMenuOpenState = () => {
+      const isOpen = dropdown.classList.contains('is-open');
+      document.body.classList.toggle('finish-menu-open', isOpen);
+      const viewerEl = document.getElementById('viewer');
+      if(viewerEl){
+        viewerEl.classList.toggle('finish-menu-open', isOpen);
+      }
+    };
     const syncFromSelect = () => {
       const selectedOpt = select.selectedOptions && select.selectedOptions[0];
       const selectedValue = selectedOpt?.value || '';
@@ -5437,6 +5759,7 @@ function renderFinishSelect(){
       dropdown.classList.toggle('is-disabled', disabled);
       if(disabled){
         dropdown.classList.remove('is-open');
+        syncFinishMenuOpenState();
       }
     };
 
@@ -5446,6 +5769,7 @@ function renderFinishSelect(){
         select.value = value;
         select.dispatchEvent(new Event('change'));
         dropdown.classList.remove('is-open');
+        syncFinishMenuOpenState();
       });
       optionButtons.set(value, btn);
       menu.appendChild(btn);
@@ -5463,11 +5787,13 @@ function renderFinishSelect(){
       if(select.disabled) return;
       updateChoiceDropdownDirection(dropdown);
       dropdown.classList.toggle('is-open');
+      syncFinishMenuOpenState();
     });
 
     const onDocPointer = (ev) => {
       if(!dropdown.contains(ev.target)){
         dropdown.classList.remove('is-open');
+        syncFinishMenuOpenState();
       }
     };
     document.addEventListener('pointerdown', onDocPointer);
@@ -5483,6 +5809,7 @@ function renderFinishSelect(){
       select.value = selectedFinish;
     }
 
+    syncFinishMenuOpenState();
     syncFromSelect();
     syncDisabledState();
     container.appendChild(select);
@@ -5759,7 +6086,7 @@ function renderFinishSelect(){
 
   function syncTrollingAutoOrbit(){
     if(!controls) return;
-    controls.autoRotate = shouldTrollingAutoOrbit();
+    controls.autoRotate = shouldTrollingAutoOrbit() || manualCameraRotate;
   }
 
   function inferSpinAxisForMesh(mesh){
@@ -5862,11 +6189,79 @@ function renderFinishSelect(){
 
   function updateRxButtonState(){
     const btn = document.getElementById('rx-btn');
-    if(!btn) return;
+    const soloBtn = document.getElementById('solo-skiff-btn');
+    const rotateBtn = document.getElementById('rotate-btn');
     const show = currentStep === 'accessori';
-    btn.style.display = show ? 'inline-block' : 'none';
-    btn.classList.toggle('is-active', show && deckTransparent);
-    btn.setAttribute('aria-pressed', String(show && deckTransparent));
+    if(btn){
+      btn.style.display = show ? 'inline-block' : 'none';
+      btn.classList.toggle('is-active', show && deckTransparent);
+      btn.setAttribute('aria-pressed', String(show && deckTransparent));
+    }
+    if(soloBtn){
+      soloBtn.style.display = show ? 'inline-block' : 'none';
+      soloBtn.classList.toggle('is-active', show && soloSkiffMode);
+      soloBtn.setAttribute('aria-pressed', String(show && soloSkiffMode));
+    }
+    if(rotateBtn){
+      rotateBtn.style.display = show ? 'inline-block' : 'none';
+      rotateBtn.classList.toggle('is-active', show && manualCameraRotate);
+      rotateBtn.setAttribute('aria-pressed', String(show && manualCameraRotate));
+    }
+  }
+
+  function updateFullscreenButtonState(){
+    const btn = document.getElementById('full-btn');
+    if(!btn) return;
+    btn.classList.toggle('is-active', fullPageMode);
+    btn.setAttribute('aria-pressed', String(fullPageMode));
+  }
+
+  function setFullPageMode(enabled){
+    fullPageMode = Boolean(enabled);
+    document.body.classList.toggle('full-page-mode', fullPageMode);
+    updateFullscreenButtonState();
+    applyMobileRotate();
+  }
+
+  function toggleViewerFullscreen(){
+    setFullPageMode(!fullPageMode);
+  }
+
+  function setSoloSkiffMode(enabled){
+    const next = Boolean(enabled);
+    soloSkiffMode = next;
+    document.body.classList.toggle('solo-skiff-mode', next);
+    const viewerEl = document.getElementById('viewer');
+    if(viewerEl){
+      viewerEl.classList.toggle('solo-skiff-mode', next);
+    }
+    updateRxButtonState();
+  }
+
+  function toggleSoloSkiffMode(){
+    setSoloSkiffMode(!soloSkiffMode);
+  }
+
+  function setManualCameraRotate(enabled){
+    const next = Boolean(enabled);
+    if(next){
+      const trollingChecked = Boolean(document.querySelector('#step-accessori input[data-accessory="trolling"]')?.checked);
+      if(trollingChecked && !trollingDeployed){
+        window.setTrollingDeployState(true);
+      }
+    }else{
+      const trollingChecked = Boolean(document.querySelector('#step-accessori input[data-accessory="trolling"]')?.checked);
+      if(trollingChecked && trollingDeployed){
+        window.setTrollingDeployState(false);
+      }
+    }
+    manualCameraRotate = next;
+    syncTrollingAutoOrbit();
+    updateRxButtonState();
+  }
+
+  function toggleManualCameraRotate(){
+    setManualCameraRotate(!manualCameraRotate);
   }
 
   function setDeckTransparency(enabled){
@@ -6035,14 +6430,59 @@ function getColorsSummary(){
     const el = document.getElementById('price-tag');
     return el ? el.textContent.trim() : '';
   }
+  function getNextNavButton(){
+    return document.querySelector('#viewer-ui .next-btn');
+  }
+  function isNextNavPulseEligible(){
+    const btn = getNextNavButton();
+    if(!btn) return false;
+    if(btn.classList.contains('is-hidden') || btn.classList.contains('is-disabled')) return false;
+    const cs = window.getComputedStyle(btn);
+    if(cs.display === 'none' || cs.visibility === 'hidden' || cs.pointerEvents === 'none') return false;
+    return true;
+  }
+  function setNextNavPulse(active){
+    const btn = getNextNavButton();
+    if(!btn) return;
+    btn.classList.toggle('is-idle-pulse', Boolean(active));
+  }
+  function ensureNextNavIdleWatcher(){
+    if(nextBtnIdleInterval) return;
+    nextBtnIdleInterval = setInterval(() => {
+      const idleMs = Date.now() - lastUserActivityTs;
+      const shouldPulse = idleMs >= NEXT_BTN_IDLE_MS && isNextNavPulseEligible();
+      setNextNavPulse(shouldPulse);
+    }, 250);
+  }
+  function resetNextNavIdlePulse(){
+    lastUserActivityTs = Date.now();
+    setNextNavPulse(false);
+    ensureNextNavIdleWatcher();
+  }
+  function handleUserActivity(){
+    resetNextNavIdlePulse();
+  }
+  function handlePointerMoveActivity(){
+    const now = performance.now();
+    if(now - lastPointerMoveActivityTs < 200) return;
+    lastPointerMoveActivityTs = now;
+    resetNextNavIdlePulse();
+  }
   function renderLiveSummary(){
     if(!liveSummaryEl) return;
+    const showSummary = currentStep === 'colori' || currentStep === 'accessori';
+    if(!showSummary){
+      liveSummaryEl.style.display = 'none';
+      liveSummaryEl.innerHTML = '';
+      return;
+    }
+    liveSummaryEl.style.display = 'block';
     const isEn = currentLang === 'en';
     const t = isEn
       ? { finish: 'Finish', colors: 'Colors', antiskid: 'Antiskid', accessories: 'Accessories' }
       : { finish: 'Finitura', colors: 'Colori', antiskid: 'Antiscivolo', accessories: 'Accessori' };
     const livePrice = getPriceSummary();
-    const liveTitle = livePrice || '';
+    const liveTitle = livePrice ? `${isEn ? 'Summary' : 'Riepilogo'} ${livePrice}` : (isEn ? 'Summary' : 'Riepilogo');
     const rows = [];
     if(selectedFinish){
       rows.push(`<li><b>${t.finish}:</b> ${getFinishLabel()}</li>`);
@@ -6538,7 +6978,7 @@ function downloadScreenshot(){
     // Title
     doc.setTextColor(20);
     doc.setFontSize(24);
-    doc.text('FISHER 40', margin, 34);
+    doc.text('FISHER 4.0', margin, 34);
     doc.setFontSize(12);
     doc.text(t.customConfig, margin, 41);
 
@@ -6725,9 +7165,15 @@ ${t.notes}: ${payload.customer.note}`;
     resetAccessoryUI();
     const audioBtn = document.getElementById('audio-toggle');
     const screenshotBtn = document.getElementById('screenshot-btn');
+    const fullBtn = document.getElementById('full-btn');
     if(screenshotBtn){
       screenshotBtn.addEventListener('click', () => {
         downloadScreenshot();
+      });
+    }
+    if(fullBtn){
+      fullBtn.addEventListener('click', () => {
+        toggleViewerFullscreen();
       });
     }
     if(audioBtn){
@@ -6736,21 +7182,17 @@ ${t.notes}: ${payload.customer.note}`;
       });
       setAudioEnabled(audioEnabled, false);
     }
-    const langItBtn = document.getElementById('lang-it');
-    const langEnBtn = document.getElementById('lang-en');
-    const currencyEurBtn = document.getElementById('currency-eur');
-    const currencyUsdBtn = document.getElementById('currency-usd');
-    if(langItBtn){
-      langItBtn.addEventListener('click', () => setLanguage('it'));
+    const langToggleBtn = document.getElementById('lang-toggle');
+    const currencyToggleBtn = document.getElementById('currency-toggle');
+    if(langToggleBtn){
+      langToggleBtn.addEventListener('click', () => {
+        setLanguage(currentLang === 'it' ? 'en' : 'it');
+      });
     }
-    if(langEnBtn){
-      langEnBtn.addEventListener('click', () => setLanguage('en'));
-    }
-    if(currencyEurBtn){
-      currencyEurBtn.addEventListener('click', () => setCurrency('EUR'));
-    }
-    if(currencyUsdBtn){
-      currencyUsdBtn.addEventListener('click', () => setCurrency('USD'));
+    if(currencyToggleBtn){
+      currencyToggleBtn.addEventListener('click', () => {
+        setCurrency(currentCurrency === 'EUR' ? 'USD' : 'EUR');
+      });
     }
     applyLanguageUI();
     const rxBtn = document.getElementById('rx-btn');
@@ -6760,6 +7202,29 @@ ${t.notes}: ${payload.customer.note}`;
         toggleDeckTransparency();
       });
     }
+    const soloSkiffBtn = document.getElementById('solo-skiff-btn');
+    if(soloSkiffBtn){
+      soloSkiffBtn.addEventListener('click', () => {
+        if(currentStep !== 'accessori') return;
+        toggleSoloSkiffMode();
+      });
+    }
+    const rotateBtn = document.getElementById('rotate-btn');
+    if(rotateBtn){
+      rotateBtn.addEventListener('click', () => {
+        if(currentStep !== 'accessori') return;
+        toggleManualCameraRotate();
+      });
+    }
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && soloSkiffMode){
+        setSoloSkiffMode(false);
+      }
+      if(e.key === 'Escape' && fullPageMode){
+        setFullPageMode(false);
+      }
+    });
+    updateFullscreenButtonState();
     updateRxButtonState();
 
     const infoPanel = document.getElementById('info-panel');
@@ -6815,6 +7280,10 @@ ${t.notes}: ${payload.customer.note}`;
     });
     applyInteractionScheme();
     applyFramingForViewport(true);
+    document.addEventListener('pointerdown', handleUserActivity);
+    document.addEventListener('keydown', handleUserActivity);
+    document.addEventListener('wheel', handleUserActivity, { passive: true });
+    document.addEventListener('touchstart', handleUserActivity, { passive: true });
     const viewer = document.getElementById('viewer');
     if(interactHint){
       interactHint.addEventListener('pointerdown', (e) => e.stopPropagation());
@@ -6827,6 +7296,7 @@ ${t.notes}: ${payload.customer.note}`;
     }
     if(viewer){
       let pointerDownPos = null;
+      viewer.addEventListener('pointermove', handlePointerMoveActivity);
       viewer.addEventListener('pointerdown', () => {
         pointerDownPos = null;
         unlockAudio();
@@ -6839,6 +7309,7 @@ ${t.notes}: ${payload.customer.note}`;
       });
       viewer.addEventListener('pointerup', (e) => {
         if(e.target?.closest?.('#viewer-ui')) return;
+        if(soloSkiffMode) return;
         if(!pointerDownPos) return;
         const dx = e.clientX - pointerDownPos.x;
         const dy = e.clientY - pointerDownPos.y;
@@ -6849,6 +7320,7 @@ ${t.notes}: ${payload.customer.note}`;
         tryToggleInteractiveActionFromPointer(e);
       });
     }
+    resetNextNavIdlePulse();
   
   });
 
@@ -6876,6 +7348,7 @@ ${t.notes}: ${payload.customer.note}`;
 
 </body>
 </html>
+
 
 
 
