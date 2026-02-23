@@ -2141,6 +2141,7 @@ Each choice is updated in real time and made interactive in the 3D view so you c
   controls.enablePan = true;
   controls.enableDamping = true;
   controls.autoRotate = false;
+  controls.autoRotateSpeed = 1.1;
   controls.enableZoom = true;
   renderer.domElement.style.touchAction = 'none';
   controls.touches.ONE = THREE.TOUCH.ROTATE;
@@ -2813,6 +2814,13 @@ Each choice is updated in real time and made interactive in the 3D view so you c
   const chirpMeshes = [];
   const trollingMeshes = [];
   const trollingDeployMeshes = [];
+  const trollingPropellerMeshes = [];
+  const TROLLING_PROPELLER_NAMES = new Set([
+    'trolling_deploy001',
+    'trolling_deploy002',
+    'trolling_deploy003',
+    'trolling_deploy005'
+  ]);
   const waterMaskMeshes = [];
   let trollingDeployed = false;
   const accessoryMeshMap = {
@@ -3198,6 +3206,7 @@ const accessoryDeps = {
     scrittaMat = null;
     trollingMeshes.length = 0;
     trollingDeployMeshes.length = 0;
+    trollingPropellerMeshes.length = 0;
     waterMaskMeshes.length = 0;
     modelRoot.traverse(obj => {
       if(obj.isMesh){
@@ -3304,6 +3313,22 @@ const accessoryDeps = {
         }
         if(isTrollingDeploy){
           trollingDeployMeshes.push(obj);
+        }
+
+        const objNameKey = objNameLower.replace(/\./g, '');
+        if(TROLLING_PROPELLER_NAMES.has(objNameKey)){
+          obj.userData.propSpinAxis = inferSpinAxisForMesh(obj);
+          const g = obj.geometry;
+          if(g){
+            if(!g.boundingBox) g.computeBoundingBox();
+            if(g.boundingBox){
+              obj.userData.propSpinCenterLocal = g.boundingBox.getCenter(new THREE.Vector3());
+            }
+          }
+          if(objNameKey === 'trolling_deploy002'){
+            console.log('Trolling_deploy.002 axis inferred:', obj.userData.propSpinAxis);
+          }
+          trollingPropellerMeshes.push(obj);
         }
 
         const groupKey =
@@ -3882,6 +3907,7 @@ function updatePrice(){
     document.body.classList.toggle('step-colori', step === 'colori');
     document.body.classList.toggle('step-accessori', step === 'accessori');
     currentStep = step;
+    syncTrollingAutoOrbit();
     if(step !== 'colori'){
       document.body.classList.remove('color-menu-open');
       const viewerEl = document.getElementById('viewer');
@@ -5692,6 +5718,7 @@ function renderFinishSelect(){
         applyMaterialOverrides(modelRoot);
         applyChirpTextureToMeshes();
       }
+      syncTrollingAutoOrbit();
     }
     if(!silent){
       const sfx = state ? sounds.on : sounds.off;
@@ -5716,12 +5743,100 @@ function renderFinishSelect(){
       trollingDeployed = false;
       trollingMeshes.forEach((m) => m.visible = false);
       trollingDeployMeshes.forEach((m) => m.visible = false);
+      syncTrollingAutoOrbit();
       return;
     }
     trollingDeployed = Boolean(deployed);
     trollingMeshes.forEach((m) => m.visible = !deployed);
     trollingDeployMeshes.forEach((m) => m.visible = deployed);
+    syncTrollingAutoOrbit();
   };
+
+  function shouldTrollingAutoOrbit(){
+    const trollingChecked = Boolean(document.querySelector('#step-accessori input[data-accessory="trolling"]')?.checked);
+    return currentStep === 'accessori' && trollingChecked && trollingDeployed;
+  }
+
+  function syncTrollingAutoOrbit(){
+    if(!controls) return;
+    controls.autoRotate = shouldTrollingAutoOrbit();
+  }
+
+  function inferSpinAxisForMesh(mesh){
+    try{
+      const geom = mesh?.geometry;
+      if(!geom) return 'x';
+      if(!geom.boundingBox) geom.computeBoundingBox();
+      const bb = geom.boundingBox;
+      if(!bb) return 'x';
+      const size = new THREE.Vector3();
+      bb.getSize(size);
+      const sx = Math.abs(size.x * (mesh?.scale?.x || 1));
+      const sy = Math.abs(size.y * (mesh?.scale?.y || 1));
+      const sz = Math.abs(size.z * (mesh?.scale?.z || 1));
+      let axis = 'x';
+      let min = sx;
+      if(sy < min){ min = sy; axis = 'y'; }
+      if(sz < min){ axis = 'z'; }
+      return axis;
+    }catch(_err){
+      return 'x';
+    }
+  }
+
+  function getAxisVector(axis){
+    if(axis === 'y') return new THREE.Vector3(0, 1, 0);
+    if(axis === 'z') return new THREE.Vector3(0, 0, 1);
+    return new THREE.Vector3(1, 0, 0);
+  }
+
+  function rotateMeshAroundWorldAxis(mesh, pivotWorld, axisWorld, angle){
+    if(!mesh) return;
+    const parent = mesh.parent;
+    const worldPos = mesh.getWorldPosition(new THREE.Vector3());
+    const worldQuat = mesh.getWorldQuaternion(new THREE.Quaternion());
+    const worldScale = mesh.getWorldScale(new THREE.Vector3());
+    const rotQ = new THREE.Quaternion().setFromAxisAngle(axisWorld, angle);
+
+    const nextWorldPos = worldPos.sub(pivotWorld).applyQuaternion(rotQ).add(pivotWorld);
+    const nextWorldQuat = rotQ.clone().multiply(worldQuat);
+
+    const worldMat = new THREE.Matrix4().compose(nextWorldPos, nextWorldQuat, worldScale);
+    if(parent){
+      const invParent = new THREE.Matrix4().copy(parent.matrixWorld).invert();
+      const localMat = new THREE.Matrix4().multiplyMatrices(invParent, worldMat);
+      localMat.decompose(mesh.position, mesh.quaternion, mesh.scale);
+    }else{
+      worldMat.decompose(mesh.position, mesh.quaternion, mesh.scale);
+    }
+  }
+
+  function shouldSpinTrollingPropeller(){
+    const trollingChecked = Boolean(document.querySelector('#step-accessori input[data-accessory="trolling"]')?.checked);
+    const deployVisible = trollingDeployMeshes.some((m) => Boolean(m?.visible));
+    return trollingChecked && (trollingDeployed || deployVisible);
+  }
+
+  function spinTrollingPropeller(delta){
+    if(!delta) return;
+    if(!shouldSpinTrollingPropeller()) return;
+    if(!trollingPropellerMeshes.length) return;
+    const speed = 14;
+    const toPropKey = (name) => String(name || '').toLowerCase().replace(/\./g, '');
+    const pivotMesh = trollingPropellerMeshes.find((m) => toPropKey(m?.name) === 'trolling_deploy002')
+      || trollingPropellerMeshes[0];
+    if(!pivotMesh) return;
+    const pivotCenterLocal = pivotMesh.userData?.propSpinCenterLocal || new THREE.Vector3();
+    const pivotWorld = pivotMesh.localToWorld(pivotCenterLocal.clone());
+    const pivotAxisLocal = getAxisVector(pivotMesh.userData?.propSpinAxis || 'x');
+    const pivotAxisWorld = pivotAxisLocal.clone().applyQuaternion(pivotMesh.getWorldQuaternion(new THREE.Quaternion())).normalize();
+    const angle = delta * speed;
+    trollingPropellerMeshes.forEach((mesh) => {
+      if(!mesh || !mesh.visible) return;
+      if(mesh === pivotMesh) return;
+      rotateMeshAroundWorldAxis(mesh, pivotWorld, pivotAxisWorld, angle);
+    });
+  }
 
   function tryToggleTrollingDeployFromPointer(event){
     if(currentStep !== 'accessori') return false;
@@ -6269,16 +6384,18 @@ function openOrderModal(){
     const prevAspect = camera.aspect;
     const prevFov = camera.fov;
     const prevSize = renderer.getSize(new THREE.Vector2());
+    const prevAutoRotate = controls.autoRotate;
     const originalPos = camera.position.clone();
     const originalTarget = controls.target.clone();
     const target = [-0.10810611905192113, -0.167470325414858, -0.13144927171760207];
     const views = [
-      { label: 'Side', pos: [0.0516653740024167, 0.1820664977829592, 0.8294428750065087], target: [-0.05, -0.167470325414858, -0.13144927171760207] },
-      { label: 'Rear', pos: [-0.8191399443716609, 0.1300141316619867, 0.3925348763178731] },
+      { label: 'Side', pos: [0.0516653740024167, 0.2520664977829592, 0.8294428750065087], target: [-0.05, -0.107470325414858, -0.13144927171760207] },
+      { label: 'Rear', pos: [-0.8191399443716609, 0.2100141316619867, 0.3925348763178731], target: [-0.10810611905192113, -0.107470325414858, -0.13144927171760207] },
       { label: 'Top', pos: [0.4912714944470407, 0.4747723290977302, -0.4437419989992951], target: [0.05, -0.08190660770733932, 0.07343899384140155] }
     ];
     const results = [];
     try{
+      controls.autoRotate = false;
       // Force a consistent landscape render target to avoid stretched images on mobile.
       renderer.setPixelRatio(1);
       renderer.setSize(captureWidth, captureHeight, false);
@@ -6300,6 +6417,8 @@ function openOrderModal(){
       camera.updateProjectionMatrix();
       renderer.setPixelRatio(prevPixelRatio);
       renderer.setSize(prevSize.x, prevSize.y, false);
+      controls.autoRotate = prevAutoRotate;
+      syncTrollingAutoOrbit();
       controls.update();
       renderer.render(scene, camera);
     }
@@ -6737,6 +6856,7 @@ ${t.notes}: ${payload.customer.note}`;
     requestAnimationFrame(animate);
     const delta = animationClock.getDelta();
     if(animationMixer) animationMixer.update(delta);
+    spinTrollingPropeller(delta);
     controls.update();
     updateInteractHint();
     updateActionHints();
