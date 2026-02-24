@@ -2307,14 +2307,14 @@ cursor: pointer;
   let interactiveBusy = false;
   const normalizeId = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
   const interactiveDefs = [
-    { id: 'portello_prua', hitTokens: ['portelloprua'], openClips: ['Portello_prua_open'] },
-    { id: 'portello_esa_prua', hitTokens: ['portelloesaprua'], openClips: ['Portello_esa_prua_open'] },
-    { id: 'portello_esa_centro', hitTokens: ['portelloesacentro'], openClips: ['Portello_esa_centro_open'] },
-    { id: 'portello_esa_poppa', hitTokens: ['portelloesapoppa'], openClips: ['Portello_esa_poppa_open'] },
+    { id: 'portello_prua', hitTokens: ['portelloprua'], openClips: ['Portello_prua_open'], actionSoundOpen: 'openDoor', actionSoundClose: 'closeDoors', syncActionToSound: true },
+    { id: 'portello_esa_prua', hitTokens: ['portelloesaprua'], openClips: ['Portello_esa_prua_open'], actionSoundOpen: 'openDoor', actionSoundClose: 'closeDoors', syncActionToSound: true },
+    { id: 'portello_esa_centro', hitTokens: ['portelloesacentro'], openClips: ['Portello_esa_centro_open'], actionSoundOpen: 'openDoor', actionSoundClose: 'closeDoors', syncActionToSound: true },
+    { id: 'portello_esa_poppa', hitTokens: ['portelloesapoppa'], openClips: ['Portello_esa_poppa_open'], actionSoundOpen: 'openDoor', actionSoundClose: 'closeDoors', syncActionToSound: true },
     { id: 'deck_toggle', hitTokens: [] },
-    { id: 'motore', hitTokens: ['fuoribordomotore'], openClips: ['Fuoribordo.motore_alza'], closeClips: ['Fuoribordo.motore_abbassa'], accessoryKey: 'motore' },
+    { id: 'motore', hitTokens: ['fuoribordomotore'], openClips: ['Fuoribordo.motore_alza'], accessoryKey: 'motore', playbackRate: 0.5, actionSound: 'outboardTrim', syncActionToSound: true },
     { id: 'panca', hitTokens: ['panca'], openClips: ['panca_center_rear'], closeClips: ['panca_center_front'], accessoryKey: 'panca' },
-    { id: 'tientibene_f', hitTokens: ['tientibenef', 'tientibene'], openClips: ['Tientibene_close'], accessoryKey: 'tientibene' }
+    { id: 'tientibene_f', hitTokens: ['tientibenef', 'tientibene'], openClips: ['Tientibene_close'], accessoryKey: 'tientibene', actionSoundOpen: 'openDoor', actionSoundClose: 'closeDoors', syncActionToSound: true }
   ];
   let modelAxesHelper = null;
   if(SHOW_DEBUG_AXES){
@@ -2616,7 +2616,7 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
     animationActions.set(key, action);
     return action;
   }
-  function playClipOnce(clip, reverse = false){
+  function playClipOnce(clip, reverse = false, playbackRate = 1){
     if(!animationMixer || !clip) return Promise.resolve(false);
     const action = getClipAction(clip);
     if(!action) return Promise.resolve(false);
@@ -2625,11 +2625,12 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
     action.enabled = true;
     action.setLoop(THREE.LoopOnce, 1);
     action.clampWhenFinished = true;
+    const safeRate = Math.max(0.01, Number(playbackRate) || 1);
     if(reverse){
-      action.timeScale = -1;
+      action.timeScale = -safeRate;
       action.time = Math.max(0.001, clip.duration || 0.001);
     }else{
-      action.timeScale = 1;
+      action.timeScale = safeRate;
       action.time = 0;
     }
     action.play();
@@ -2641,6 +2642,13 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
       };
       animationMixer.addEventListener('finished', onFinished);
     });
+  }
+  function getSyncedPlaybackRate(def, clip, sound, fallbackRate = 1){
+    if(!def?.syncActionToSound || !clip || !sound) return fallbackRate;
+    const clipDuration = Number(clip.duration) || 0;
+    const audioDuration = Number(sound.duration) || 0;
+    if(clipDuration <= 0 || audioDuration <= 0) return fallbackRate;
+    return clipDuration / audioDuration;
   }
   function stopDefActions(def, exceptClip = null){
     const clips = []
@@ -2694,20 +2702,28 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
         action.enabled = false;
       });
     };
+    const playPancaClip = (clip, reverse = false) => {
+      if(!clip) return Promise.resolve(false);
+      const clipDuration = Number(clip.duration) || 0;
+      const audioDuration = Number(sounds.moving?.duration) || 0;
+      const playbackRate = (clipDuration > 0 && audioDuration > 0) ? (clipDuration / audioDuration) : 1;
+      playUiSound(sounds.moving);
+      return playClipOnce(clip, reverse, playbackRate);
+    };
     const playCenterRear = (rev = false) => {
       if(!centerRearClip) return Promise.resolve(false);
       resetPancaActions(centerRearClip);
-      return playClipOnce(centerRearClip, rev);
+      return playPancaClip(centerRearClip, rev);
     };
     const playCenterFront = (rev = false) => {
       if(!centerFrontClip) return Promise.resolve(false);
       resetPancaActions(centerFrontClip);
-      return playClipOnce(centerFrontClip, rev);
+      return playPancaClip(centerFrontClip, rev);
     };
     const playRearFront = (rev = false) => {
       if(!rearFrontClip) return Promise.resolve(false);
       resetPancaActions(rearFrontClip);
-      return playClipOnce(rearFrontClip, rev);
+      return playPancaClip(rearFrontClip, rev);
     };
     if(pancaPosition === 'center'){
       if(target === 'rear') return playCenterRear(false).then((ok) => { if(ok) pancaPosition = 'rear'; return ok; });
@@ -2734,14 +2750,18 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
       const openClip = findFirstAvailableClip(def.openClips || []);
       if(!openClip) return;
       stopDefActions(def, openClip);
+      const closeSoundKey = def.actionSoundClose || def.actionSound || '';
+      const closeSound = closeSoundKey ? sounds[closeSoundKey] : null;
+      const closePlaybackRate = getSyncedPlaybackRate(def, openClip, closeSound, Number(def.closePlaybackRate) || Number(def.playbackRate) || 1);
       jobs.push(
-        playClipOnce(openClip, true).then((ok) => {
+        playClipOnce(openClip, true, closePlaybackRate).then((ok) => {
           if(ok) interactiveState.set(esaId, false);
           return ok;
         })
       );
     });
     if(!jobs.length) return Promise.resolve(false);
+    playUiSound(sounds.closeDoors);
     return Promise.all(jobs).then((arr) => arr.some(Boolean));
   }
 
@@ -2787,9 +2807,19 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
     if(!openClip && !closeClip) return Promise.resolve(false);
     const targetClip = shouldOpen ? openClip : (closeClip || openClip);
     stopDefActions(def, targetClip || null);
+    const actionSoundKey = shouldOpen
+      ? (def.actionSoundOpen || def.actionSound || '')
+      : (def.actionSoundClose || def.actionSound || '');
+    const actionSound = actionSoundKey ? sounds[actionSoundKey] : null;
+    if(actionSound) playUiSound(actionSound);
+    const defaultOpenPlaybackRate = Number(def.openPlaybackRate) || Number(def.playbackRate) || 1;
+    const defaultClosePlaybackRate = Number(def.closePlaybackRate) || Number(def.playbackRate) || 1;
+    const openPlaybackRate = getSyncedPlaybackRate(def, openClip, actionSound, defaultOpenPlaybackRate);
+    const closeTargetClip = closeClip || openClip;
+    const closePlaybackRate = getSyncedPlaybackRate(def, closeTargetClip, actionSound, defaultClosePlaybackRate);
     const op = shouldOpen
-      ? (openClip ? playClipOnce(openClip, false) : Promise.resolve(false))
-      : (closeClip ? playClipOnce(closeClip, false) : playClipOnce(openClip, true));
+      ? (openClip ? playClipOnce(openClip, false, openPlaybackRate) : Promise.resolve(false))
+      : (closeClip ? playClipOnce(closeClip, false, closePlaybackRate) : playClipOnce(openClip, true, closePlaybackRate));
     return op.then((ok) => {
       if(ok) interactiveState.set(id, shouldOpen);
       return ok;
@@ -3208,33 +3238,105 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
     bg: new Audio('audio/gabbiani.mp3'),
     on: new Audio('audio/click.mp3'),
     off: new Audio('audio/blip.mp3'),
-    fine: new Audio('audio/lambo.mp3'),
+    openDoor: new Audio('audio/open_door.mp3'),
+    closeDoors: new Audio('audio/close_doors.mp3'),
+    sonarOpen: new Audio('audio/sonar.mp3'),
+    sonarClose: new Audio('audio/sonar2.mp3'),
+    camera: new Audio('audio/camera.mp3'),
+    moving: new Audio('audio/moving.mp3'),
+    uobp: new Audio('audio/uobp.mp3'),
+    fine: new Audio('audio/registratore_cassa.mp3'),
     trollingDown: new Audio('audio/trolling.mp3'),
-    confirm: new Audio('audio/registratore_cassa.mp3')
+    outboardTrim: new Audio('audio/outboard_trim_fast.mp3'),
+    confirm: new Audio('audio/lambo.mp3')
   };
   sounds.bg.loop = true;
-  sounds.bg.volume = 0.10;
+  const BG_AMBIENT_VOLUME = 0.02;
+  function syncBgVolume(){
+    sounds.bg.volume = BG_AMBIENT_VOLUME;
+  }
+  syncBgVolume();
   sounds.on.volume = 0.8;
   sounds.off.volume = 0.8;
+  sounds.openDoor.volume = 0.85;
+  sounds.closeDoors.volume = 0.85;
+  sounds.sonarOpen.volume = 0.85;
+  sounds.sonarClose.volume = 0.85;
+  sounds.camera.volume = 0.85;
+  sounds.moving.volume = 0.85;
+  sounds.uobp.volume = 0.85;
   sounds.fine.volume = 0.85;
   sounds.trollingDown.volume = 0.85;
+  sounds.outboardTrim.volume = 0.85;
   sounds.confirm.volume = 0.9;
   sounds.trollingDown.loop = true;
+  const soundBaseVolumes = new Map([
+    [sounds.bg, BG_AMBIENT_VOLUME],
+    [sounds.on, 0.8],
+    [sounds.off, 0.8],
+    [sounds.openDoor, 0.85],
+    [sounds.closeDoors, 0.85],
+    [sounds.sonarOpen, 0.85],
+    [sounds.sonarClose, 0.85],
+    [sounds.camera, 0.85],
+    [sounds.moving, 0.85],
+    [sounds.uobp, 0.85],
+    [sounds.fine, 0.85],
+    [sounds.trollingDown, 0.85],
+    [sounds.outboardTrim, 0.85],
+    [sounds.confirm, 0.9]
+  ]);
+  const soundFadeTimers = new Map();
   Object.values(sounds).forEach((s) => { s.preload = 'auto'; });
   let audioUnlocked = false;
   let audioEnabled = true;
 
+  function clearSoundFade(sound){
+    const timerId = soundFadeTimers.get(sound);
+    if(timerId){
+      clearInterval(timerId);
+      soundFadeTimers.delete(sound);
+    }
+  }
+  function fadeOutUiSound(sound, durationMs = 450){
+    if(!sound) return;
+    clearSoundFade(sound);
+    const baseVolume = soundBaseVolumes.get(sound);
+    const startVolume = Math.max(0, Number(sound.volume) || 0);
+    if(sound.paused || startVolume <= 0.001){
+      sound.pause();
+      sound.currentTime = 0;
+      if(typeof baseVolume === 'number') sound.volume = baseVolume;
+      return;
+    }
+    const t0 = performance.now();
+    const timerId = setInterval(() => {
+      const progress = Math.min(1, (performance.now() - t0) / Math.max(1, durationMs));
+      sound.volume = startVolume * (1 - progress);
+      if(progress >= 1){
+        clearSoundFade(sound);
+        sound.pause();
+        sound.currentTime = 0;
+        if(typeof baseVolume === 'number') sound.volume = baseVolume;
+      }
+    }, 16);
+    soundFadeTimers.set(sound, timerId);
+  }
   function playUiSound(sound){
     if(!sound || !audioEnabled) return;
     if(!audioUnlocked){
       unlockAudio();
       if(!audioUnlocked) return;
     }
+    clearSoundFade(sound);
+    const baseVolume = soundBaseVolumes.get(sound);
+    if(typeof baseVolume === 'number') sound.volume = baseVolume;
     sound.currentTime = 0;
     sound.play().catch(() => {});
   }
   function stopUiSound(sound){
     if(!sound) return;
+    clearSoundFade(sound);
     sound.pause();
     sound.currentTime = 0;
   }
@@ -3243,6 +3345,7 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
     if(!audioEnabled) return;
     if(audioUnlocked) return;
     audioUnlocked = true;
+    syncBgVolume();
     sounds.bg.play().catch(() => {});
   }
 
@@ -3251,8 +3354,16 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
     sounds.bg.muted = !enabled;
     sounds.on.muted = !enabled;
     sounds.off.muted = !enabled;
+    sounds.openDoor.muted = !enabled;
+    sounds.closeDoors.muted = !enabled;
+    sounds.sonarOpen.muted = !enabled;
+    sounds.sonarClose.muted = !enabled;
+    sounds.camera.muted = !enabled;
+    sounds.moving.muted = !enabled;
+    sounds.uobp.muted = !enabled;
     sounds.fine.muted = !enabled;
     sounds.trollingDown.muted = !enabled;
+    sounds.outboardTrim.muted = !enabled;
     sounds.confirm.muted = !enabled;
     const btn = document.getElementById('audio-toggle');
     if(btn){
@@ -3268,6 +3379,7 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
     }
     if(fromUser){
       audioUnlocked = true;
+      syncBgVolume();
       sounds.bg.play().catch(() => {});
     }else{
       unlockAudio();
@@ -4297,6 +4409,26 @@ const accessoryDeps = {
         }
       }
     });
+
+    // Keep outboard prop material visually aligned with bench material.
+    let panca001Material = null;
+    const outboardPropMeshes = [];
+    root.traverse((obj) => {
+      if(!obj.isMesh) return;
+      const key = toKey(obj.name);
+      if(!panca001Material && key === 'panca001' && obj.material){
+        panca001Material = Array.isArray(obj.material) ? obj.material[0] : obj.material;
+      }
+      if(key === 'fuoribordoelica'){
+        outboardPropMeshes.push(obj);
+      }
+    });
+    if(panca001Material && outboardPropMeshes.length){
+      outboardPropMeshes.forEach((mesh) => {
+        mesh.material = panca001Material.clone?.() || panca001Material;
+        if(mesh.material) mesh.material.needsUpdate = true;
+      });
+    }
   }
   let selectedAntiskid = '';
   const scrittaTextures = {
@@ -4705,9 +4837,23 @@ function updatePrice(){
     btn.addEventListener('click', (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
+      playMenuPickSound(label);
       onPick();
     });
     return btn;
+  }
+
+  function normalizeMenuLabel(label){
+    return String(label || '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  }
+  function playMenuPickSound(label){
+    const key = normalizeMenuLabel(label);
+    const useBlip = key === 'bianco' || key === 'white' || key === 'nessuno' || key === 'none' || key === 'ninguno' || key === '无';
+    playUiSound(useBlip ? sounds.off : sounds.on);
   }
 
   function createChoiceSubmenu(title){
@@ -5017,6 +5163,7 @@ function updatePrice(){
         btn.addEventListener('click', (ev) => {
           ev.preventDefault();
           ev.stopPropagation();
+          playMenuPickSound(entry.label);
           pickEntry({ label: translateColorMenuLabel(entry.label), color: entry.color || '' });
         });
         optionButtons.set(makeKey({ label: translateColorMenuLabel(entry.label), color: entry.color || '' }), btn);
@@ -5053,6 +5200,7 @@ function updatePrice(){
         btn.addEventListener('click', (ev) => {
           ev.preventDefault();
           ev.stopPropagation();
+          playMenuPickSound(entry.label);
           pickEntry(optEntry);
         });
         optionButtons.set(makeKey({ ...optEntry, rugged: false }), btn);
@@ -5081,6 +5229,7 @@ function updatePrice(){
         btn.addEventListener('click', (ev) => {
           ev.preventDefault();
           ev.stopPropagation();
+          playMenuPickSound(entry.label);
           pickEntry(optEntry);
         });
         optionButtons.set(makeKey(optEntry), btn);
@@ -5206,6 +5355,7 @@ function updatePrice(){
         btn.addEventListener('click', (ev) => {
           ev.preventDefault();
           ev.stopPropagation();
+          playMenuPickSound(opt.textContent || '');
           pickOption(opt);
         });
         optionButtons.set(opt.value, btn);
@@ -5225,6 +5375,7 @@ function updatePrice(){
           btn.addEventListener('click', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
+            playMenuPickSound(opt.textContent || '');
             pickOption(opt);
           });
           optionButtons.set(opt.value, btn);
@@ -6301,6 +6452,7 @@ function renderFinishSelect(){
   }
 
   window.goBack = function(){
+      playUiSound(sounds.on);
       const accessoriEl = document.getElementById('step-accessori');
       const accessoriVisible = accessoriEl && accessoriEl.offsetParent !== null && accessoriEl.getClientRects().length > 0;
       const titleEl = document.getElementById('step-title');
@@ -6325,6 +6477,9 @@ function renderFinishSelect(){
       }
     };
   window.goNext = function(){
+    if(currentStep !== 'accessori'){
+      playUiSound(sounds.on);
+    }
     if(currentStep === 'finitura'){
       if(!finishSelected) return;
       showStep('colori');
@@ -6399,7 +6554,7 @@ function renderFinishSelect(){
     if(nextDeployed){
       if(!wasDeployed) playUiSound(sounds.trollingDown);
     }else{
-      stopUiSound(sounds.trollingDown);
+      fadeOutUiSound(sounds.trollingDown, 500);
     }
     syncTrollingAutoOrbit();
   };
@@ -7490,6 +7645,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     if(orderDownload){
       orderDownload.addEventListener('click', () => {
+        playUiSound(sounds.uobp);
         downloadOrderPdf();
       });
     }
@@ -7551,6 +7707,7 @@ ${t.notes}: ${payload.customer.note}`;
     const fullBtn = document.getElementById('full-btn');
     if(screenshotBtn){
       screenshotBtn.addEventListener('click', () => {
+        playUiSound(sounds.camera);
         downloadScreenshot();
       });
     }
@@ -7620,6 +7777,7 @@ ${t.notes}: ${payload.customer.note}`;
     let lastInfoTrigger = null;
     const closeInfoPanel = () => {
       if(!infoPanel) return;
+      playUiSound(sounds.sonarClose);
       const focusedInsidePanel = document.activeElement && infoPanel.contains(document.activeElement)
         ? document.activeElement
         : null;
@@ -7656,6 +7814,7 @@ ${t.notes}: ${payload.customer.note}`;
         currentInfoKey = resolvedKey;
         infoTitle.textContent = (content.title || 'Informazioni');
         infoBody.textContent = (content.body || '');
+        playUiSound(sounds.sonarOpen);
         infoPanel.classList.add('is-open');
         if('inert' in infoPanel){
           infoPanel.inert = false;
@@ -7686,6 +7845,7 @@ ${t.notes}: ${payload.customer.note}`;
         pointerDownPos = null;
         unlockAudio();
         if(audioEnabled){
+          syncBgVolume();
           sounds.bg.play().catch(() => {});
         }
       });
@@ -7733,6 +7893,10 @@ ${t.notes}: ${payload.customer.note}`;
 
 </body>
 </html>
+
+
+
+
 
 
 
