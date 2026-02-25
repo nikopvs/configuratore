@@ -1201,7 +1201,6 @@ cursor: pointer;
     body.solo-skiff-mode #viewer-ui .next-btn,
     body.solo-skiff-mode #controls-overlay,
     body.solo-skiff-mode #interact-hint,
-    body.solo-skiff-mode #interact-hints,
     body.solo-skiff-mode #info-panel,
     body.solo-skiff-mode .home-link {
       display: none !important;
@@ -2895,15 +2894,23 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
       actionHintEls.set(def.id, el);
     });
   }
+  function getPancaChoicePrefix(){
+    const dict = I18N[currentLang] || I18N.it;
+    return dict.pancaMove?.prefix || dict.acc?.panca || I18N.it.pancaMove?.prefix || I18N.it.acc?.panca || 'Panca';
+  }
+  function getPancaChoiceAria(target){
+    const label = getPancaChoiceLabel(target);
+    return `${getPancaChoicePrefix()} ${label}`.trim();
+  }
   function ensurePancaArrowElements(){
     if(!interactHintsLayer) return;
     if(!pancaArrowRearEl){
       pancaArrowRearEl = document.createElement('button');
       pancaArrowRearEl.type = 'button';
       pancaArrowRearEl.className = 'panca-arrow-btn';
-      pancaArrowRearEl.textContent = 'centro';
-      pancaArrowRearEl.title = 'Panca centro';
-      pancaArrowRearEl.setAttribute('aria-label', 'Panca centro');
+      pancaArrowRearEl.textContent = getPancaChoiceLabel('center');
+      pancaArrowRearEl.title = getPancaChoiceAria('center');
+      pancaArrowRearEl.setAttribute('aria-label', getPancaChoiceAria('center'));
       pancaArrowRearEl.style.display = 'none';
       pancaArrowRearEl.addEventListener('pointerdown', (e) => e.stopPropagation());
       pancaArrowRearEl.addEventListener('pointerup', (e) => {
@@ -2916,9 +2923,9 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
       pancaArrowFrontEl = document.createElement('button');
       pancaArrowFrontEl.type = 'button';
       pancaArrowFrontEl.className = 'panca-arrow-btn';
-      pancaArrowFrontEl.textContent = 'avanti';
-      pancaArrowFrontEl.title = 'Panca avanti';
-      pancaArrowFrontEl.setAttribute('aria-label', 'Panca avanti');
+      pancaArrowFrontEl.textContent = getPancaChoiceLabel('front');
+      pancaArrowFrontEl.title = getPancaChoiceAria('front');
+      pancaArrowFrontEl.setAttribute('aria-label', getPancaChoiceAria('front'));
       pancaArrowFrontEl.style.display = 'none';
       pancaArrowFrontEl.addEventListener('pointerdown', (e) => e.stopPropagation());
       pancaArrowFrontEl.addEventListener('pointerup', (e) => {
@@ -2929,9 +2936,11 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
     }
   }
   function getPancaChoiceLabel(target){
-    if(target === 'rear') return 'indietro';
-    if(target === 'center') return 'centro';
-    if(target === 'front') return 'avanti';
+    const dict = I18N[currentLang] || I18N.it;
+    const labels = dict.pancaMove || I18N.it.pancaMove || {};
+    if(target === 'rear') return labels.rear || 'poppa';
+    if(target === 'center') return labels.center || 'centro';
+    if(target === 'front') return labels.front || 'prua';
     return '';
   }
   function triggerPancaDirection(target){
@@ -3008,11 +3017,11 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
     const leftLabel = getPancaChoiceLabel(pancaChoiceLeftTarget);
     const rightLabel = getPancaChoiceLabel(pancaChoiceRightTarget);
     pancaArrowRearEl.textContent = leftLabel;
-    pancaArrowRearEl.title = `Panca ${leftLabel}`;
-    pancaArrowRearEl.setAttribute('aria-label', `Panca ${leftLabel}`);
+    pancaArrowRearEl.title = getPancaChoiceAria(pancaChoiceLeftTarget);
+    pancaArrowRearEl.setAttribute('aria-label', getPancaChoiceAria(pancaChoiceLeftTarget));
     pancaArrowFrontEl.textContent = rightLabel;
-    pancaArrowFrontEl.title = `Panca ${rightLabel}`;
-    pancaArrowFrontEl.setAttribute('aria-label', `Panca ${rightLabel}`);
+    pancaArrowFrontEl.title = getPancaChoiceAria(pancaChoiceRightTarget);
+    pancaArrowFrontEl.setAttribute('aria-label', getPancaChoiceAria(pancaChoiceRightTarget));
     if(!getInteractiveAnchorCenter('panca', hintWorldPos)) return;
     hintAdjustedWorldPos.copy(hintWorldPos);
     hintAdjustedWorldPos.project(camera);
@@ -3149,7 +3158,7 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
   let environmentLoaded = false;
   let environmentLoadingPromise = null;
   let water;
-  const WATER_LEVEL_OFFSET = -0.008;
+  const WATER_LEVEL_OFFSET = -0.002;
   let waterTargetY = -0.43;
 
   function loadEnvironment(){
@@ -3946,9 +3955,29 @@ const accessoryDeps = {
       mat.needsUpdate = true;
     });
 
-    if(hullMat) hullMat.color.set('#ffffff');
-    if(deckMat) deckMat.color.set('#ffffff');
-    if(hatchesMat) hatchesMat.color.set('#ffffff');
+    if(hullMat){
+      hullMat.map = null;
+      hullMat.color.set('#ffffff');
+      hullMat.needsUpdate = true;
+    }
+    if(deckMat){
+      deckMat.map = null;
+      deckMat.normalMap = null;
+      deckMat.roughnessMap = null;
+      deckMat.metalnessMap = null;
+      deckMat.color.set('#ffffff');
+      deckMat.needsUpdate = true;
+    }
+    if(hatchesMat){
+      hatchesMat.map = null;
+      hatchesMat.normalMap = null;
+      hatchesMat.roughnessMap = null;
+      hatchesMat.metalnessMap = null;
+      hatchesMat.color.set('#ffffff');
+      hatchesMat.needsUpdate = true;
+    }
+    normalizeColorSurfaceMaterial(deckMat);
+    normalizeColorSurfaceMaterial(hatchesMat);
     if(bottazzoMat) bottazzoMat.color.set('#000000');
     applyScrittaAppearance(scrittaTextures.black, '#ffffff');
     applyChirpTextureToMeshes();
@@ -4078,9 +4107,10 @@ const accessoryDeps = {
       close: 'Chiudi',
       summary: 'Riepilogo',
       none: 'Nessuno',
-      antiskidWord: 'Antiscivolo',
-      colorWord: 'Colore',
-      selectLabel: 'Seleziona',
+        antiskidWord: 'Antiscivolo',
+        colorWord: 'Colore',
+        pancaMove: { rear: 'poppa', center: 'centro', front: 'prua', prefix: 'Panca' },
+        selectLabel: 'Seleziona',
       colorsSummary: { hull: 'Chiglia', deck: 'Ponte', doors: 'Portelli' },
       finishMap: { gelcoat: 'Gelcoat', paint: 'Acrilico', rugged: 'Rugged', wrapping: 'Wrapping' },
       antiskidModes: { none: 'Nessuno', paint: 'Verniciato', print: 'Stampato' },
@@ -4123,9 +4153,10 @@ const accessoryDeps = {
       close: 'Close',
       summary: 'Summary',
       none: 'None',
-      antiskidWord: 'Antiskid',
-      colorWord: 'Color',
-      selectLabel: 'Select',
+        antiskidWord: 'Antiskid',
+        colorWord: 'Color',
+        pancaMove: { rear: 'back', center: 'center', front: 'forward', prefix: 'Bench' },
+        selectLabel: 'Select',
       colorsSummary: { hull: 'Hull', deck: 'Deck', doors: 'Doors' },
       finishMap: { gelcoat: 'Gelcoat', paint: 'Acrylic', rugged: 'Rugged', wrapping: 'Wrapping' },
       antiskidModes: { none: 'None', paint: 'Painted', print: 'Printed' },
@@ -4168,9 +4199,10 @@ const accessoryDeps = {
       close: 'Cerrar',
       summary: 'Resumen',
       none: 'Ninguno',
-      antiskidWord: 'Antideslizante',
-      colorWord: 'Color',
-      selectLabel: 'Seleccionar',
+        antiskidWord: 'Antideslizante',
+        colorWord: 'Color',
+        pancaMove: { rear: 'atras', center: 'centro', front: 'adelante', prefix: 'Banco' },
+        selectLabel: 'Seleccionar',
       colorsSummary: { hull: 'Quilla', deck: 'Cubierta', doors: 'Tapas' },
       finishMap: { gelcoat: 'Gelcoat', paint: 'Acrilico', rugged: 'Rugged', wrapping: 'Wrapping' },
       antiskidModes: { none: 'Ninguno', paint: 'Pintado', print: 'Estampado' },
@@ -4213,9 +4245,10 @@ const accessoryDeps = {
       close: '\u5173\u95ed',
       summary: '\u6982\u89c8',
       none: '\u65e0',
-      antiskidWord: '\u9632\u6ed1',
-      colorWord: '\u989c\u8272',
-      selectLabel: '\u9009\u62e9',
+        antiskidWord: '\u9632\u6ed1',
+        colorWord: '\u989c\u8272',
+        pancaMove: { rear: '\u540e\u79fb', center: '\u5c45\u4e2d', front: '\u524d\u79fb', prefix: '\u5ea7\u6905' },
+        selectLabel: '\u9009\u62e9',
       colorsSummary: { hull: '\u8239\u4f53', deck: '\u7532\u677f', doors: '\u8231\u76d6' },
       finishMap: { gelcoat: 'Gelcoat', paint: '\u4e19\u70ef', rugged: 'Rugged', wrapping: 'Wrapping' },
       antiskidModes: { none: '\u65e0', paint: '\u6d82\u88c5', print: '\u538b\u7eb9' },
@@ -4596,10 +4629,10 @@ function updatePrice(){
     document.body.classList.toggle('step-colori', step === 'colori');
     document.body.classList.toggle('step-accessori', step === 'accessori');
     currentStep = step;
-    if(step !== 'accessori'){
-      if(soloSkiffMode) setSoloSkiffMode(false);
-      if(manualCameraRotate) setManualCameraRotate(false);
-    }
+      if(step !== 'accessori'){
+        if(soloSkiffMode) setSoloSkiffMode(false);
+        if(manualCameraRotate) setManualCameraRotate(false);
+      }
     syncTrollingAutoOrbit();
     if(step !== 'colori'){
       document.body.classList.remove('color-menu-open');
@@ -5603,6 +5636,9 @@ function updateAntiskidOptions(finish){
     if(!mat) return;
     if(!antiskidTexture){
       mat.color.set(color);
+      if('metalness' in mat) mat.metalness = 0;
+      if('roughness' in mat) mat.roughness = 1;
+      normalizeColorSurfaceMaterial(mat);
       mat.needsUpdate = true;
       antiskidTexture = textureLoader.load('images/antiskid.jpg', (t) => {
         t.wrapS = t.wrapT = THREE.RepeatWrapping;
@@ -5611,13 +5647,32 @@ function updateAntiskidOptions(finish){
         t.flipY = false;
         mat.map = t;
         mat.color.set(color);
+        if('metalness' in mat) mat.metalness = 0;
+        if('roughness' in mat) mat.roughness = 1;
+        normalizeColorSurfaceMaterial(mat);
         mat.needsUpdate = true;
       });
       return;
     }
     mat.map = antiskidTexture;
     mat.color.set(color);
+    if('metalness' in mat) mat.metalness = 0;
+    if('roughness' in mat) mat.roughness = 1;
+    normalizeColorSurfaceMaterial(mat);
     mat.needsUpdate = true;
+  }
+  function normalizeColorSurfaceMaterial(mat){
+    if(!mat) return;
+    const src = hullMat && hullMat !== mat ? hullMat : null;
+    if('metalness' in mat) mat.metalness = src && 'metalness' in src ? src.metalness : 0;
+    if('roughness' in mat) mat.roughness = src && 'roughness' in src ? src.roughness : 1;
+    if('envMapIntensity' in mat && src && 'envMapIntensity' in src) mat.envMapIntensity = src.envMapIntensity;
+    if('reflectivity' in mat && src && 'reflectivity' in src) mat.reflectivity = src.reflectivity;
+    if('clearcoat' in mat && src && 'clearcoat' in src) mat.clearcoat = src.clearcoat;
+    if('clearcoatRoughness' in mat && src && 'clearcoatRoughness' in src) mat.clearcoatRoughness = src.clearcoatRoughness;
+    if('vertexColors' in mat && src && 'vertexColors' in src) mat.vertexColors = src.vertexColors;
+    if('emissive' in mat && mat.emissive?.set) mat.emissive.set('#000000');
+    if('emissiveIntensity' in mat) mat.emissiveIntensity = 0;
   }
   function applyRuggedTexture(mat, color){
     if(!mat) return;
@@ -5635,9 +5690,7 @@ function updateAntiskidOptions(finish){
     mat.map = ruggedTexture;
     mat.userData.baseMap = ruggedTexture;
     mat.color.set(color);
-    if('metalness' in mat) mat.metalness = 0;
-    if('roughness' in mat) mat.roughness = 1;
-    if('vertexColors' in mat) mat.vertexColors = false;
+    normalizeColorSurfaceMaterial(mat);
     mat.needsUpdate = true;
   }
 
@@ -5645,9 +5698,11 @@ function updateAntiskidOptions(finish){
     if(!mat) return;
     if(mode === 'paint'){
       applyAntiskid(mat, color);
+      normalizeColorSurfaceMaterial(mat);
       return;
     }
     applyAntiskid(mat, color);
+    normalizeColorSurfaceMaterial(mat);
   }
 
     function applyEvaTextureToMeshes(meshes, tintColor = '#ffffff'){
@@ -5828,22 +5883,23 @@ function applyChirpTextureToMeshes(){
     }
 
     function syncSchienaleMaterial(){
-    if(!schienaleMeshes.length || !hatchesMat) return;
-    schienaleMeshes.forEach((mesh) => {
-      if(!mesh) return;
-      if(mesh.material === hatchesMat || !mesh.material){
-        mesh.material = hatchesMat?.clone?.() || mesh.material;
-      }
-      const mat = mesh.material;
-      if(!mat) return;
-      mat.color.copy(hatchesMat.color);
-      mat.map = hatchesMat.map || null;
-      mat.userData.baseMap = hatchesMat.userData?.baseMap || null;
-      mat.normalMap = null;
-      mat.roughnessMap = null;
-      mat.metalnessMap = null;
-      if('metalness' in mat) mat.metalness = 0;
-      if('roughness' in mat) mat.roughness = 1;
+      const sourceMat = deckMat || hatchesMat;
+      if(!schienaleMeshes.length || !sourceMat) return;
+      schienaleMeshes.forEach((mesh) => {
+        if(!mesh) return;
+        if(mesh.material === sourceMat || !mesh.material){
+          mesh.material = sourceMat?.clone?.() || mesh.material;
+        }
+        const mat = mesh.material;
+        if(!mat) return;
+        mat.color.copy(sourceMat.color);
+        mat.map = sourceMat.map || null;
+        mat.userData.baseMap = sourceMat.userData?.baseMap || null;
+        mat.normalMap = null;
+        mat.roughnessMap = null;
+        mat.metalnessMap = null;
+        if('metalness' in mat) mat.metalness = 0;
+        if('roughness' in mat) mat.roughness = 1;
       mat.needsUpdate = true;
     });
   }
@@ -5898,11 +5954,13 @@ function applyChirpTextureToMeshes(){
         const sv = Number.isFinite(scaleV) && scaleV > 0 ? scaleV : s;
         t.repeat.set(tileU(su), tileV(sv));
         mat.map = t;
+        normalizeColorSurfaceMaterial(mat);
         mat.needsUpdate = true;
       });
     }else{
       mat.map = null;
       mat.color.set(baseColor || '#ffffff');
+      normalizeColorSurfaceMaterial(mat);
       mat.needsUpdate = true;
     }
   }
@@ -6012,11 +6070,17 @@ function applyChirpTextureToMeshes(){
     
     if(deckMat){
       deckMat.map = null;
+      deckMat.normalMap = null;
+      deckMat.roughnessMap = null;
+      deckMat.metalnessMap = null;
       deckMat.color.set('#ffffff');
       deckMat.needsUpdate = true;
     }
     if(hatchesMat){
       hatchesMat.map = null;
+      hatchesMat.normalMap = null;
+      hatchesMat.roughnessMap = null;
+      hatchesMat.metalnessMap = null;
       hatchesMat.color.set('#ffffff');
       hatchesMat.needsUpdate = true;
     }
@@ -6339,7 +6403,7 @@ function renderFinishSelect(){
     updateLogoAndBottazzo();
       updatePrice();
   }
-  window.setDeck = function(color, btn){
+    window.setDeck = function(color, btn){
       selectedDeckMode = resolveFinishMode(btn);
     if(btn?.dataset?.texture || btn?.dataset?.wrapFinish){
       applyWrappingTextureFor(
@@ -6364,7 +6428,11 @@ function renderFinishSelect(){
       }
       deckMat.userData.baseMap = null;
       deckMat.map = null;
+      deckMat.normalMap = null;
+      deckMat.roughnessMap = null;
+      deckMat.metalnessMap = null;
       deckMat.color.set(color);
+      normalizeColorSurfaceMaterial(deckMat);
       deckMat.needsUpdate = true;
       deckDark = isDarkColor(color);
       wrappingWhite = false;
@@ -6375,8 +6443,8 @@ function renderFinishSelect(){
     checkStep();
     updateLogoAndBottazzo();
       updatePrice();
-    if(hatchesAuto){
-      setHatches(color, btn, false);
+      if(hatchesAuto){
+        setHatches(color, btn, false);
       const hSelect = colorSelects.hatches;
       if(hSelect){
         if(btn?.dataset.texture || btn?.dataset.wrapFinish){
@@ -6407,9 +6475,13 @@ function renderFinishSelect(){
         if(selectedFinish === 'gelcoat' && hLabel && gelcoatTriggers?.hatches){
           gelcoatTriggers.hatches.textContent = hLabel;
         }
+        }
       }
-    }
-  };
+      const schienaleChecked = Boolean(document.querySelector('#step-accessori input[data-accessory="schienale"]')?.checked);
+      if(schienaleChecked){
+        syncSchienaleMaterial();
+      }
+    };
 
   window.setHatches = function(color, btn, manual = true){
       selectedHatchesMode = resolveFinishMode(btn);
@@ -6433,7 +6505,11 @@ function renderFinishSelect(){
       }
       hatchesMat.userData.baseMap = null;
       hatchesMat.map = null;
+      hatchesMat.normalMap = null;
+      hatchesMat.roughnessMap = null;
+      hatchesMat.metalnessMap = null;
       hatchesMat.color.set(color);
+      normalizeColorSurfaceMaterial(hatchesMat);
       hatchesMat.needsUpdate = true;
     }
     hatchesSelected = true;
@@ -7867,7 +7943,6 @@ ${t.notes}: ${payload.customer.note}`;
       });
       viewer.addEventListener('pointerup', (e) => {
         if(e.target?.closest?.('#viewer-ui')) return;
-        if(soloSkiffMode) return;
         if(!pointerDownPos) return;
         const dx = e.clientX - pointerDownPos.x;
         const dy = e.clientY - pointerDownPos.y;
