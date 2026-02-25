@@ -2307,14 +2307,14 @@ cursor: pointer;
   let interactiveBusy = false;
   const normalizeId = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
   const interactiveDefs = [
-    { id: 'portello_prua', hitTokens: ['portelloprua'], openClips: ['Portello_prua_open'], actionSoundOpen: 'openDoor', actionSoundClose: 'closeDoors', syncActionToSound: true },
-    { id: 'portello_esa_prua', hitTokens: ['portelloesaprua'], openClips: ['Portello_esa_prua_open'], actionSoundOpen: 'openDoor', actionSoundClose: 'closeDoors', syncActionToSound: true },
-    { id: 'portello_esa_centro', hitTokens: ['portelloesacentro'], openClips: ['Portello_esa_centro_open'], actionSoundOpen: 'openDoor', actionSoundClose: 'closeDoors', syncActionToSound: true },
-    { id: 'portello_esa_poppa', hitTokens: ['portelloesapoppa'], openClips: ['Portello_esa_poppa_open'], actionSoundOpen: 'openDoor', actionSoundClose: 'closeDoors', syncActionToSound: true },
+    { id: 'portello_prua', hitTokens: ['portelloprua'], openClips: ['Portello_prua_open'], actionSoundOpen: 'openDoor', actionSoundClose: 'closeDoors', syncActionToSound: true, soundPlaybackRate: 2.5 },
+    { id: 'portello_esa_prua', hitTokens: ['portelloesaprua'], openClips: ['Portello_esa_prua_open'], actionSoundOpen: 'openDoor', actionSoundClose: 'closeDoors', syncActionToSound: true, soundPlaybackRate: 2.5 },
+    { id: 'portello_esa_centro', hitTokens: ['portelloesacentro'], openClips: ['Portello_esa_centro_open'], actionSoundOpen: 'openDoor', actionSoundClose: 'closeDoors', syncActionToSound: true, soundPlaybackRate: 2.5 },
+    { id: 'portello_esa_poppa', hitTokens: ['portelloesapoppa'], openClips: ['Portello_esa_poppa_open'], actionSoundOpen: 'openDoor', actionSoundClose: 'closeDoors', syncActionToSound: true, soundPlaybackRate: 2.5 },
     { id: 'deck_toggle', hitTokens: [] },
     { id: 'motore', hitTokens: ['fuoribordomotore'], openClips: ['Fuoribordo.motore_alza'], accessoryKey: 'motore', playbackRate: 0.5, actionSound: 'outboardTrim', syncActionToSound: true },
     { id: 'panca', hitTokens: ['panca'], openClips: ['panca_center_rear'], closeClips: ['panca_center_front'], accessoryKey: 'panca' },
-    { id: 'tientibene_f', hitTokens: ['tientibenef', 'tientibene'], openClips: ['Tientibene_close'], accessoryKey: 'tientibene', actionSoundOpen: 'openDoor', actionSoundClose: 'closeDoors', syncActionToSound: true }
+    { id: 'tientibene_f', hitTokens: ['tientibenef', 'tientibene'], openClips: ['Tientibene_close'], accessoryKey: 'tientibene', actionSoundOpen: 'openDoor', actionSoundClose: 'closeDoors', syncActionToSound: true, soundPlaybackRate: 2.5 }
   ];
   let modelAxesHelper = null;
   if(SHOW_DEBUG_AXES){
@@ -2643,12 +2643,21 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
       animationMixer.addEventListener('finished', onFinished);
     });
   }
-  function getSyncedPlaybackRate(def, clip, sound, fallbackRate = 1){
+  function resolveActionSoundPlaybackRate(def, shouldOpen){
+    const byAction = shouldOpen
+      ? Number(def?.openSoundPlaybackRate)
+      : Number(def?.closeSoundPlaybackRate);
+    const generic = Number(def?.soundPlaybackRate);
+    return Math.max(0.01, byAction || generic || 1);
+  }
+  function getSyncedPlaybackRate(def, clip, sound, fallbackRate = 1, soundPlaybackRate = 1){
     if(!def?.syncActionToSound || !clip || !sound) return fallbackRate;
     const clipDuration = Number(clip.duration) || 0;
     const audioDuration = Number(sound.duration) || 0;
-    if(clipDuration <= 0 || audioDuration <= 0) return fallbackRate;
-    return clipDuration / audioDuration;
+    const safeSoundRate = Math.max(0.01, Number(soundPlaybackRate) || 1);
+    const effectiveAudioDuration = audioDuration / safeSoundRate;
+    if(clipDuration <= 0 || effectiveAudioDuration <= 0) return fallbackRate;
+    return clipDuration / effectiveAudioDuration;
   }
   function stopDefActions(def, exceptClip = null){
     const clips = []
@@ -2752,7 +2761,8 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
       stopDefActions(def, openClip);
       const closeSoundKey = def.actionSoundClose || def.actionSound || '';
       const closeSound = closeSoundKey ? sounds[closeSoundKey] : null;
-      const closePlaybackRate = getSyncedPlaybackRate(def, openClip, closeSound, Number(def.closePlaybackRate) || Number(def.playbackRate) || 1);
+      const closeSoundPlaybackRate = resolveActionSoundPlaybackRate(def, false);
+      const closePlaybackRate = getSyncedPlaybackRate(def, openClip, closeSound, Number(def.closePlaybackRate) || Number(def.playbackRate) || 1, closeSoundPlaybackRate);
       jobs.push(
         playClipOnce(openClip, true, closePlaybackRate).then((ok) => {
           if(ok) interactiveState.set(esaId, false);
@@ -2761,7 +2771,7 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
       );
     });
     if(!jobs.length) return Promise.resolve(false);
-    playUiSound(sounds.closeDoors);
+    playUiSound(sounds.closeDoors, resolveActionSoundPlaybackRate(getInteractiveDef('portello_esa_prua'), false));
     return Promise.all(jobs).then((arr) => arr.some(Boolean));
   }
 
@@ -2811,12 +2821,14 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
       ? (def.actionSoundOpen || def.actionSound || '')
       : (def.actionSoundClose || def.actionSound || '');
     const actionSound = actionSoundKey ? sounds[actionSoundKey] : null;
-    if(actionSound) playUiSound(actionSound);
+    const openSoundPlaybackRate = resolveActionSoundPlaybackRate(def, true);
+    const closeSoundPlaybackRate = resolveActionSoundPlaybackRate(def, false);
+    if(actionSound) playUiSound(actionSound, shouldOpen ? openSoundPlaybackRate : closeSoundPlaybackRate);
     const defaultOpenPlaybackRate = Number(def.openPlaybackRate) || Number(def.playbackRate) || 1;
     const defaultClosePlaybackRate = Number(def.closePlaybackRate) || Number(def.playbackRate) || 1;
-    const openPlaybackRate = getSyncedPlaybackRate(def, openClip, actionSound, defaultOpenPlaybackRate);
+    const openPlaybackRate = getSyncedPlaybackRate(def, openClip, actionSound, defaultOpenPlaybackRate, openSoundPlaybackRate);
     const closeTargetClip = closeClip || openClip;
-    const closePlaybackRate = getSyncedPlaybackRate(def, closeTargetClip, actionSound, defaultClosePlaybackRate);
+    const closePlaybackRate = getSyncedPlaybackRate(def, closeTargetClip, actionSound, defaultClosePlaybackRate, closeSoundPlaybackRate);
     const op = shouldOpen
       ? (openClip ? playClipOnce(openClip, false, openPlaybackRate) : Promise.resolve(false))
       : (closeClip ? playClipOnce(closeClip, false, closePlaybackRate) : playClipOnce(openClip, true, closePlaybackRate));
@@ -3322,7 +3334,7 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
     }, 16);
     soundFadeTimers.set(sound, timerId);
   }
-  function playUiSound(sound){
+  function playUiSound(sound, playbackRate = 1){
     if(!sound || !audioEnabled) return;
     if(!audioUnlocked){
       unlockAudio();
@@ -3331,6 +3343,7 @@ PRINTED -> \u6a21\u5177\u5185\u7f6e\u9632\u6ed1\u7eb9\u7406\u3002`
     clearSoundFade(sound);
     const baseVolume = soundBaseVolumes.get(sound);
     if(typeof baseVolume === 'number') sound.volume = baseVolume;
+    sound.playbackRate = Math.max(0.01, Number(playbackRate) || 1);
     sound.currentTime = 0;
     sound.play().catch(() => {});
   }
